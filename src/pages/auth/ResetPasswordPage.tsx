@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 
 import { useNavigate } from 'react-router-dom'
 
-const ResetPasswordModal = () => {
+const ResetPasswordPage = () => {
   const navigate = useNavigate()
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -113,4 +113,4 @@ const ResetPasswordModal = () => {
   )
 }
 
-export default ResetPasswordModal
+export default ResetPasswordPage

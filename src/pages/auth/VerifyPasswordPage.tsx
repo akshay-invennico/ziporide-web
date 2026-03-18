@@ -3,7 +3,7 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom'
 
-const VerifyPasswordModal = () => {
+const VerifyPasswordPage = () => {
   const navigate = useNavigate()
   const [timeLeft, setTimeLeft] = useState(15 * 60)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -141,4 +141,4 @@ const VerifyPasswordModal = () => {
   )
 }
 
-export default VerifyPasswordModal
+export default VerifyPasswordPage;
