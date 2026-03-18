@@ -2,7 +2,7 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom'
 
-const ForgetPasswordModal = () => {
+const ForgetPasswordPage = () => {
   const navigate = useNavigate()
   const formik = useFormik({
     initialValues: {
@@ -81,4 +81,4 @@ const ForgetPasswordModal = () => {
   )
 }
 
-export default ForgetPasswordModal
+export default ForgetPasswordPage

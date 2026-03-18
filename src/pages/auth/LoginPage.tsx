@@ -3,7 +3,7 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom'
 
-const LoginModal = () => {
+const LoginPage = () => {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false)
 
@@ -133,4 +133,4 @@ const LoginModal = () => {
     )
 }
 
-export default LoginModal
+export default LoginPage
