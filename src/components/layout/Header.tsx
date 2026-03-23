@@ -1,17 +1,25 @@
-import { ChevronDown } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { ChevronDown } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export default function Header() {
   const location = useLocation();
 
   // Basic title mapping based on route
   const getPageTitle = () => {
-    if (location.pathname.includes('dashboard')) return { title: 'Dashboard', subtitle: "Welcome back! Here's what's happening today." };
-    if (location.pathname.includes('rider')) return { title: 'Riders', subtitle: "View and manage rider accounts" };
-    if (location.pathname.includes('driver')) return { title: 'Drivers', subtitle: "View and manage driver accounts" };
-    if (location.pathname.includes('verification')) return { title: 'Verification Requests', subtitle: 'Review and take action on driver applications' };
-    if (location.pathname.includes('trips')) return { title: 'Trip History', subtitle: 'View and manage trip records' }
-    return { title: 'Admin Panel', subtitle: "Manage your platform here." };
+    if (location.pathname.includes('dashboard'))
+      return { title: 'Dashboard', subtitle: "Welcome back! Here's what's happening today." };
+    if (location.pathname.includes('rider'))
+      return { title: 'Riders', subtitle: 'View and manage rider accounts' };
+    if (location.pathname.includes('driver'))
+      return { title: 'Drivers', subtitle: 'View and manage driver accounts' };
+    if (location.pathname.includes('verification'))
+      return {
+        title: 'Verification Requests',
+        subtitle: 'Review and take action on driver applications',
+      };
+    if (location.pathname.includes('trips'))
+      return { title: 'Trip History', subtitle: 'View and manage trip records' };
+    return { title: 'Admin Panel', subtitle: 'Manage your platform here.' };
   };
 
   const { title, subtitle } = getPageTitle();
@@ -24,7 +32,11 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-5">
-        <img src="/icons/bellIcon.svg" alt="bellIcon" className="w-[44px] h-[44px] cursor-pointer" />
+        <img
+          src="/icons/bellIcon.svg"
+          alt="bellIcon"
+          className="w-[44px] h-[44px] cursor-pointer"
+        />
 
         <div className="flex items-center gap-3 cursor-pointer border border-[#DFE6E5] p-1.5 rounded-full pr-3 transition-colors">
           <img

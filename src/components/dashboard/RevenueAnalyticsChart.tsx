@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
 
 type FilterKey = 'Year' | 'Month' | 'Week';
@@ -38,8 +43,7 @@ const dummyData: Record<FilterKey, { name: string; revenue: number; rides: numbe
   ],
 };
 
-const yTickFormatter = (value: number) =>
-  `£${value >= 1000 ? `${value / 1000}K` : value}`;
+const yTickFormatter = (value: number) => `£${value >= 1000 ? `${value / 1000}K` : value}`;
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
@@ -49,10 +53,14 @@ const CustomTooltip = ({ active, payload }: any) => {
     return (
       <div className="bg-white p-3 border border-[#DFE6E5] shadow-[0_0_16px_0_#ED9B0E3D] w-[154px] h-[80px] rounded-lg flex flex-col items-start">
         <div className="flex items-center gap-2 mb-1">
-          <img src="/icons/rider/income.svg" alt="income" className='w-[24px] h-[24px]' />
-          <span className="font-semibold text-[#000000] text-[16px]">£{payload[0].value.toLocaleString()}</span>
+          <img src="/icons/rider/income.svg" alt="income" className="w-[24px] h-[24px]" />
+          <span className="font-semibold text-[#000000] text-[16px]">
+            £{payload[0].value.toLocaleString()}
+          </span>
         </div>
-        <span className="text-[12px] text-[#4E616A] font-medium">From {payload[0].payload.rides} Rides</span>
+        <span className="text-[12px] text-[#4E616A] font-medium">
+          From {payload[0].payload.rides} Rides
+        </span>
       </div>
     );
   }
@@ -65,7 +73,6 @@ export default function RevenueAnalyticsChart() {
 
   return (
     <div className="bg-white h-[418px]  p-5 lg:p-6 rounded-lg border border-[#DFE6E5] s col-span-1 lg:col-span-2 xl:col-span-4">
-
       {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
         <div>
@@ -81,10 +88,11 @@ export default function RevenueAnalyticsChart() {
             <button
               key={filter}
               onClick={() => setTrendFilter(filter)}
-              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                trendFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+              }`}
             >
               {filter}
             </button>
@@ -97,10 +105,7 @@ export default function RevenueAnalyticsChart() {
             which (a) updates data correctly and (b) avoids the width/height -1 warning */}
       <div className="h-[300px] w-full">
         <ResponsiveContainer key={trendFilter} width="100%" height="100%">
-          <AreaChart
-            data={activeData}
-            margin={{ top: 10, right: 0, left: -10, bottom: 0 }}
-          >
+          <AreaChart data={activeData} margin={{ top: 10, right: 0, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#1CC8B1" stopOpacity={0.12} />

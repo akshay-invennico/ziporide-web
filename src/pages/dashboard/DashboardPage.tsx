@@ -1,8 +1,8 @@
-import StatCard from "../../components/dashboard/StatCard";
-import RevenueAnalyticsChart from "../../components/dashboard/RevenueAnalyticsChart";
-import RidersDriversReportChart from "../../components/dashboard/RidersDriversReportChart";
-import TripsChart from "../../components/dashboard/TripsChart";
-import RecentTripsTable from "../../components/dashboard/RecentTripsTable";
+import RecentTripsTable from '../../components/dashboard/RecentTripsTable';
+import RevenueAnalyticsChart from '../../components/dashboard/RevenueAnalyticsChart';
+import RidersDriversReportChart from '../../components/dashboard/RidersDriversReportChart';
+import StatCard from '../../components/dashboard/StatCard';
+import TripsChart from '../../components/dashboard/TripsChart';
 
 export default function DashboardPage() {
   return (
@@ -16,7 +16,6 @@ export default function DashboardPage() {
           trendValue="+12.5%"
           trendLabel="This Week"
           icon="/icons/statCard/Riders.svg"
-
         />
         <StatCard
           title="Active Drivers"
@@ -25,7 +24,6 @@ export default function DashboardPage() {
           trendValue="+1.5%"
           trendLabel="This Week"
           icon="/icons/statCard/Drivers.svg"
-
         />
         <StatCard
           title="Total Trips"
@@ -34,7 +32,6 @@ export default function DashboardPage() {
           trendValue="-12%"
           trendLabel="This Week"
           icon="/icons/statCard/Trips.svg"
-
         />
         <StatCard
           title="Revenue"
@@ -43,7 +40,6 @@ export default function DashboardPage() {
           trendValue="-15%"
           trendLabel="This Week"
           icon="/icons/statCard/Revenu.svg"
-
         />
       </div>
 

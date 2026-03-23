@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 const REJECTION_REASONS = [
-  "Required documents are missing",
-  "Multiple documents are invalid",
-  "Identity details could not be verified",
-  "Vehicle information is incorrect or incomplete",
-  "Duplicate account detected",
-  "Does not meet platform requirements",
-  "Suspicious or fraudulent activity detected",
+  'Required documents are missing',
+  'Multiple documents are invalid',
+  'Identity details could not be verified',
+  'Vehicle information is incorrect or incomplete',
+  'Duplicate account detected',
+  'Does not meet platform requirements',
+  'Suspicious or fraudulent activity detected',
 ];
 
 interface RejectVerificationModalProps {
@@ -16,21 +16,15 @@ interface RejectVerificationModalProps {
   onConfirm?: (reasons: string[], note: string) => void;
 }
 
-const RejectVerificationModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-}: RejectVerificationModalProps) => {
+const RejectVerificationModal = ({ isOpen, onClose, onConfirm }: RejectVerificationModalProps) => {
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState('');
 
   if (!isOpen) return null;
 
   const toggleReason = (reason: string) => {
     setSelectedReasons((prev) =>
-      prev.includes(reason)
-        ? prev.filter((r) => r !== reason)
-        : [...prev, reason]
+      prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason],
     );
   };
 
@@ -41,14 +35,16 @@ const RejectVerificationModal = ({
 
   const handleClose = () => {
     setSelectedReasons([]);
-    setNote("");
+    setNote('');
     onClose();
   };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
     >
       <div className="bg-white rounded-xl w-[600px]  overflow-hidden">
         {/* Body */}
@@ -59,29 +55,26 @@ const RejectVerificationModal = ({
               Reject Verification Request?
             </h2>
             <p className="text-[14px] font-medium text-[#4E616A] leading-relaxed">
-              Please select a reason for rejection. This will be shared with the driver to help them correct and resubmit the required information.
+              Please select a reason for rejection. This will be shared with the driver to help them
+              correct and resubmit the required information.
             </p>
           </div>
 
           {/* Reasons */}
           <div className="flex flex-col gap-1 mt-2">
-            <span className="text-[16px] font-semibold text-[#000000]">
-              Reason for Rejections?
-            </span>
+            <span className="text-[16px] font-semibold text-[#000000]">Reason for Rejections?</span>
             <div className="flex flex-col gap-3 mt-3">
               {REJECTION_REASONS.map((reason) => {
                 const checked = selectedReasons.includes(reason);
                 return (
-                  <label
-                    key={reason}
-                    className="flex items-center gap-3 cursor-pointer group"
-                  >
+                  <label key={reason} className="flex items-center gap-3 cursor-pointer group">
                     <div
                       onClick={() => toggleReason(reason)}
-                      className={`w-[18px] h-[18px] rounded-[4px] border-[1.5px] flex items-center justify-center shrink-0 transition-colors ${checked
-                        ? "bg-[#1DAFA1] border-[#1DAFA1]"
-                        : "border-[#4E616A] group-hover:border-[#1DAFA1]"
-                        }`}
+                      className={`w-[18px] h-[18px] rounded-[4px] border-[1.5px] flex items-center justify-center shrink-0 transition-colors ${
+                        checked
+                          ? 'bg-[#1DAFA1] border-[#1DAFA1]'
+                          : 'border-[#4E616A] group-hover:border-[#1DAFA1]'
+                      }`}
                     >
                       {checked && (
                         <svg
@@ -102,8 +95,9 @@ const RejectVerificationModal = ({
                       )}
                     </div>
                     <span
-                      className={`text-[14px] select-none font-medium ${checked ? "text-[#000000]" : "text-[#000000]"
-                        }`}
+                      className={`text-[14px] select-none font-medium ${
+                        checked ? 'text-[#000000]' : 'text-[#000000]'
+                      }`}
                       onClick={() => toggleReason(reason)}
                     >
                       {reason}

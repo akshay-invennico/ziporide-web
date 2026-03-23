@@ -1,47 +1,48 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { CheckCircle2, XCircle, X, Check, ArrowLeft } from "lucide-react";
-import DocumentViewModal from "../../components/ui/DocumentViewModal";
-import RejectDocumentModal from "../../components/ui/RejectDocumentModal";
-import RejectVerificationModal from "../../components/ui/RejectVerificationModal";
-import { verificationRequestsData } from "../../data/VerificationData";
+import { CheckCircle2, XCircle, X, Check, ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import DocumentViewModal from '../../components/ui/DocumentViewModal';
+import RejectDocumentModal from '../../components/ui/RejectDocumentModal';
+import RejectVerificationModal from '../../components/ui/RejectVerificationModal';
+import { verificationRequestsData } from '../../data/VerificationData';
 
 const ApplicationDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentDocumentName, setCurrentDocumentName] = useState("");
+  const [currentDocumentName, setCurrentDocumentName] = useState('');
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectingDocument, setRejectingDocument] = useState("");
+  const [rejectingDocument, setRejectingDocument] = useState('');
   const [isRejectVerificationModalOpen, setIsRejectVerificationModalOpen] = useState(false);
 
-  const request = verificationRequestsData.find(r => r.id === id) || {
-    id: "0",
-    driverName: "Mike Smith",
-    driverId: "DRVR-2001",
-    phone: "+44 1321 65456",
-    email: "mike.smith@email.com",
-    gender: "Male",
-    dob: "1990-01-01",
-    appliedOn: "2023-05-12",
-    status: "Pending",
-    avatar: "MS",
-    address: "123 Main ST. Anytown, USA",
-    licenceNumber: "ASAN9011278KA2WX",
-    licenceExpiry: "2028-11-26",
-    issuingAuthority: "DVLA Lincoln",
+  const request = verificationRequestsData.find((r) => r.id === id) || {
+    id: '0',
+    driverName: 'Mike Smith',
+    driverId: 'DRVR-2001',
+    phone: '+44 1321 65456',
+    email: 'mike.smith@email.com',
+    gender: 'Male',
+    dob: '1990-01-01',
+    appliedOn: '2023-05-12',
+    status: 'Pending',
+    avatar: 'MS',
+    address: '123 Main ST. Anytown, USA',
+    licenceNumber: 'ASAN9011278KA2WX',
+    licenceExpiry: '2028-11-26',
+    issuingAuthority: 'DVLA Lincoln',
     vehicle: {
-      registrationNumber: "LN22 EFG",
-      make: "Ford",
-      model: "Mustang",
+      registrationNumber: 'LN22 EFG',
+      make: 'Ford',
+      model: 'Mustang',
       year: 2022,
-      color: "Grabber Blue",
-      vehicleType: "Executive",
+      color: 'Grabber Blue',
+      vehicleType: 'Executive',
     },
   };
 
-  const isApproved = request.status === "Approved";
-  const isRejected = request.status === "Rejected";
+  const isApproved = request.status === 'Approved';
+  const isRejected = request.status === 'Rejected';
   const isPending = !isApproved && !isRejected;
 
   const handleOpenDocument = (docName: string) => {
@@ -56,7 +57,6 @@ const ApplicationDetailsPage = () => {
 
   return (
     <div className="w-full min-h-screen p-1 flex flex-col gap-6">
-
       {/* Header */}
       <div className="flex flex-col gap-4">
         <button
@@ -66,7 +66,6 @@ const ApplicationDetailsPage = () => {
           <ArrowLeft className="w-4 h-4" />
           <span className="text-[14px] font-medium">Back</span>
         </button>
-
       </div>
 
       {/* Personal Information */}
@@ -79,7 +78,11 @@ const ApplicationDetailsPage = () => {
               {request.avatar.length <= 2 ? (
                 <span>{request.avatar}</span>
               ) : (
-                <img src={request.avatar} alt={request.driverName} className="w-full h-full object-cover" />
+                <img
+                  src={request.avatar}
+                  alt={request.driverName}
+                  className="w-full h-full object-cover"
+                />
               )}
             </div>
             <div className="flex flex-col">
@@ -92,7 +95,9 @@ const ApplicationDetailsPage = () => {
             {isRejected && (
               <div className="bg-[#F9F9F9] px-3 py-1.5 rounded-[600px] flex items-center gap-2">
                 <img src="/icons/verification/info.svg" alt="info" className="w-[15px] h-[15px]" />
-                <span className="text-[14px] font-medium text-[#4E616A]">Vehicle information is incorrect or incomplete</span>
+                <span className="text-[14px] font-medium text-[#4E616A]">
+                  Vehicle information is incorrect or incomplete
+                </span>
               </div>
             )}
 
@@ -112,7 +117,7 @@ const ApplicationDetailsPage = () => {
 
             {isPending && (
               <div className="flex items-center gap-3">
-                <button 
+                <button
                   onClick={() => setIsRejectVerificationModalOpen(true)}
                   className="flex cursor-pointer items-center gap-1 px-6 py-2 rounded-[500px] bg-[#FFF6F6]   text-[#FF0707] font-medium text-[14px] "
                 >
@@ -130,35 +135,57 @@ const ApplicationDetailsPage = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 p-3">
           <div className="flex gap-3">
-            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center"><img src="/icons/verification/callIcon.svg" alt="phone" className="w-[20px] h-[20px] " /></div>
+            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center">
+              <img
+                src="/icons/verification/callIcon.svg"
+                alt="phone"
+                className="w-[20px] h-[20px] "
+              />
+            </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Phone Number</span>
               <span className="text-[14px] font-medium text-[#101828]">{request.phone}</span>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center"><img src="/icons/verification/mailIcon.svg" alt="email" className="w-[20px] h-[20px] " /></div>
+            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center">
+              <img
+                src="/icons/verification/mailIcon.svg"
+                alt="email"
+                className="w-[20px] h-[20px] "
+              />
+            </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Email</span>
               <span className="text-[14px] font-medium text-[#101828]">{request.email}</span>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center"><img src="/icons/verification/gender.svg" alt="gender" className="w-[20px] h-[20px] " /></div>
+            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center">
+              <img
+                src="/icons/verification/gender.svg"
+                alt="gender"
+                className="w-[20px] h-[20px] "
+              />
+            </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Gender</span>
               <span className="text-[14px] font-medium text-[#101828]">{request.gender}</span>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center"><img src="/icons/verification/cale.svg" alt="dob" className="w-[20px] h-[20px] " /></div>
+            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center">
+              <img src="/icons/verification/cale.svg" alt="dob" className="w-[20px] h-[20px] " />
+            </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Date of Birth</span>
               <span className="text-[14px] font-medium text-[#101828]">{request.dob}</span>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center"><img src="/icons/verification/cale.svg" alt="joined" className="w-[20px] h-[20px]" /></div>
+            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center">
+              <img src="/icons/verification/cale.svg" alt="joined" className="w-[20px] h-[20px]" />
+            </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Joined on</span>
               <span className="text-[14px] font-medium text-[#101828]">{request.appliedOn}</span>
@@ -169,10 +196,15 @@ const ApplicationDetailsPage = () => {
         <div className="flex flex-col p-3 gap-2">
           <span className="text-[12px] text-[#4E616A] font-medium">Address</span>
           <div className="flex gap-3 items-center">
-            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center"><img src="/icons/verification/location.svg" alt="location" className="w-[20px] h-[20px]" /></div>
+            <div className="mt-0.5 bg-[#F9F9F9] w-[41px] h-[41px] rounded-full flex items-center justify-center">
+              <img
+                src="/icons/verification/location.svg"
+                alt="location"
+                className="w-[20px] h-[20px]"
+              />
+            </div>
             <div className="flex flex-col">
               <span className="text-[14px] font-semibold text-[#000000]">{request.address}</span>
-
             </div>
           </div>
         </div>
@@ -185,15 +217,21 @@ const ApplicationDetailsPage = () => {
           <div className="flex flex-col gap-6">
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">PAN License Number</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.licenceNumber}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.licenceNumber}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Expiry Date</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.licenceExpiry}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.licenceExpiry}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Issuing Authority</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.issuingAuthority}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.issuingAuthority}
+              </span>
             </div>
           </div>
 
@@ -205,18 +243,24 @@ const ApplicationDetailsPage = () => {
               <div className="flex flex-col gap-1 items-start">
                 <span className="text-[14px] font-medium text-[#000000]">license.pdf</span>
                 <button
-                  onClick={() => handleOpenDocument("license.pdf")}
+                  onClick={() => handleOpenDocument('license.pdf')}
                   className="text-[12px] cursor-pointer font-semibold text-[#1DAFA1] hover:underline"
                 >
                   Click to View
                 </button>
                 <div className="mt-1">
                   {isRejected ? (
-                    <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">Rejected</div>
+                    <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
+                      Rejected
+                    </div>
                   ) : isApproved ? (
-                    <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">Verified</div>
+                    <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+                      Verified
+                    </div>
                   ) : (
-                    <div className="px-3 py-2 rounded-[500px] bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">Pending Verification</div>
+                    <div className="px-3 py-2 rounded-[500px] bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">
+                      Pending Verification
+                    </div>
                   )}
                 </div>
               </div>
@@ -224,8 +268,8 @@ const ApplicationDetailsPage = () => {
 
             {isPending && (
               <div className="flex items-center gap-2 ">
-                <button 
-                  onClick={() => handleOpenRejectModal("license.pdf")}
+                <button
+                  onClick={() => handleOpenRejectModal('license.pdf')}
                   className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
                 >
                   <X className="w-5 h-5 font-bold" />
@@ -246,7 +290,9 @@ const ApplicationDetailsPage = () => {
           <div className="flex flex-col gap-6">
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Registration Number</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.vehicle.registrationNumber}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.vehicle.registrationNumber}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Make</span>
@@ -254,7 +300,9 @@ const ApplicationDetailsPage = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Model</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.vehicle.model}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.vehicle.model}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Year</span>
@@ -262,11 +310,15 @@ const ApplicationDetailsPage = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Color</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.vehicle.color}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.vehicle.color}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Vehicle Type</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.vehicle.vehicleType}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.vehicle.vehicleType}
+              </span>
             </div>
           </div>
 
@@ -277,9 +329,11 @@ const ApplicationDetailsPage = () => {
                   <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
-                  <span className="text-[14px] font-medium text-[#000000]">Insurance Certificate</span>
+                  <span className="text-[14px] font-medium text-[#000000]">
+                    Insurance Certificate
+                  </span>
                   <button
-                    onClick={() => handleOpenDocument("Insurance Certificate")}
+                    onClick={() => handleOpenDocument('Insurance Certificate')}
                     className="text-[12px] cursor-pointer font-semibold text-[#1DAFA1] hover:underline"
                   >
                     Click to View
@@ -287,16 +341,28 @@ const ApplicationDetailsPage = () => {
                   <div className="flex items-center gap-3 mt-1">
                     {isRejected ? (
                       <>
-                        <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">Rejected</div>
+                        <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
+                          Rejected
+                        </div>
                         <div className="flex items-center gap-1.5 bg-[#F9F9F9] rounded-[400px] px-2 py-1">
-                          <img src="/icons/verification/info.svg" alt="info" className="w-[15px] h-[15px]" />
-                          <span className="text-[12px] font-medium text-[#4E616A]">Document is expired</span>
+                          <img
+                            src="/icons/verification/info.svg"
+                            alt="info"
+                            className="w-[15px] h-[15px]"
+                          />
+                          <span className="text-[12px] font-medium text-[#4E616A]">
+                            Document is expired
+                          </span>
                         </div>
                       </>
                     ) : isApproved ? (
-                      <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">Verified</div>
+                      <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+                        Verified
+                      </div>
                     ) : (
-                      <div className="px-3 py-2 rounded-[500px] bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">Pending Verification</div>
+                      <div className="px-3 py-2 rounded-[500px] bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">
+                        Pending Verification
+                      </div>
                     )}
                   </div>
                 </div>
@@ -304,8 +370,8 @@ const ApplicationDetailsPage = () => {
 
               {isPending && (
                 <div className="flex items-center gap-2 ">
-                  <button 
-                    onClick={() => handleOpenRejectModal("Insurance Certificate")}
+                  <button
+                    onClick={() => handleOpenRejectModal('Insurance Certificate')}
                     className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
                   >
                     <X className="w-5 h-5 font-bold" />
@@ -325,7 +391,7 @@ const ApplicationDetailsPage = () => {
                 <div className="flex flex-col items-start gap-1">
                   <span className="text-[14px] font-medium text-[#000000]">MOT Certificate</span>
                   <button
-                    onClick={() => handleOpenDocument("MOT Certificate")}
+                    onClick={() => handleOpenDocument('MOT Certificate')}
                     className="text-[12px] cursor-pointer font-semibold text-[#1DAFA1] hover:underline"
                   >
                     Click to View
@@ -333,16 +399,28 @@ const ApplicationDetailsPage = () => {
                   <div className="flex items-center gap-3 mt-1">
                     {isRejected ? (
                       <>
-                        <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">Rejected</div>
+                        <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
+                          Rejected
+                        </div>
                         <div className="flex items-center gap-1.5 bg-[#F9F9F9] rounded-[400px] px-2 py-1">
-                          <img src="/icons/verification/info.svg" alt="info" className="w-[15px] h-[15px]" />
-                          <span className="text-[12px] font-medium text-[#4E616A]">Criminal record unclear</span>
+                          <img
+                            src="/icons/verification/info.svg"
+                            alt="info"
+                            className="w-[15px] h-[15px]"
+                          />
+                          <span className="text-[12px] font-medium text-[#4E616A]">
+                            Criminal record unclear
+                          </span>
                         </div>
                       </>
                     ) : isApproved ? (
-                      <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">Verified</div>
+                      <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+                        Verified
+                      </div>
                     ) : (
-                      <div className="px-3 py-2 rounded-[500px] bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">Pending Verification</div>
+                      <div className="px-3 py-2 rounded-[500px] bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">
+                        Pending Verification
+                      </div>
                     )}
                   </div>
                 </div>
@@ -350,8 +428,8 @@ const ApplicationDetailsPage = () => {
 
               {isPending && (
                 <div className="flex items-center gap-2 ">
-                  <button 
-                    onClick={() => handleOpenRejectModal("MOT Certificate")}
+                  <button
+                    onClick={() => handleOpenRejectModal('MOT Certificate')}
                     className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
                   >
                     <X className="w-5 h-5 font-bold" />
@@ -374,20 +452,34 @@ const ApplicationDetailsPage = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-[14px] font-medium text-[#101828] mb-1">Background Check</span>
-            <span className="text-[12px] font-semibold text-[#4E616A] mb-2">Criminal & driving record verification</span>
+            <span className="text-[12px] font-semibold text-[#4E616A] mb-2">
+              Criminal & driving record verification
+            </span>
             <div className="flex items-center gap-3">
               {isRejected ? (
                 <>
-                  <div className="px-3 py-1 rounded-full bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">Rejected</div>
+                  <div className="px-3 py-1 rounded-full bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
+                    Rejected
+                  </div>
                   <div className="flex items-center gap-1.5 bg-[#F9F9F9] rounded-[400px] px-2 py-1">
-                    <img src="/icons/verification/info.svg" alt="info" className="w-[15px] h-[15px]" />
-                    <span className="text-[12px] font-medium text-[#4E616A]">Criminal record unclear</span>
+                    <img
+                      src="/icons/verification/info.svg"
+                      alt="info"
+                      className="w-[15px] h-[15px]"
+                    />
+                    <span className="text-[12px] font-medium text-[#4E616A]">
+                      Criminal record unclear
+                    </span>
                   </div>
                 </>
               ) : isApproved ? (
-                <div className="px-3 py-1 rounded-full bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">Verified</div>
+                <div className="px-3 py-1 rounded-full bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+                  Verified
+                </div>
               ) : (
-                <div className="px-3 py-1 rounded-full bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">Pending Verification</div>
+                <div className="px-3 py-1 rounded-full bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">
+                  Pending Verification
+                </div>
               )}
             </div>
           </div>
@@ -395,8 +487,8 @@ const ApplicationDetailsPage = () => {
 
         {isPending && (
           <div className="flex items-center gap-2 ">
-            <button 
-              onClick={() => handleOpenRejectModal("Background Check")}
+            <button
+              onClick={() => handleOpenRejectModal('Background Check')}
               className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
             >
               <X className="w-5 h-5 font-bold" />
@@ -411,7 +503,9 @@ const ApplicationDetailsPage = () => {
       {/* Warning Alert */}
       <div className="bg-[#F9F9F9] rounded-lg p-4 flex items-center gap-3 ">
         <img src="/icons/verification/docs.svg" alt="docs" className="w-[24px] h-[24px]" />
-        <span className="text-[14px] font-medium text-[#4E616A]">Complete all document verifications and background check before approving the driver.</span>
+        <span className="text-[14px] font-medium text-[#4E616A]">
+          Complete all document verifications and background check before approving the driver.
+        </span>
       </div>
 
       {/* Legal Agreements */}
@@ -420,15 +514,21 @@ const ApplicationDetailsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="border border-[#DFE6E5] rounded-lg p-4 flex items-center justify-between">
             <span className="text-[14px] font-medium text-[#4E616A]">Terms of Service</span>
-            <div className="px-4 py-1.5 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">Agreed</div>
+            <div className="px-4 py-1.5 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+              Agreed
+            </div>
           </div>
           <div className="border border-[#DFE6E5] rounded-lg p-4 flex items-center justify-between">
             <span className="text-[14px] font-medium text-[#4E616A]">Privacy Policy</span>
-            <div className="px-4 py-1.5 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">Agreed</div>
+            <div className="px-4 py-1.5 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+              Agreed
+            </div>
           </div>
           <div className="border border-[#DFE6E5] rounded-lg p-4 flex items-center justify-between">
             <span className="text-[14px] font-medium text-[#4E616A]">Data Processing Consent</span>
-            <div className="px-4 py-1.5 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">Agreed</div>
+            <div className="px-4 py-1.5 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+              Agreed
+            </div>
           </div>
         </div>
       </div>
@@ -449,10 +549,9 @@ const ApplicationDetailsPage = () => {
         isOpen={isRejectVerificationModalOpen}
         onClose={() => setIsRejectVerificationModalOpen(false)}
         onConfirm={(reasons, note) => {
-          console.log("Rejected with reasons:", reasons, "and note:", note);
+          console.log('Rejected with reasons:', reasons, 'and note:', note);
         }}
       />
-
     </div>
   );
 };

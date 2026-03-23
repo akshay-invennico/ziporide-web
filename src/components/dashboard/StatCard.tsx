@@ -2,14 +2,21 @@ interface StatCardProps {
   title: string;
   value: string;
   icon: string;
-  trend: "up" | "down";
+  trend: 'up' | 'down';
   trendValue: string;
   trendLabel: string;
 }
 
-export default function StatCard({ title, value, icon, trend, trendValue, trendLabel }: StatCardProps) {
-  const isPositive = trend === "up";
-  const trendIcon = isPositive ? "/icons/statCard/Up.svg" : "/icons/statCard/Down.svg";
+export default function StatCard({
+  title,
+  value,
+  icon,
+  trend,
+  trendValue,
+  trendLabel,
+}: StatCardProps) {
+  const isPositive = trend === 'up';
+  const trendIcon = isPositive ? '/icons/statCard/Up.svg' : '/icons/statCard/Down.svg';
 
   return (
     <div className="bg-white p-3 rounded-lg border border-[#DFE6E5] flex flex-col justify-between h-[120px] w-[285px] relative">
@@ -23,9 +30,7 @@ export default function StatCard({ title, value, icon, trend, trendValue, trendL
 
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1.5 text-[12px] font-medium">
-          <span className={isPositive ? "text-[#00A63E]" : "text-[#FF0707]"}>
-            {trendValue}
-          </span>
+          <span className={isPositive ? 'text-[#00A63E]' : 'text-[#FF0707]'}>{trendValue}</span>
           <span className="text-[#4E616A] font-medium text-[12px]">{trendLabel}</span>
         </div>
         <img src={trendIcon} alt={trend} className="w-5 h-5" />

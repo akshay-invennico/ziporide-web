@@ -1,8 +1,17 @@
-import { useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Route as ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { spendingData, recentTrips } from '../../../../data/RiderTripsData';
+import { useState } from 'react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
+import { spendingData, recentTrips } from '../../../../data/RiderTripsData';
 
 export default function SpentTripHistoryTab() {
   const [trendFilter, setTrendFilter] = useState('Year');
@@ -11,16 +20,18 @@ export default function SpentTripHistoryTab() {
   const itemsPerPage = 6;
 
   const totalPages = Math.ceil(recentTrips.length / itemsPerPage);
-  const currentTrips = recentTrips.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentTrips = recentTrips.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
 
   // Pagination Handlers
   const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
   const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
-
 
   // Custom generic tooltip for the chart
   const CustomTooltip = ({ active, payload }: any) => {
@@ -28,10 +39,14 @@ export default function SpentTripHistoryTab() {
       return (
         <div className="bg-white p-3 border border-[#DFE6E5] shadow-[0_0_16px_0_#ED9B0E3D] w-[128px] h-[80px] rounded-lg flex flex-col items-center">
           <div className="flex items-center gap-2 mb-1">
-            <img src="/icons/rider/income.svg" alt="income" className='w-[24px] h-[24px]' />
-            <span className="font-semibold text-[#000000] text-[16px]">£{payload[0].value.toLocaleString()}</span>
+            <img src="/icons/rider/income.svg" alt="income" className="w-[24px] h-[24px]" />
+            <span className="font-semibold text-[#000000] text-[16px]">
+              £{payload[0].value.toLocaleString()}
+            </span>
           </div>
-          <span className="text-[12px] text-[#4E616A] font-medium">From {payload[0].payload.rides} Rides</span>
+          <span className="text-[12px] text-[#4E616A] font-medium">
+            From {payload[0].payload.rides} Rides
+          </span>
         </div>
       );
     }
@@ -40,7 +55,6 @@ export default function SpentTripHistoryTab() {
 
   return (
     <div className="flex flex-col gap-6 w-full fade-in">
-
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between ">
@@ -48,7 +62,7 @@ export default function SpentTripHistoryTab() {
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Trips</p>
             <h3 className="text-[24px] font-bold text-[#101828]">145</h3>
           </div>
-          <img src="/icons/rider/card1.svg" alt="card1" className='w-[58px] h-[58px]' />
+          <img src="/icons/rider/card1.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
 
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between ">
@@ -56,7 +70,7 @@ export default function SpentTripHistoryTab() {
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Spent</p>
             <h3 className="text-[24px] font-bold text-[#101828]">£5600.00</h3>
           </div>
-          <img src="/icons/rider/card2.svg" alt="card1" className='w-[58px] h-[58px]' />
+          <img src="/icons/rider/card2.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
 
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between ">
@@ -64,7 +78,7 @@ export default function SpentTripHistoryTab() {
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Average Trip Value</p>
             <h3 className="text-[24px] font-bold text-[#101828]">£16.64</h3>
           </div>
-          <img src="/icons/rider/card3.svg" alt="card1" className='w-[58px] h-[58px]' />
+          <img src="/icons/rider/card3.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
 
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between">
@@ -72,7 +86,7 @@ export default function SpentTripHistoryTab() {
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Cancellation Rate</p>
             <h3 className="text-[24px] font-bold text-[#101828]">2.1%</h3>
           </div>
-          <img src="/icons/rider/card4.svg" alt="card1" className='w-[58px] h-[58px]' />
+          <img src="/icons/rider/card4.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
       </div>
 
@@ -81,7 +95,9 @@ export default function SpentTripHistoryTab() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
             <h3 className="text-[20px] font-semibold text-[#101828]">Spending Trend</h3>
-            <p className="text-[12px] text-[#4E616A] mt-1 font-medium">Track Ride's Spending amounts</p>
+            <p className="text-[12px] text-[#4E616A] mt-1 font-medium">
+              Track Ride's Spending amounts
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -89,10 +105,11 @@ export default function SpentTripHistoryTab() {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-                  }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                  trendFilter === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A] '
+                }`}
               >
                 {filter}
               </button>
@@ -102,10 +119,7 @@ export default function SpentTripHistoryTab() {
 
         <div className="h-[300px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={spendingData}
-              margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
-            >
+            <AreaChart data={spendingData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSpent" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#20B2AA" stopOpacity={0.2} />
@@ -124,9 +138,12 @@ export default function SpentTripHistoryTab() {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 500 }}
-                tickFormatter={(value) => value > 0 ? `£${value / 1000}K` : '£0'}
+                tickFormatter={(value) => (value > 0 ? `£${value / 1000}K` : '£0')}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '3 3' }} />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '3 3' }}
+              />
               <Area
                 type="monotone"
                 dataKey="spent"
@@ -150,10 +167,11 @@ export default function SpentTripHistoryTab() {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-                  }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                  trendFilter === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A] '
+                }`}
               >
                 {filter}
               </button>
@@ -193,7 +211,6 @@ export default function SpentTripHistoryTab() {
                   </div>
                 </th>
 
-
                 <th className="px-4 py-3.5 cursor-pointer group">
                   <div className="flex items-center justify-between">
                     <span>AMOUNT</span>
@@ -208,7 +225,6 @@ export default function SpentTripHistoryTab() {
                   </div>
                 </th>
 
-
                 <th className="px-4 py-3.5 cursor-pointer group">
                   <div className="flex items-center justify-between">
                     <span>STATUS</span>
@@ -222,22 +238,30 @@ export default function SpentTripHistoryTab() {
                     <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
                   </div>
                 </th>
-
               </tr>
             </thead>
             <tbody className="text-sm">
               {currentTrips.map((trip: any) => (
-                <tr key={trip.id} className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors">
+                <tr
+                  key={trip.id}
+                  className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
+                >
                   <td className="p-4 px-5 text-[#14B8A6] font-medium text-[14px]">{trip.id}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden shrink-0">
                         {/* Using a placeholder avatar box if image not present, mimicking image with a colored background */}
-                        <div className="w-full h-full bg-teal-100 flex items-center justify-center text-[#14B8A6] font-bold text-[16px]">{trip.driver.charAt(0)}</div>
+                        <div className="w-full h-full bg-teal-100 flex items-center justify-center text-[#14B8A6] font-bold text-[16px]">
+                          {trip.driver.charAt(0)}
+                        </div>
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-medium text-[#1DAFA1] text-[14px] ">{trip.driver}</span>
-                        <span className="text-[12px] font-medium text-[#4E616A]">{trip.driverPhone}</span>
+                        <span className="font-medium text-[#1DAFA1] text-[14px] ">
+                          {trip.driver}
+                        </span>
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          {trip.driverPhone}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -251,19 +275,23 @@ export default function SpentTripHistoryTab() {
                   <td className="p-4">
                     <div className="flex items-center gap-1.5">
                       <Star className="w-[20px] h-[20px] fill-[#E9A90A] text-[#E9A90A]" />
-                      <span className="font-medium text-[#4E616A] text-[14px]">{trip.rating.toFixed(1)}</span>
+                      <span className="font-medium text-[#4E616A] text-[14px]">
+                        {trip.rating.toFixed(1)}
+                      </span>
                     </div>
                   </td>
                   <td className="p-4 font-medium text-[#4E616A] text-[14px]">
                     £{trip.amount.toFixed(2)}
                   </td>
-                  <td className="p-4 font-medium text-[#4E616A] text-[14px]">
-                    {trip.date}
-                  </td>
+                  <td className="p-4 font-medium text-[#4E616A] text-[14px]">{trip.date}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      <div className={`w-1.5 h-1.5 rounded-full ${trip.status === 'Completed' ? 'bg-[#00A63E]' : trip.status === 'In Progress' ? 'bg-[#F6921E]' : 'bg-[#FF0707]'}`}></div>
-                      <span className={`font-semibold text-[12px] ${trip.status === 'Completed' ? 'text-[#00A63E]' : trip.status === 'In Progress' ? 'text-[#F6921E]' : 'text-[#FF0707]'}`}>
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${trip.status === 'Completed' ? 'bg-[#00A63E]' : trip.status === 'In Progress' ? 'bg-[#F6921E]' : 'bg-[#FF0707]'}`}
+                      ></div>
+                      <span
+                        className={`font-semibold text-[12px] ${trip.status === 'Completed' ? 'text-[#00A63E]' : trip.status === 'In Progress' ? 'text-[#F6921E]' : 'text-[#FF0707]'}`}
+                      >
                         {trip.status}
                       </span>
                     </div>
@@ -273,7 +301,7 @@ export default function SpentTripHistoryTab() {
                       onClick={() => setSelectedTrip(trip)}
                       className="flex items-center gap-1 font-medium text-[14px] transition-colors text-[#1DAFA1] cursor-pointer"
                     >
-                      <img src="/icons/rider/eye.svg" alt="eye" className='w-[22px] h-[22px]' />
+                      <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
                       View
                     </button>
                   </td>
@@ -285,9 +313,7 @@ export default function SpentTripHistoryTab() {
 
         {/* Pagination Info & Controls */}
         <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-sm text-gray-500 hidden sm:block">
-
-          </div>
+          <div className="text-sm text-gray-500 hidden sm:block"></div>
 
           <div className="flex items-center gap-2">
             <button
@@ -311,19 +337,21 @@ export default function SpentTripHistoryTab() {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
-                        ? "bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]"
-                        : "text-gray-600 hover:bg-gray-50 border border-transparent"
-                        }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>
                   );
-                } else if (
-                  pageNum === currentPage - 2 ||
-                  pageNum === currentPage + 2
-                ) {
-                  return <span key={pageNum} className="text-gray-400 px-1">...</span>;
+                } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return (
+                    <span key={pageNum} className="text-gray-400 px-1">
+                      ...
+                    </span>
+                  );
                 }
                 return null;
               })}

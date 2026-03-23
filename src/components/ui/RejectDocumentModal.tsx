@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState } from 'react';
 //import { X } from "lucide-react";
 
 const REJECTION_REASONS = [
-  "Document is unclear or blurred",
-  "Document is expired",
-  "Incorrect document uploaded",
-  "Information does not match profile details",
-  "Document is cropped or partially visible",
-  "Invalid or unrecognized document",
-  "Tampered or edited document",
+  'Document is unclear or blurred',
+  'Document is expired',
+  'Incorrect document uploaded',
+  'Information does not match profile details',
+  'Document is cropped or partially visible',
+  'Invalid or unrecognized document',
+  'Tampered or edited document',
 ];
 
 interface RejectDocumentModalProps {
@@ -18,21 +18,15 @@ interface RejectDocumentModalProps {
   onConfirm?: (reasons: string[], note: string) => void;
 }
 
-const RejectDocumentModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-}: RejectDocumentModalProps) => {
+const RejectDocumentModal = ({ isOpen, onClose, onConfirm }: RejectDocumentModalProps) => {
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState('');
 
   if (!isOpen) return null;
 
   const toggleReason = (reason: string) => {
     setSelectedReasons((prev) =>
-      prev.includes(reason)
-        ? prev.filter((r) => r !== reason)
-        : [...prev, reason]
+      prev.includes(reason) ? prev.filter((r) => r !== reason) : [...prev, reason],
     );
   };
 
@@ -43,47 +37,42 @@ const RejectDocumentModal = ({
 
   const handleClose = () => {
     setSelectedReasons([]);
-    setNote("");
+    setNote('');
     onClose();
   };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
     >
       <div className="bg-white rounded-xl w-[600px]  overflow-hidden">
         {/* Body */}
         <div className="p-6 flex flex-col gap-5">
           {/* Title */}
           <div className="flex flex-col gap-1.5">
-            <h2 className="text-[18px] font-semibold text-[#000000]">
-              Reject Document?
-            </h2>
+            <h2 className="text-[18px] font-semibold text-[#000000]">Reject Document?</h2>
             <p className="text-[14px] font-medium text-[#4E616A] leading-relaxed">
-              Please select a reason for rejection. This will be shared with the driver to help them correct and resubmit the required information.
+              Please select a reason for rejection. This will be shared with the driver to help them
+              correct and resubmit the required information.
             </p>
           </div>
 
           {/* Reasons */}
           <div className="flex flex-col gap-1">
-            <span className="text-[16px] font-semibold text-[#000000]">
-              Reason for Rejections?
-            </span>
+            <span className="text-[16px] font-semibold text-[#000000]">Reason for Rejections?</span>
             <div className="flex flex-col gap-2">
               {REJECTION_REASONS.map((reason) => {
                 const checked = selectedReasons.includes(reason);
                 return (
-                  <label
-                    key={reason}
-                    className="flex items-center gap-3 cursor-pointer group mt-3"
-                  >
+                  <label key={reason} className="flex items-center gap-3 cursor-pointer group mt-3">
                     <div
                       onClick={() => toggleReason(reason)}
-                      className={`w-[18px] h-[18px] rounded-[4px] border flex items-center justify-center shrink-0 transition-colors ${checked
-                        ? "bg-[#1DAFA1] border-[#1DAFA1]"
-                        : "border-[#4E616A]"
-                        }`}
+                      className={`w-[18px] h-[18px] rounded-[4px] border flex items-center justify-center shrink-0 transition-colors ${
+                        checked ? 'bg-[#1DAFA1] border-[#1DAFA1]' : 'border-[#4E616A]'
+                      }`}
                     >
                       {checked && (
                         <svg

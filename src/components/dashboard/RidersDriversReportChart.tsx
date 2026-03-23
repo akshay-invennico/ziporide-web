@@ -25,7 +25,9 @@ export default function RidersDriversReportChart() {
     <div className="bg-white p-5 lg:p-6 rounded-lg border border-[#DFE6E5] col-span-1 lg:col-span-2">
       <div className="flex items-start justify-between mb-8">
         <div className="flex flex-col gap-2.5">
-          <h3 className="text-[20px] font-semibold text-[#000000] leading-none">Riders & Drivers Report</h3>
+          <h3 className="text-[20px] font-semibold text-[#000000] leading-none">
+            Riders & Drivers Report
+          </h3>
           <div className="flex items-center gap-6 mt-1">
             <div className="flex items-center gap-1.5">
               <div className="w-[12px] h-[12px] rounded-sm bg-[#1DAFA1]" />
@@ -44,10 +46,11 @@ export default function RidersDriversReportChart() {
             <button
               key={item}
               onClick={() => setFilter(item)}
-              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${filter === item
-                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                : 'border-[#DFE6E5] text-[#4E616A] bg-white'
-                }`}
+              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                filter === item
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] bg-white'
+              }`}
             >
               {item}
             </button>
@@ -57,7 +60,12 @@ export default function RidersDriversReportChart() {
 
       <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={dummyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barGap={6} barSize={10}>
+          <BarChart
+            data={dummyData}
+            margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
+            barGap={6}
+            barSize={10}
+          >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
             <XAxis
               dataKey="name"
@@ -75,7 +83,11 @@ export default function RidersDriversReportChart() {
             />
             <Tooltip
               cursor={{ fill: 'transparent' }}
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+              contentStyle={{
+                borderRadius: '8px',
+                border: 'none',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+              }}
             />
             <Bar dataKey="riders" name="Riders" fill="#1DAFA1" radius={[5, 5, 5, 5]} />
             <Bar dataKey="drivers" name="Drivers" fill="#2D2D2D" radius={[5, 5, 5, 5]} />

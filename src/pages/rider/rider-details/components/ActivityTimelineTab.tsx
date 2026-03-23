@@ -3,7 +3,9 @@ import { activityTimelineData } from '../../../../data/RiderTripsData';
 export default function ActivityTimelineTab() {
   return (
     <div className="flex flex-col w-full fade-in pb-4">
-      <h3 className="text-[20px] font-semibold text-[#000000] mb-8 border-b border-[#DFE6E5] pb-5">Activity Timeline</h3>
+      <h3 className="text-[20px] font-semibold text-[#000000] mb-8 border-b border-[#DFE6E5] pb-5">
+        Activity Timeline
+      </h3>
 
       <div className="relative pl-[5px]">
         {/* Continuous vertical line - starting from first element slightly below top to last element slightly above bottom */}
@@ -19,12 +21,18 @@ export default function ActivityTimelineTab() {
               <div className="flex flex-col pb-0">
                 <h4 className="text-[16px] font-semibold text-[#000000] mb-1">{activity.title}</h4>
                 {activity.description && (
-                  <p className="text-[14px] text-[#4E616A] mb-2.5 leading-relaxed font-medium">{activity.description}</p>
+                  <p className="text-[14px] text-[#4E616A] mb-2.5 leading-relaxed font-medium">
+                    {activity.description}
+                  </p>
                 )}
                 {activity.date && (
                   <div className="flex items-center gap-2.5 text-[12px] font-medium text-[#4E616A]">
                     <div className="flex items-center gap-1.5">
-                      <img src="/icons/rider/dateIcon.svg" alt="calender" className='w-[15px] h-[15px]' />
+                      <img
+                        src="/icons/rider/dateIcon.svg"
+                        alt="calender"
+                        className="w-[15px] h-[15px]"
+                      />
                       <span>{activity.date}</span>
                     </div>
                     <span className="w-[5px] h-[5px] rounded-full bg-[#4E616A]"></span>
@@ -32,9 +40,13 @@ export default function ActivityTimelineTab() {
                     <span className="w-[5px] h-[5px] rounded-full bg-[#4E616A]"></span>
                     <div className="flex items-center gap-1.5">
                       {activity.user === 'system' ? (
-                        <img src="/icons/rider/system.svg" alt="system" className='w-[15px] h-[15px]' />
+                        <img
+                          src="/icons/rider/system.svg"
+                          alt="system"
+                          className="w-[15px] h-[15px]"
+                        />
                       ) : (
-                        <img src="/icons/rider/user.svg" alt="user" className='w-[15px] h-[15px]' />
+                        <img src="/icons/rider/user.svg" alt="user" className="w-[15px] h-[15px]" />
                       )}
                       <span>{activity.user}</span>
                     </div>

@@ -1,31 +1,28 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  Search,
-  Star,
-  ChevronLeft,
-  ChevronRight
-} from "lucide-react";
-import { ridersData } from "../../data/RiderData";
-import SuspendRiderModal from "../../components/ui/SuspendRiderModal";
+import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+
+import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
+import { ridersData } from '../../data/RiderData';
 
 const RiderPage = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterStatus, setFilterStatus] = useState('All');
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   // NEW STATE: track the rider being suspended
   const [suspendedRiderId, setSuspendedRiderId] = useState<string | null>(null);
 
   // Filter based on search query
-  const filteredData = ridersData.filter(rider => {
-    const matchesSearch = rider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredData = ridersData.filter((rider) => {
+    const matchesSearch =
+      rider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rider.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rider.phone.includes(searchQuery);
-    const matchesStatus = filterStatus === "All" || rider.status === filterStatus;
+    const matchesStatus = filterStatus === 'All' || rider.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
@@ -34,20 +31,19 @@ const RiderPage = () => {
   // Get current page data
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   // Pagination Handlers
   const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
   const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
   return (
     <div className="w-full min-h-screen bg-[#FFFFFF] p-1 relative">
-
       <div className="bg-white rounded-lg  border border-[#DFE6E5] overflow-hidden">
         {/* Controls Row */}
         <div className="p-4 border-b border-[#DFE6E5] flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -127,8 +123,12 @@ const RiderPage = () => {
                         <div className="absolute top-1/2 -translate-y-1/2 right-[20%] translate-x-1/2 w-[18px] h-[18px] bg-white border-2 border-[#20B2AA] rounded-full shadow cursor-pointer"></div>
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <span className="text-sm text-gray-500 font-medium">From <span className="text-gray-900 font-bold ml-1">£110</span></span>
-                        <span className="text-sm text-gray-500 font-medium">To <span className="text-gray-900 font-bold ml-1">£880</span></span>
+                        <span className="text-sm text-gray-500 font-medium">
+                          From <span className="text-gray-900 font-bold ml-1">£110</span>
+                        </span>
+                        <span className="text-sm text-gray-500 font-medium">
+                          To <span className="text-gray-900 font-bold ml-1">£880</span>
+                        </span>
                       </div>
                     </div>
 
@@ -141,8 +141,12 @@ const RiderPage = () => {
                         <div className="absolute top-1/2 -translate-y-1/2 right-[20%] translate-x-1/2 w-[18px] h-[18px] bg-white border-2 border-[#20B2AA] rounded-full shadow cursor-pointer"></div>
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <span className="text-sm text-gray-500 font-medium">From <span className="text-gray-900 font-bold ml-1">01</span></span>
-                        <span className="text-sm text-gray-500 font-medium">To <span className="text-gray-900 font-bold ml-1">400</span></span>
+                        <span className="text-sm text-gray-500 font-medium">
+                          From <span className="text-gray-900 font-bold ml-1">01</span>
+                        </span>
+                        <span className="text-sm text-gray-500 font-medium">
+                          To <span className="text-gray-900 font-bold ml-1">400</span>
+                        </span>
                       </div>
                     </div>
 
@@ -155,16 +159,13 @@ const RiderPage = () => {
                           All
                         </button>
                         <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-800 hover:border-[#20B2AA] hover:text-[#20B2AA] transition-colors bg-white">
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                          5 Star
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />5 Star
                         </button>
                         <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-800 hover:border-[#20B2AA] hover:text-[#20B2AA] transition-colors bg-white">
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                          4 & above
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />4 & above
                         </button>
                         <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-800 hover:border-[#20B2AA] hover:text-[#20B2AA] transition-colors bg-white">
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                          3 & above
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />3 & above
                         </button>
                       </div>
                     </div>
@@ -210,12 +211,23 @@ const RiderPage = () => {
                       onClick={() => setIsExportOpen(false)}
                     >
                       <div className="relative flex items-center justify-center text-black">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                           <polyline points="14 2 14 8 20 8"></polyline>
                         </svg>
                         <div className="absolute -bottom-1 -left-1 bg-white px-0.5">
-                          <span className="text-[10px] font-bold leading-none tracking-tighter">PDF</span>
+                          <span className="text-[10px] font-bold leading-none tracking-tighter">
+                            PDF
+                          </span>
                         </div>
                       </div>
                       <span className="text-xl font-medium text-gray-900">PDF</span>
@@ -225,12 +237,23 @@ const RiderPage = () => {
                       onClick={() => setIsExportOpen(false)}
                     >
                       <div className="relative flex items-center justify-center text-black">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                           <polyline points="14 2 14 8 20 8"></polyline>
                         </svg>
                         <div className="absolute -bottom-1 -left-1 bg-white px-0.5">
-                          <span className="text-[10px] font-bold leading-none tracking-tighter">CSV</span>
+                          <span className="text-[10px] font-bold leading-none tracking-tighter">
+                            CSV
+                          </span>
                         </div>
                       </div>
                       <span className="text-xl font-medium text-gray-900">CSV</span>
@@ -248,22 +271,27 @@ const RiderPage = () => {
             <thead>
               <tr className="bg-[#F8F9FA] border-y border-[#DFE6E5] text-[14px] font-medium uppercase tracking-wider text-[#4E616A]">
                 <th className="px-4 py-3.5 w-[48px] text-center">
-                  <input type="checkbox" className="rounded-[4px]  border-[#4E616A] text-[#20B2AA] focus:ring-[#20B2AA] w-4 h-4 cursor-pointer" />
+                  <input
+                    type="checkbox"
+                    className="rounded-[4px]  border-[#4E616A] text-[#20B2AA] focus:ring-[#20B2AA] w-4 h-4 cursor-pointer"
+                  />
                 </th>
                 {[
-                  { label: "RIDER", sortable: true },
-                  { label: "EMAIL", sortable: true },
-                  { label: "TOTAL TRIPS", sortable: true },
-                  { label: "TOTAL SPENT", sortable: true },
-                  { label: "RATINGS", sortable: true },
-                  { label: "STATUS", sortable: true },
-                  { label: "ACTION", sortable: false },
+                  { label: 'RIDER', sortable: true },
+                  { label: 'EMAIL', sortable: true },
+                  { label: 'TOTAL TRIPS', sortable: true },
+                  { label: 'TOTAL SPENT', sortable: true },
+                  { label: 'RATINGS', sortable: true },
+                  { label: 'STATUS', sortable: true },
+                  { label: 'ACTION', sortable: false },
                 ].map((header) => (
                   <th
                     key={header.label}
-                    className={`px-4 py-3.5 ${header.sortable ? "cursor-pointer group" : ""}`}
+                    className={`px-4 py-3.5 ${header.sortable ? 'cursor-pointer group' : ''}`}
                   >
-                    <div className={`flex items-center ${header.sortable ? "justify-between" : "justify-start"}`}>
+                    <div
+                      className={`flex items-center ${header.sortable ? 'justify-between' : 'justify-start'}`}
+                    >
                       <span className="text-[#4E616A] font-medium text-[14px]">{header.label}</span>
                       {header.sortable && (
                         <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
@@ -276,9 +304,15 @@ const RiderPage = () => {
             <tbody className="text-sm">
               {currentData.length > 0 ? (
                 currentData.map((rider) => (
-                  <tr key={rider.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                  <tr
+                    key={rider.id}
+                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                  >
                     <td className="p-4">
-                      <input type="checkbox" className="rounded-sm w-[16px] h-[16px] border-[#4E616A] text-teal-600 focus:ring-teal-500" />
+                      <input
+                        type="checkbox"
+                        className="rounded-sm w-[16px] h-[16px] border-[#4E616A] text-teal-600 focus:ring-teal-500"
+                      />
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -286,13 +320,17 @@ const RiderPage = () => {
                           {rider.initials}
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-medium text-[#1DAFA1] text-[14px] ">{rider.name}</span>
-                          <span className="text-[12px] font-medium  text-[#4E616A]">{rider.phone}</span>
+                          <span className="font-medium text-[#1DAFA1] text-[14px] ">
+                            {rider.name}
+                          </span>
+                          <span className="text-[12px] font-medium  text-[#4E616A]">
+                            {rider.phone}
+                          </span>
                         </div>
                       </div>
                     </td>
                     <td className="p-4 text-[#1DAFA1] font-medium text-[14px] ">
-                      {rider.email || "-"}
+                      {rider.email || '-'}
                     </td>
                     <td className="p-4 text-[#4E616A] text-[14px] font-medium">
                       {rider.totalTrips}
@@ -303,16 +341,18 @@ const RiderPage = () => {
                     <td className="p-4">
                       <div className="flex items-center gap-1.5">
                         <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
-                        <span className="text-[#4E616A] text-[14px] font-medium">{rider.rating.toFixed(1)}</span>
+                        <span className="text-[#4E616A] text-[14px] font-medium">
+                          {rider.rating.toFixed(1)}
+                        </span>
                       </div>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`h-2 w-2 rounded-full ${rider.status === "Active" ? "bg-[#00A63E]" : "bg-[#FF0707]"}`}
+                          className={`h-2 w-2 rounded-full ${rider.status === 'Active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
                         />
                         <span
-                          className={`font-medium ${rider.status === "Active" ? "text-[#00A63E] text-[12px] font-semibold" : "text-[#FF0707] text-[12px] font-medium"}`}
+                          className={`font-medium ${rider.status === 'Active' ? 'text-[#00A63E] text-[12px] font-semibold' : 'text-[#FF0707] text-[12px] font-medium'}`}
                         >
                           {rider.status}
                         </span>
@@ -330,9 +370,13 @@ const RiderPage = () => {
                         <button
                           onClick={() => setSuspendedRiderId(rider.id)}
                           className="cursor-pointer"
-                          title={rider.status === "Active" ? "Suspend Rider" : "Activate Rider"}
+                          title={rider.status === 'Active' ? 'Suspend Rider' : 'Activate Rider'}
                         >
-                          <img src="/icons/rider/person.svg" alt="suspend" className="w-[24px] h-[24px]" />
+                          <img
+                            src="/icons/rider/person.svg"
+                            alt="suspend"
+                            className="w-[24px] h-[24px]"
+                          />
                         </button>
                       </div>
                     </td>
@@ -351,9 +395,7 @@ const RiderPage = () => {
 
         {/* Pagination Info & Controls */}
         <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-sm text-gray-500 hidden sm:block">
-
-          </div>
+          <div className="text-sm text-gray-500 hidden sm:block"></div>
 
           <div className="flex items-center gap-2">
             <button
@@ -377,19 +419,21 @@ const RiderPage = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
-                        ? "bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]"
-                        : "text-gray-600 hover:bg-gray-50 border border-transparent"
-                        }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] font-semibold transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>
                   );
-                } else if (
-                  pageNum === currentPage - 2 ||
-                  pageNum === currentPage + 2
-                ) {
-                  return <span key={pageNum} className="text-gray-400 px-1">...</span>;
+                } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return (
+                    <span key={pageNum} className="text-gray-400 px-1">
+                      ...
+                    </span>
+                  );
                 }
                 return null;
               })}

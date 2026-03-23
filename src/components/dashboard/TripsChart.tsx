@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 type FilterKey = 'Year' | 'Month';
 
@@ -12,12 +20,11 @@ const dummyData = [
   { name: 'Jun', trips: 53000 },
   { name: 'Jul', trips: 59000 },
   { name: 'Aug', trips: 52000 },
-  { name: 'Sep', trips: 44000 }
+  { name: 'Sep', trips: 44000 },
 ];
 
 export default function TripsChart() {
   const [filter, setFilter] = useState<FilterKey>('Year');
-
 
   return (
     <div className="bg-white p-5 lg:p-6 rounded-lg border border-[#DFE6E5]  col-span-1 lg:col-span-2">
@@ -33,10 +40,11 @@ export default function TripsChart() {
             <button
               key={item}
               onClick={() => setFilter(item)}
-              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${filter === item
-                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                : 'border-[#DFE6E5] text-[#4E616A] bg-white'
-                }`}
+              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                filter === item
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] bg-white'
+              }`}
             >
               {item}
             </button>
@@ -68,7 +76,11 @@ export default function TripsChart() {
               tickFormatter={(value) => `${value / 1000}K`}
             />
             <Tooltip
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+              contentStyle={{
+                borderRadius: '8px',
+                border: 'none',
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+              }}
             />
             <Area
               type="monotone"

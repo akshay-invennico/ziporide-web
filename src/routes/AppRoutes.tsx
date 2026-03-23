@@ -1,27 +1,26 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 //auth routes
-import LoginPage from "../pages/auth/LoginPage";
-import ForgetPasswordPage from "../pages/auth/ForgetPasswordPage";
-import VerifyPasswordPage from "../pages/auth/VerifyPasswordPage";
-import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
+import AdminLayout from '../components/layout/AdminLayout';
+import ForgetPasswordPage from '../pages/auth/ForgetPasswordPage';
+import LoginPage from '../pages/auth/LoginPage';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
+import VerifyPasswordPage from '../pages/auth/VerifyPasswordPage';
 
 //other routes
-import DashboardPage from "../pages/dashboard/DashboardPage";
-import RiderPage from "../pages/rider/RiderPage";
-import DriverPage from "../pages/driver/DriverPage";
-import AdminLayout from "../components/layout/AdminLayout";
-import RiderDetailsPage from "../pages/rider/rider-details/RiderDetailsPage";
-import DriverDetailsPage from "../pages/driver/driver-details/DriverDetailsPage";
-import VerificationPage from "../pages/verification/VerificationPage";
-import ApplicationDetailsPage from "../pages/verification/ApplicationDetailsPage";
-import TripHistoryPage from "../pages/trips/TripHistoryPage";
+import DashboardPage from '../pages/dashboard/DashboardPage';
+import DriverDetailsPage from '../pages/driver/driver-details/DriverDetailsPage';
+import DriverPage from '../pages/driver/DriverPage';
+import RiderDetailsPage from '../pages/rider/rider-details/RiderDetailsPage';
+import RiderPage from '../pages/rider/RiderPage';
+import TripHistoryPage from '../pages/trips/TripHistoryPage';
+import ApplicationDetailsPage from '../pages/verification/ApplicationDetailsPage';
+import VerificationPage from '../pages/verification/VerificationPage';
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Redirect root to login */}
         <Route path="/" element={<Navigate to="/dashboard" />} />
 
@@ -43,10 +42,8 @@ export default function AppRoutes() {
           <Route path="/trips" element={<TripHistoryPage />} />
         </Route>
 
-
         {/* Optional 404 */}
         <Route path="*" element={<div>Page Not Found</div>} />
-
       </Routes>
     </BrowserRouter>
   );
