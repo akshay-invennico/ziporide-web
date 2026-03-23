@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+type FilterKey = 'Year' | 'Month';
+
 const dummyData = [
   { name: 'Jan', trips: 11000 },
   { name: 'Feb', trips: 20000 },
@@ -14,7 +16,8 @@ const dummyData = [
 ];
 
 export default function TripsChart() {
-  const [filter, setFilter] = useState('Year');
+  const [filter, setFilter] = useState<FilterKey>('Year');
+
 
   return (
     <div className="bg-white p-5 lg:p-6 rounded-lg border border-[#DFE6E5]  col-span-1 lg:col-span-2">
@@ -23,15 +26,19 @@ export default function TripsChart() {
           <h3 className="text-[20px] font-semibold text-[#000000]">Trips</h3>
           <p className="text-[12px] text-[#4E616A] font-medium  mt-1">Trips Over the time</p>
         </div>
-        <div className="flex bg-white border border-gray-200 rounded-lg p-0.5">
-          {['Year', 'Month'].map((tab) => (
+
+        {/* Filter tabs */}
+        <div className="flex items-center gap-2">
+          {(['Year', 'Month'] as FilterKey[]).map((item) => (
             <button
-              key={tab}
-              onClick={() => setFilter(tab)}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${filter === tab ? 'text-[#1CC8B1] border border-[#1CC8B1] bg-teal-50/10' : 'text-gray-500'
+              key={item}
+              onClick={() => setFilter(item)}
+              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${filter === item
+                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                : 'border-[#DFE6E5] text-[#4E616A] bg-white'
                 }`}
             >
-              {tab}
+              {item}
             </button>
           ))}
         </div>
@@ -51,13 +58,13 @@ export default function TripsChart() {
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#9CA3AF', fontSize: 12 }}
+              tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
               dy={10}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#9CA3AF', fontSize: 12 }}
+              tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
               tickFormatter={(value) => `${value / 1000}K`}
             />
             <Tooltip

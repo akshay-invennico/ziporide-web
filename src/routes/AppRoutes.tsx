@@ -7,10 +7,14 @@ import VerifyPasswordPage from "../pages/auth/VerifyPasswordPage";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
 
 //other routes
-import DashboardPage from "../pages/DashboardPage";
-import RiderPage from "../pages/RiderPage";
-import DriverPage from "../pages/DriverPage";
+import DashboardPage from "../pages/dashboard/DashboardPage";
+import RiderPage from "../pages/rider/RiderPage";
+import DriverPage from "../pages/driver/DriverPage";
 import AdminLayout from "../components/layout/AdminLayout";
+import RiderDetailsPage from "../pages/rider/rider-details/RiderDetailsPage";
+import DriverDetailsPage from "../pages/driver/driver-details/DriverDetailsPage";
+import VerificationPage from "../pages/verification/VerificationPage";
+import ApplicationDetailsPage from "../pages/verification/ApplicationDetailsPage";
 
 export default function AppRoutes() {
   return (
@@ -18,7 +22,7 @@ export default function AppRoutes() {
       <Routes>
 
         {/* Redirect root to login */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />} />
@@ -30,7 +34,11 @@ export default function AppRoutes() {
         <Route element={<AdminLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/rider" element={<RiderPage />} />
-          <Route path="driver" element={<DriverPage />} />
+          <Route path="/rider/details/:id" element={<RiderDetailsPage />} />
+          <Route path="/driver" element={<DriverPage />} />
+          <Route path="/driver/details/:id" element={<DriverDetailsPage />} />
+          <Route path="/verification" element={<VerificationPage />} />
+          <Route path="/verification/details/:id" element={<ApplicationDetailsPage />} />
         </Route>
 
 

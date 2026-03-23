@@ -1,136 +1,173 @@
+import { ArrowRight } from 'lucide-react';
+
 const dummyTrips = [
   {
     id: "ZPT-2845148",
-    rider: { name: "Mia Chen", phone: "+44 231 5623", initials: "MC", },
+    rider: { name: "Mia Chen", phone: "+44 231 5623", initials: "MC" },
     driver: { name: "Jasmine Lee", phone: "+44 987 6543", img: "https://i.pravatar.cc/150?img=1" },
-    route: { from: "Uptown", to: "Station" },
-    amount: "£12.50",
-    status: "In Progress",
-    time: "2min ago"
+    routeFrom: "Uptown",
+    routeTo: "Station",
+    amount: 12.50,
+    status: "Assigned",
+    time: "2min ago",
   },
   {
     id: "ZPT-2845149",
-    rider: { name: "Amir Suleiman", phone: "+44 231 5632", initials: "AS", },
+    rider: { name: "Amir Suleiman", phone: "+44 231 5632", initials: "AS" },
     driver: { name: "David Thompson", phone: "+44 564 7381", img: "https://i.pravatar.cc/150?img=11" },
-    route: { from: "Midtown", to: "Mall" },
-    amount: "£22.00",
+    routeFrom: "Midtown",
+    routeTo: "Mall",
+    amount: 22.00,
     status: "In Progress",
-    time: "3min ago"
+    time: "3min ago",
   },
   {
     id: "ZPT-2845150",
-    rider: { name: "Ravi Kumar", phone: "+44 231 5641", initials: "RK", },
+    rider: { name: "Ravi Kumar", phone: "+44 231 5641", initials: "RK" },
     driver: { name: "Aisha Patel", phone: "+44 123 4567", img: "https://i.pravatar.cc/150?img=5" },
-    route: { from: "Seaside", to: "Resort" },
-    amount: "£18.00",
+    routeFrom: "Seaside",
+    routeTo: "Resort",
+    amount: 18.00,
     status: "Completed",
-    time: "4min ago"
+    time: "4min ago",
   },
   {
     id: "ZPT-2845151",
-    rider: { name: "Lara Brown", phone: "+44 231 5650", initials: "LB", },
+    rider: { name: "Lara Brown", phone: "+44 231 5650", initials: "LB" },
     driver: { name: "Oliver Smith", phone: "+44 246 6103", img: "https://i.pravatar.cc/150?img=8" },
-    route: { from: "Lakeside", to: "Park" },
-    amount: "£30.00",
+    routeFrom: "Lakeside",
+    routeTo: "Park",
+    amount: 30.00,
     status: "Cancelled",
-    time: "5min ago"
+    time: "5min ago",
   },
   {
     id: "ZPT-2845152",
-    rider: { name: "Tommy Nguyen", phone: "+44 231 5669", initials: "TN", },
+    rider: { name: "Tommy Nguyen", phone: "+44 231 5669", initials: "TN" },
     driver: { name: "Sophie Wright", phone: "+44 753 1594", img: "https://i.pravatar.cc/150?img=9" },
-    route: { from: "Hilltop", to: "Observatory" },
-    amount: "£21.50",
+    routeFrom: "Hilltop",
+    routeTo: "Observatory",
+    amount: 21.50,
     status: "In Progress",
-    time: "6min ago"
+    time: "6min ago",
   },
   {
     id: "ZPT-2845153",
-    rider: { name: "Nina Davis", phone: "+44 231 5678", initials: "ND", },
+    rider: { name: "Nina Davis", phone: "+44 231 5678", initials: "ND" },
     driver: { name: "Liam Johnson", phone: "+44 321 9876", img: "https://i.pravatar.cc/150?img=12" },
-    route: { from: "Riverside", to: "Cafe" },
-    amount: "£16.00",
-    status: "In Progress",
-    time: "7min ago"
-  }
+    routeFrom: "Riverside",
+    routeTo: "Cafe",
+    amount: 16.00,
+    status: "Completed",
+    time: "7min ago",
+  },
 ];
 
 export default function RecentTripsTable() {
   return (
-    <div className="bg-white rounded-lg border border-[#DFE6E5] col-span-1 lg:col-span-2 xl:col-span-4 overflow-hidden mt-6">
-      <div className="p-5 lg:p-6 border-b border-gray-100">
+    <div className="bg-white rounded-lg border border-[#DFE6E5] col-span-1 lg:col-span-2 xl:col-span-4 overflow-hidden mt-3">
+      <div className="p-5 lg:p-6 border-b border-[#DFE6E5]">
         <h3 className="text-[20px] font-semibold text-[#000000]">Recent Trips</h3>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left  whitespace-nowrap">
-          <thead className="bg-white font-medium  text-[#4E616A] uppercase text-[14px]">
-            <tr>
-              <th className="px-6 py-4">TRIP ID <span className="ml-1 inline-block">↕</span></th>
-              <th className="px-6 py-4">RIDER <span className="ml-1 inline-block">↕</span></th>
-              <th className="px-6 py-4">DRIVER <span className="ml-1 inline-block">↕</span></th>
-              <th className="px-6 py-4">ROUTE <span className="ml-1 inline-block">↕</span></th>
-              <th className="px-6 py-4">AMOUNT <span className="ml-1 inline-block">↕</span></th>
-              <th className="px-6 py-4">STATUS <span className="ml-1 inline-block">↕</span></th>
-              <th className="px-6 py-4">TIME <span className="ml-1 inline-block">↕</span></th>
-              <th className="px-6 py-4">ACTION</th>
+        <table className="w-full text-left border-collapse min-w-[800px]">
+          <thead>
+            <tr className="bg-[#F8F9FA] border-y border-[#DFE6E5] text-[14px] font-medium uppercase tracking-wider text-[#4E616A]">
+              {["TRIP ID", "RIDER", "DRIVER", "ROUTE", "AMOUNT", "STATUS", "TIME", "ACTION"].map((col) => (
+                <th key={col} className="px-4 py-3.5 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <span className='font-medium text-[14px] text-[#4E616A]'>{col}</span>
+                    <img src="/icons/rider/updown.svg" alt="sort" className="w-[18px] h-[18px]" />
+                  </div>
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {dummyTrips.map((trip) => (
-              <tr key={trip.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-4 text-[14px] font-medium text-[#14B8A6]">{trip.id}</td>
+              <tr key={trip.id} className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors">
 
-                <td className="px-6 py-4">
+                {/* Trip ID */}
+                <td className="px-4 py-3.5 text-[#14B8A6] font-medium text-[14px]">{trip.id}</td>
+
+                {/* Rider */}
+                <td className="px-4 py-3.5">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-medium text-[14px] bg-[#1DAFA1]`}>
+                    <div className="w-[40px] h-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
                       {trip.rider.initials}
                     </div>
-                    <div>
-                      <p className="font-medium text-[14px] text-[#1DAFA1]">{trip.rider.name}</p>
-                      <p className="text-[12px] font-medium text-[#4E616A]">{trip.rider.phone}</p>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-[#1DAFA1] text-[14px]">{trip.rider.name}</span>
+                      <span className="text-[12px] font-medium text-[#4E616A]">{trip.rider.phone}</span>
                     </div>
                   </div>
                 </td>
 
-                <td className="px-6 py-4">
+                {/* Driver */}
+                <td className="px-4 py-3.5">
                   <div className="flex items-center gap-3">
-                    <img src={trip.driver.img} alt={trip.driver.name} className="w-8 h-8 rounded-full object-cover" />
-                    <div>
-                      <p className="font-medium text-gray-900">{trip.driver.name}</p>
-                      <p className="text-xs text-gray-500">{trip.driver.phone}</p>
+                    <img
+                      src={trip.driver.img}
+                      alt={trip.driver.name}
+                      className="w-[40px] h-[40px] rounded-full object-cover shrink-0"
+                    />
+                    <div className="flex flex-col">
+                      <span className="font-medium text-[#1DAFA1] text-[14px]">{trip.driver.name}</span>
+                      <span className="text-[12px] font-medium text-[#4E616A]">{trip.driver.phone}</span>
                     </div>
                   </div>
                 </td>
 
-                <td className="px-6 py-4 text-gray-600">
-                  {trip.route.from} <span className="text-gray-400 mx-1">→</span> {trip.route.to}
+                {/* Route */}
+                <td className="px-4 py-3.5 font-medium text-[#4E616A] text-[14px]">
+                  <div className="flex items-center gap-1.5">
+                    <span>{trip.routeFrom}</span>
+                    <ArrowRight className='w-[18px] h-[18px]' />
+                    <span>{trip.routeTo}</span>
+                  </div>
                 </td>
 
-                <td className="px-6 py-4 font-medium text-gray-900">{trip.amount}</td>
 
-                <td className="px-6 py-4">
+
+                {/* Amount */}
+                <td className="px-4 py-3.5 font-medium text-[#4A5565] text-[14px]">
+                  £{trip.amount.toFixed(2)}
+                </td>
+
+                {/* Status */}
+                <td className="px-4 py-3.5">
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${trip.status === 'Completed' ? 'bg-green-500' :
-                      trip.status === 'Cancelled' ? 'bg-red-500' :
-                        'bg-orange-500'
+                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${trip.status === 'Completed' ? 'bg-[#00A63E]' :
+                      trip.status === 'In Progress' ? 'bg-[#F6921E]' :
+                        trip.status === 'Assigned' ? 'bg-[#1DAFA1]' :
+                          trip.status === 'Cancelled' ? 'bg-[#FF0707]' :
+                            'bg-[#6B7280]'
                       }`} />
-                    <span className={`text-xs font-semibold ${trip.status === 'Completed' ? 'text-green-600' :
-                      trip.status === 'Cancelled' ? 'text-red-600' :
-                        'text-orange-600'
+                    <span className={`font-semibold text-[12px] ${trip.status === 'Completed' ? 'text-[#00A63E]' :
+                      trip.status === 'In Progress' ? 'text-[#F6921E]' :
+                        trip.status === 'Assigned' ? 'text-[#1DAFA1]' :
+                          trip.status === 'Cancelled' ? 'text-[#FF0707]' :
+                            'text-[#6B7280]'
                       }`}>
                       {trip.status}
                     </span>
                   </div>
                 </td>
 
-                <td className="px-6 py-4 text-gray-500">{trip.time}</td>
+                {/* Time */}
+                <td className="px-4 py-3.5 font-medium text-[#4A5565] text-[14px]">
+                  {trip.time}
+                </td>
 
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <img src="/icons/trips/view.svg" alt="view" />
-                    <img src="/icons/trips/cancel.svg" alt="cancel" />
-                  </div>
+                {/* Action */}
+                <td className="px-4 py-3.5">
+                  <button className="flex justify-center gap-3 font-medium text-[14px] text-[#1DAFA1] cursor-pointer transition-colors">
+                    <img src="/icons/dashboard/view.svg" alt="view" className="w-[20px] h-[20px]" />
+                    {trip.status !== 'Completed' && (
+                      <img src="/icons/dashboard/cancel.svg" alt="cancel" className="w-[20px] h-[20px]" />
+                    )}
+                  </button>
                 </td>
               </tr>
             ))}
@@ -140,3 +177,4 @@ export default function RecentTripsTable() {
     </div>
   );
 }
+

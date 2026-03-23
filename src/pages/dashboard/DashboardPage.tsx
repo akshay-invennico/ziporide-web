@@ -1,8 +1,8 @@
-import StatCard from "../components/dashboard/StatCard";
-import RevenueAnalyticsChart from "../components/dashboard/RevenueAnalyticsChart";
-import RidersDriversReportChart from "../components/dashboard/RidersDriversReportChart";
-import TripsChart from "../components/dashboard/TripsChart";
-import RecentTripsTable from "../components/dashboard/RecentTripsTable";
+import StatCard from "../../components/dashboard/StatCard";
+import RevenueAnalyticsChart from "../../components/dashboard/RevenueAnalyticsChart";
+import RidersDriversReportChart from "../../components/dashboard/RidersDriversReportChart";
+import TripsChart from "../../components/dashboard/TripsChart";
+import RecentTripsTable from "../../components/dashboard/RecentTripsTable";
 
 export default function DashboardPage() {
   return (
