@@ -7,8 +7,8 @@ export default function Header() {
   // Basic title mapping based on route
   const getPageTitle = () => {
     if (location.pathname.includes('dashboard')) return { title: 'Dashboard', subtitle: "Welcome back! Here's what's happening today." };
-    if (location.pathname.includes('rider')) return { title: 'Riders', subtitle: "Manage your platform's riders here." };
-    if (location.pathname.includes('driver')) return { title: 'Drivers', subtitle: "Manage your platform's drivers here." };
+    if (location.pathname.includes('rider')) return { title: 'Riders', subtitle: "View and manage rider accounts" };
+    if (location.pathname.includes('driver')) return { title: 'Drivers', subtitle: "View and manage driver accounts" };
     return { title: 'Admin Panel', subtitle: "Manage your platform here." };
   };
 

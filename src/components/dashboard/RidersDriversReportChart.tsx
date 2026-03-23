@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+type FilterKey = 'Year' | 'Month';
 
 const dummyData = [
   { name: 'Jan', riders: 58000, drivers: 41000 },
@@ -17,21 +19,37 @@ const dummyData = [
 ];
 
 export default function RidersDriversReportChart() {
-  const [filter, setFilter] = useState('Year');
+  const [filter, setFilter] = useState<FilterKey>('Year');
 
   return (
-    <div className="bg-white p-5 lg:p-6 rounded-lg border border-[#DFE6E5]  col-span-1 lg:col-span-2">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-[20px] font-semibold text-[#000000]">Riders & Drivers Report</h3>
-        <div className="flex bg-white border border-gray-200 rounded-lg p-0.5">
-          {['Year', 'Month'].map((tab) => (
+    <div className="bg-white p-5 lg:p-6 rounded-lg border border-[#DFE6E5] col-span-1 lg:col-span-2">
+      <div className="flex items-start justify-between mb-8">
+        <div className="flex flex-col gap-2.5">
+          <h3 className="text-[20px] font-semibold text-[#000000] leading-none">Riders & Drivers Report</h3>
+          <div className="flex items-center gap-6 mt-1">
+            <div className="flex items-center gap-1.5">
+              <div className="w-[12px] h-[12px] rounded-sm bg-[#1DAFA1]" />
+              <span className="text-[12px] font-medium text-[#4E616A] leading-none">Riders</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-[12px] h-[12px] rounded-sm bg-[#2D2D2D]" />
+              <span className="text-[12px] font-medium text-[#4E616A] leading-none">Drivers</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter tabs */}
+        <div className="flex items-center gap-2">
+          {(['Year', 'Month'] as FilterKey[]).map((item) => (
             <button
-              key={tab}
-              onClick={() => setFilter(tab)}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${filter === tab ? 'text-[#1CC8B1] border border-[#1CC8B1] bg-teal-50/10' : 'text-gray-500'
+              key={item}
+              onClick={() => setFilter(item)}
+              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${filter === item
+                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                : 'border-[#DFE6E5] text-[#4E616A] bg-white'
                 }`}
             >
-              {tab}
+              {item}
             </button>
           ))}
         </div>
@@ -39,34 +57,28 @@ export default function RidersDriversReportChart() {
 
       <div className="h-[280px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={dummyData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }} barGap={2} barSize={8}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+          <BarChart data={dummyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barGap={6} barSize={10}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
             <XAxis
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#9CA3AF', fontSize: 12 }}
+              tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
               dy={10}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#9CA3AF', fontSize: 12 }}
-              tickFormatter={(value) => `${value / 1000}K`}
+              tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
+              tickFormatter={(value) => `${value === 0 ? '0' : value / 1000}K`}
+              width={55}
             />
             <Tooltip
               cursor={{ fill: 'transparent' }}
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
             />
-            <Legend
-              verticalAlign="top"
-              align="left"
-              iconType="circle"
-              iconSize={8}
-              wrapperStyle={{ top: -45, left: -20, fontSize: '12px' }}
-            />
-            <Bar dataKey="riders" name="Riders" fill="#1CC8B1" radius={[4, 4, 4, 4]} />
-            <Bar dataKey="drivers" name="Drivers" fill="#2A2E33" radius={[4, 4, 4, 4]} />
+            <Bar dataKey="riders" name="Riders" fill="#1DAFA1" radius={[5, 5, 5, 5]} />
+            <Bar dataKey="drivers" name="Drivers" fill="#2D2D2D" radius={[5, 5, 5, 5]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
