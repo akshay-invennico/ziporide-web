@@ -1,28 +1,26 @@
 import { useState } from "react";
-//import { X } from "lucide-react";
 
 const REJECTION_REASONS = [
-  "Document is unclear or blurred",
-  "Document is expired",
-  "Incorrect document uploaded",
-  "Information does not match profile details",
-  "Document is cropped or partially visible",
-  "Invalid or unrecognized document",
-  "Tampered or edited document",
+  "Required documents are missing",
+  "Multiple documents are invalid",
+  "Identity details could not be verified",
+  "Vehicle information is incorrect or incomplete",
+  "Duplicate account detected",
+  "Does not meet platform requirements",
+  "Suspicious or fraudulent activity detected",
 ];
 
-interface RejectDocumentModalProps {
+interface RejectVerificationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  documentName?: string;
   onConfirm?: (reasons: string[], note: string) => void;
 }
 
-const RejectDocumentModal = ({
+const RejectVerificationModal = ({
   isOpen,
   onClose,
   onConfirm,
-}: RejectDocumentModalProps) => {
+}: RejectVerificationModalProps) => {
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [note, setNote] = useState("");
 
@@ -54,11 +52,11 @@ const RejectDocumentModal = ({
     >
       <div className="bg-white rounded-xl w-[600px]  overflow-hidden">
         {/* Body */}
-        <div className="p-6 flex flex-col gap-5">
+        <div className="p-6 pb-2 mt-2 flex flex-col gap-4">
           {/* Title */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-4">
             <h2 className="text-[18px] font-semibold text-[#000000]">
-              Reject Document?
+              Reject Verification Request?
             </h2>
             <p className="text-[14px] font-medium text-[#4E616A] leading-relaxed">
               Please select a reason for rejection. This will be shared with the driver to help them correct and resubmit the required information.
@@ -66,23 +64,23 @@ const RejectDocumentModal = ({
           </div>
 
           {/* Reasons */}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 mt-2">
             <span className="text-[16px] font-semibold text-[#000000]">
               Reason for Rejections?
             </span>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3 mt-3">
               {REJECTION_REASONS.map((reason) => {
                 const checked = selectedReasons.includes(reason);
                 return (
                   <label
                     key={reason}
-                    className="flex items-center gap-3 cursor-pointer group mt-3"
+                    className="flex items-center gap-3 cursor-pointer group"
                   >
                     <div
                       onClick={() => toggleReason(reason)}
-                      className={`w-[18px] h-[18px] rounded-[4px] border flex items-center justify-center shrink-0 transition-colors ${checked
+                      className={`w-[18px] h-[18px] rounded-[4px] border-[1.5px] flex items-center justify-center shrink-0 transition-colors ${checked
                         ? "bg-[#1DAFA1] border-[#1DAFA1]"
-                        : "border-[#4E616A]"
+                        : "border-[#4E616A] group-hover:border-[#1DAFA1]"
                         }`}
                     >
                       {checked && (
@@ -94,7 +92,7 @@ const RejectDocumentModal = ({
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            d="M1 4L4 7L10 1"
+                            d="M1 4.5L4 7.5L10 1.5"
                             stroke="white"
                             strokeWidth="2"
                             strokeLinecap="round"
@@ -104,7 +102,8 @@ const RejectDocumentModal = ({
                       )}
                     </div>
                     <span
-                      className="text-[14px] select-none text-[#000000] font-medium"
+                      className={`text-[14px] select-none font-medium ${checked ? "text-[#000000]" : "text-[#000000]"
+                        }`}
                       onClick={() => toggleReason(reason)}
                     >
                       {reason}
@@ -116,7 +115,7 @@ const RejectDocumentModal = ({
           </div>
 
           {/* Note */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2 mt-2">
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Note</span>
               <span className="text-[12px] font-medium text-[#4E616A]">(Optional)</span>
@@ -126,7 +125,7 @@ const RejectDocumentModal = ({
               placeholder="Please provide additional details."
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full border border-[#DFE6E5] rounded-sm px-3 py-2.5 text-[14px] text-[#000000] placeholder-[#939999] resize-none focus:outline-none focus:border-[#1DAFA1] transition-colors"
+              className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] text-[#000000] placeholder-[#939999] resize-none focus:outline-none focus:border-[#1DAFA1] transition-colors"
             />
           </div>
         </div>
@@ -151,4 +150,4 @@ const RejectDocumentModal = ({
   );
 };
 
-export default RejectDocumentModal;
+export default RejectVerificationModal;

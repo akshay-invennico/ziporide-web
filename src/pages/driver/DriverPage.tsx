@@ -408,7 +408,7 @@ const DriverPage = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
+                      className={`min-w-[32px] h-8 flex items-center cursor-pointer justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
                         ? "bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]"
                         : "text-gray-600 hover:bg-gray-50 border border-transparent"
                         }`}

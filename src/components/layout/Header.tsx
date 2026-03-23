@@ -9,6 +9,8 @@ export default function Header() {
     if (location.pathname.includes('dashboard')) return { title: 'Dashboard', subtitle: "Welcome back! Here's what's happening today." };
     if (location.pathname.includes('rider')) return { title: 'Riders', subtitle: "View and manage rider accounts" };
     if (location.pathname.includes('driver')) return { title: 'Drivers', subtitle: "View and manage driver accounts" };
+    if (location.pathname.includes('verification')) return { title: 'Verification Requests', subtitle: 'Review and take action on driver applications' };
+    if (location.pathname.includes('trips')) return { title: 'Trip History', subtitle: 'View and manage trip records' }
     return { title: 'Admin Panel', subtitle: "Manage your platform here." };
   };
 

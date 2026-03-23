@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
-import type { TripDetail } from '../../../../components/ui/TripDetailsModal';
+import type { TripRecord } from '../../../../data/TripHistoryData';
 
 type TripStatus = 'Completed' | 'Cancelled' | 'In Progress' | 'Assigned';
 
@@ -44,7 +44,6 @@ const ROUTES = [
 
 const STATUSES: TripStatus[] = ['Completed', 'Completed', 'Completed', 'Cancelled', 'In Progress', 'Assigned'];
 
-// Generate 99 mock trips
 const allTrips: Trip[] = Array.from({ length: 99 }, (_, i) => {
     const rider = RIDERS[i % RIDERS.length];
     const route = ROUTES[i % ROUTES.length];
@@ -83,10 +82,8 @@ function StatusBadge({ status }: { status: TripStatus }) {
 export default function DriverTripHistoryTab() {
     const [period, setPeriod] = useState<'Year' | 'This Month' | 'This Week'>('Year');
     const [currentPage, setCurrentPage] = useState(1);
-
-    // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedTrip, setSelectedTrip] = useState<TripDetail | null>(null);
+    const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
 
     const totalPages = Math.ceil(allTrips.length / ITEMS_PER_PAGE);
     const pageData = allTrips.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
@@ -106,51 +103,28 @@ export default function DriverTripHistoryTab() {
     };
 
     const handleViewTrip = (trip: Trip) => {
-        const detail: TripDetail = {
+        const record: TripRecord = {
             id: trip.id,
-            date: '21 Feb, 2026',
-            time: '09:41 AM',
-            status: trip.status,
-            amount: trip.amount,
-            distance: '15.5 Kms',
-            duration: '28 Mins',
-            payment: { method: 'Visa', last4: '4245' },
-            route: {
-                pickup: "65, Cheapside, One New Change, St Paul's,..",
-                stops: ["75, Cheapside, One New Change, St Paul's,.."],
-                destination: '48, Notting Hill Gate, The Coronet Theatre,..',
-            },
-            fare: trip.status === 'Cancelled' ? {
-                cancellationFee: 2.50,
-                waitingCharge: 1.00,
-                total: 3.50,
-            } : {
-                baseFare: 12.50,
-                distanceFare: 3.00,
-                waitingCharges: 3.00,
-                total: 18.50,
-            },
             rider: {
                 name: trip.rider.name,
-                initials: trip.rider.initials,
-                riderId: 'RDR-2001',
-                rating: trip.rating || 4.9,
+                phone: trip.rider.phone,
+                avatar: trip.rider.initials,
             },
-            vehicle: trip.status === 'Cancelled' ? {
-                make: 'Tesla',
-                model: 'Model S',
-                color: 'Silver',
-                plate: 'EVN84235TS03',
-            } : undefined,
-            ratingByRider: trip.status === 'Completed' ? { stars: 5, feedback: 'Professional' } : undefined,
-            ratingByDriver: trip.status === 'Completed' ? { stars: 5, feedback: 'Humble' } : undefined,
-            cancellation: trip.status === 'Cancelled' ? {
-                cancelledBy: 'Rider',
-                tripStage: 'After Driver Arrival',
-                reason: "Driver's Behaviour",
-            } : undefined,
+            driver: {
+                name: 'James Williams',
+                phone: '+44 231 5732',
+                avatar: '/icons/avatar1.png',
+            },
+            route: {
+                from: trip.from,
+                to: trip.to,
+            },
+            amount: trip.amount,
+            date: trip.date,
+            time: '09:41 AM',
+            status: trip.status,
         };
-        setSelectedTrip(detail);
+        setSelectedTrip(record);
         setIsModalOpen(true);
     };
 
@@ -159,14 +133,14 @@ export default function DriverTripHistoryTab() {
             {/* Header */}
             <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                 <h3 className="text-[18px] font-bold text-[#101828]">Recent Trips</h3>
-                <div className="flex items-center  rounded-lg gap-3 overflow-hidden">
+                <div className="flex items-center rounded-lg gap-3 overflow-hidden">
                     {(['Year', 'This Month', 'This Week'] as const).map((p) => (
                         <button
                             key={p}
                             onClick={() => { setPeriod(p); setCurrentPage(1); }}
                             className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
                                 ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                                : 'border-[#DFE6E5] text-[#4E616A] '
+                                : 'border-[#DFE6E5] text-[#4E616A]'
                                 }`}
                         >
                             {p}
@@ -261,16 +235,13 @@ export default function DriverTripHistoryTab() {
 
                                     {/* Action */}
                                     <td className="px-4 py-3">
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => handleViewTrip(trip)}
-                                                className="flex items-center gap-1.5 text-[13px] font-medium text-[#1DAFA1] hover:underline cursor-pointer"
-                                            >
-                                                <Eye className="w-[15px] h-[15px]" />
-                                                View
-                                            </button>
-
-                                        </div>
+                                        <button
+                                            onClick={() => handleViewTrip(trip)}
+                                            className="flex items-center gap-1.5 text-[13px] font-medium text-[#1DAFA1] hover:underline cursor-pointer"
+                                        >
+                                            <Eye className="w-[15px] h-[15px]" />
+                                            View
+                                        </button>
                                     </td>
 
                                 </tr>
