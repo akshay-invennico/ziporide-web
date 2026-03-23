@@ -15,6 +15,7 @@ import RiderDetailsPage from "../pages/rider/rider-details/RiderDetailsPage";
 import DriverDetailsPage from "../pages/driver/driver-details/DriverDetailsPage";
 import VerificationPage from "../pages/verification/VerificationPage";
 import ApplicationDetailsPage from "../pages/verification/ApplicationDetailsPage";
+import TripHistoryPage from "../pages/trips/TripHistoryPage";
 
 export default function AppRoutes() {
   return (
@@ -39,6 +40,7 @@ export default function AppRoutes() {
           <Route path="/driver/details/:id" element={<DriverDetailsPage />} />
           <Route path="/verification" element={<VerificationPage />} />
           <Route path="/verification/details/:id" element={<ApplicationDetailsPage />} />
+          <Route path="/trips" element={<TripHistoryPage />} />
         </Route>
 
 
