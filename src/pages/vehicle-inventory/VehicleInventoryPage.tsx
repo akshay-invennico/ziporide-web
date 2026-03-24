@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
-import AddCategoryModal from '../../components/ui/AddCategoryModal';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+
+import AddCategoryModal from '../../components/ui/AddCategoryModal';
+import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
 import { vehicleDatabaseData } from '../../data/VehicleDatabaseData';
 
 const vehicleCategories = [
@@ -65,7 +66,7 @@ const VehicleInventoryPage: React.FC = () => {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const handlePrev = () => {
@@ -77,12 +78,18 @@ const VehicleInventoryPage: React.FC = () => {
 
   const getCategoryTheme = (category: string) => {
     switch (category) {
-      case 'Electric': return 'bg-[#EEFFFD] text-[#1DAFA1]';
-      case 'Standard': return 'bg-[#FFF3D4] text-[#F6921E]';
-      case 'XL': return 'bg-[#EEF3FF] text-[#007AEB]';
-      case 'Executive (Premium)': return 'bg-[#F3EEFF] text-[#4D00FF]';
-      case 'Executive XL (Premium)': return 'bg-[#DCFCE7] text-[#00A63E]';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Electric':
+        return 'bg-[#EEFFFD] text-[#1DAFA1]';
+      case 'Standard':
+        return 'bg-[#FFF3D4] text-[#F6921E]';
+      case 'XL':
+        return 'bg-[#EEF3FF] text-[#007AEB]';
+      case 'Executive (Premium)':
+        return 'bg-[#F3EEFF] text-[#4D00FF]';
+      case 'Executive XL (Premium)':
+        return 'bg-[#DCFCE7] text-[#00A63E]';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -104,8 +111,9 @@ const VehicleInventoryPage: React.FC = () => {
       <div className="flex gap-8  mb-6">
         <button
           onClick={() => setActiveTab('category')}
-          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-            }`}
+          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${
+            activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+          }`}
         >
           Vehicle Category
           {activeTab === 'category' && (
@@ -114,8 +122,9 @@ const VehicleInventoryPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('database')}
-          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-            }`}
+          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${
+            activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+          }`}
         >
           Vehicle Database
           {activeTab === 'database' && (
@@ -136,7 +145,7 @@ const VehicleInventoryPage: React.FC = () => {
               }}
               className="flex  cursor-pointer items-center gap-2 bg-[#1DAFA1] text-white px-4 py-2 rounded-sm font-semibold text-[14px]"
             >
-              <img src="/icons/vehicle/add.svg" alt="add" className='w-[22px] h-[22px]' />
+              <img src="/icons/vehicle/add.svg" alt="add" className="w-[22px] h-[22px]" />
               Add Category
             </button>
           </div>
@@ -144,7 +153,10 @@ const VehicleInventoryPage: React.FC = () => {
           {/* Grid of Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicleCategories.map((cat) => (
-              <div key={cat.id} className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-[390px] h-[160px]">
+              <div
+                key={cat.id}
+                className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-[390px] h-[160px]"
+              >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     <img
@@ -153,7 +165,8 @@ const VehicleInventoryPage: React.FC = () => {
                       className="w-[130px] h-[130px] object-contain mb-4"
                       onError={(e) => {
                         // Fallback if image not found
-                        e.currentTarget.src = 'https://img.freepik.com/free-vector/white-sedan-car-isolated-white-background_1308-100223.jpg';
+                        e.currentTarget.src =
+                          'https://img.freepik.com/free-vector/white-sedan-car-isolated-white-background_1308-100223.jpg';
                       }}
                     />
                   </div>
@@ -165,15 +178,27 @@ const VehicleInventoryPage: React.FC = () => {
                         <div className="flex flex-col gap-1">
                           <span className="text-[12px] text-[#4E616A] font-medium">Seats</span>
                           <div className="flex items-center gap-2">
-                            <img src="/icons/vehicle/seats.svg" alt="seats" className='w-[22px] h-[22px]' />
-                            <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">{cat.seats} Seats</span>
+                            <img
+                              src="/icons/vehicle/seats.svg"
+                              alt="seats"
+                              className="w-[22px] h-[22px]"
+                            />
+                            <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">
+                              {cat.seats} Seats
+                            </span>
                           </div>
                         </div>
                         <div className="flex flex-col gap-1">
                           <span className="text-[12px] text-[#4E616A] font-medium">Base Price</span>
                           <div className="flex items-center gap-2">
-                            <img src="/icons/vehicle/amount.svg" alt="amount" className='w-[22px] h-[22px]' />
-                            <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">£{cat.basePrice}</span>
+                            <img
+                              src="/icons/vehicle/amount.svg"
+                              alt="amount"
+                              className="w-[22px] h-[22px]"
+                            />
+                            <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">
+                              £{cat.basePrice}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -183,7 +208,11 @@ const VehicleInventoryPage: React.FC = () => {
                           onClick={() => handleRemoveClick(cat.id)}
                           className="flex cursor-pointer items-center gap-1.5 text-[#FF0707] text-[14px] font-medium"
                         >
-                          <img src="/icons/vehicle/remove.svg" alt="remove" className='w-[22px] h-[22px]' />
+                          <img
+                            src="/icons/vehicle/remove.svg"
+                            alt="remove"
+                            className="w-[22px] h-[22px]"
+                          />
                           Remove
                         </button>
                         <button
@@ -193,7 +222,11 @@ const VehicleInventoryPage: React.FC = () => {
                           }}
                           className="flex cursor-pointer items-center gap-1.5 text-[#1DAFA1] text-[14px] font-medium"
                         >
-                          <img src="/icons/vehicle/edit.svg" alt="edit" className='w-[22px] h-[22px]' />
+                          <img
+                            src="/icons/vehicle/edit.svg"
+                            alt="edit"
+                            className="w-[22px] h-[22px]"
+                          />
                           Edit
                         </button>
                       </div>
@@ -230,7 +263,6 @@ const VehicleInventoryPage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-inter font-medium uppercase tracking-wider text-[#4E616A]">
-
                   {[
                     { label: 'VEHICAL', sortable: true },
                     { label: 'CATEGORY', sortable: true },
@@ -245,9 +277,15 @@ const VehicleInventoryPage: React.FC = () => {
                       <div
                         className={`flex items-center ${header.sortable ? 'justify-between' : 'justify-start'}`}
                       >
-                        <span className="text-[#4E616A] font-medium text-[12px]">{header.label}</span>
+                        <span className="text-[#4E616A] font-medium text-[12px]">
+                          {header.label}
+                        </span>
                         {header.sortable && (
-                          <img src="/icons/rider/updown.svg" alt="sort" className="w-[14px] h-[14px]" />
+                          <img
+                            src="/icons/rider/updown.svg"
+                            alt="sort"
+                            className="w-[14px] h-[14px]"
+                          />
                         )}
                       </div>
                     </th>
@@ -261,10 +299,13 @@ const VehicleInventoryPage: React.FC = () => {
                       key={vehicle.id}
                       className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
                     >
-
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <img src={vehicle.image} alt={vehicle.name} className="w-[40px] h-[40px] object-contain shrink-0" />
+                          <img
+                            src={vehicle.image}
+                            alt={vehicle.name}
+                            className="w-[40px] h-[40px] object-contain shrink-0"
+                          />
                           <div className="flex flex-col gap-0.5">
                             <span className="font-medium text-[#1DAFA1] text-[14px]">
                               {vehicle.name}
@@ -276,7 +317,9 @@ const VehicleInventoryPage: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`px-4 py-1.5 rounded-[500px] text-[14px] font-medium whitespace-nowrap ${getCategoryTheme(vehicle.category)}`}>
+                        <span
+                          className={`px-4 py-1.5 rounded-[500px] text-[14px] font-medium whitespace-nowrap ${getCategoryTheme(vehicle.category)}`}
+                        >
                           {vehicle.category}
                         </span>
                       </td>
@@ -285,7 +328,11 @@ const VehicleInventoryPage: React.FC = () => {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <img src={vehicle.driver.image} alt={vehicle.driver.name} className="w-[40px] h-[40px] rounded-full object-cover shrink-0" />
+                          <img
+                            src={vehicle.driver.image}
+                            alt={vehicle.driver.name}
+                            className="w-[40px] h-[40px] rounded-full object-cover shrink-0"
+                          />
                           <div className="flex flex-col gap-0.5">
                             <span className="font-medium text-[#1DAFA1] text-[14px]">
                               {vehicle.driver.name}
@@ -343,10 +390,11 @@ const VehicleInventoryPage: React.FC = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${currentPage === pageNum
-                        ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold'
-                        : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
-                        }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${
+                        currentPage === pageNum
+                          ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold'
+                          : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>
@@ -393,6 +441,5 @@ const VehicleInventoryPage: React.FC = () => {
     </div>
   );
 };
-
 
 export default VehicleInventoryPage;

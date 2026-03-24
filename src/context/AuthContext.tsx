@@ -1,13 +1,8 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import type { AuthState, AuthUser } from '@/types/auth.types';
 
-interface AuthContextValue extends AuthState {
-  setAuth: (user: AuthUser, token: string) => void;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
+import { AuthContext } from './authContextDef';
 
 const getInitialState = (): AuthState => {
   const token = localStorage.getItem('token');
@@ -39,14 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, setAuth, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ ...authState, setAuth, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
