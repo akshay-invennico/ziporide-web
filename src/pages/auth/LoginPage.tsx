@@ -29,8 +29,8 @@ const LoginPage = () => {
   });
 
   return (
-    <div className="fixed inset-0 flex items-start sm:items-center justify-center bg-white overflow-y-auto p-4">
-      <div className="bg-white shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] rounded-xl w-full max-w-[560px] max-h-[600px] overflow-auto px-5 sm:px-10 py-8 sm:py-10 my-auto">
+    <div className="fixed inset-0 flex items-start sm:items-center justify-center bg-white  p-4">
+      <div className="bg-white shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] rounded-xl w-full max-w-[560px] max-h-[600px]  px-5 sm:px-10 py-8 sm:py-10 my-auto">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-6">
           <img src="/logo.svg" alt="ZipoRide" className="w-[32px] h-[32px]" />
@@ -50,12 +50,11 @@ const LoginPage = () => {
               Email
             </label>
             <div
-              className={`flex items-center border rounded-lg px-3 py-3 transition
-                            ${
-                              formik.touched.email && formik.errors.email
-                                ? 'border-red-400 focus-within:border-red-500'
-                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                            }`}
+              className={`flex items-center border rounded-lg px-3 py-3 transition 
+                            ${formik.touched.email && formik.errors.email
+                  ? 'border-red-400 focus-within:border-red-500 '
+                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                }`}
             >
               <img src="/icons/auth/mail.svg" alt="email" className="w-5 h-5 mr-2 shrink-0" />
               <input
@@ -77,11 +76,10 @@ const LoginPage = () => {
             </label>
             <div
               className={`flex items-center border rounded-lg px-3 py-3 transition
-                            ${
-                              formik.touched.password && formik.errors.password
-                                ? 'border-red-400 focus-within:border-red-500'
-                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                            }`}
+                            ${formik.touched.password && formik.errors.password
+                  ? 'border-red-400 focus-within:border-red-500'
+                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                }`}
             >
               <img
                 src={formik.values.password ? '/icons/auth/lockOn.svg' : '/icons/auth/lockOff.svg'}

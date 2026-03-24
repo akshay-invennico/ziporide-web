@@ -119,19 +119,35 @@ export default function DriverTripHistoryTab() {
     const record: TripRecord = {
       id: trip.id,
       rider: {
+        id: 'RDR-' + trip.id,
         name: trip.rider.name,
         phone: trip.rider.phone,
         avatar: trip.rider.initials,
+        rating: trip.rating ?? 4.5,
       },
       driver: {
+        id: 'DRV-001',
         name: 'James Williams',
         phone: '+44 231 5732',
         avatar: '/icons/avatar1.png',
+        rating: 4.9,
+        vehicle: {
+          name: 'Standard',
+          photo: '/icons/vehicle/vehicle2.svg',
+          color: 'Pearl White',
+          registrationNumber: 'LK21 MNX'
+        }
       },
       route: {
+        pickupLocation: trip.from,
+        stop1Location: 'City Center',
+        destination: trip.to,
         from: trip.from,
         to: trip.to,
       },
+      distance: 6.4,
+      estimatedTime: 18,
+      totalFare: trip.amount,
       amount: trip.amount,
       date: trip.date,
       time: '09:41 AM',

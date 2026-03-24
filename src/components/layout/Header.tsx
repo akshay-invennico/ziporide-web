@@ -9,6 +9,7 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   [routes.DRIVER]: { title: 'Drivers', subtitle: 'View and manage driver accounts' },
   [routes.VERIFICATION]: { title: 'Verification Requests', subtitle: 'Review and take action on driver applications' },
   [routes.TRIPS]: { title: 'Trip History', subtitle: 'View and manage trip records' },
+  [routes.INVENTORY]: { title: 'Vehicle Inventory', subtitle: 'Manage all vehicles in the fleet with detailed information' }
 };
 
 export default function Header() {
