@@ -9,7 +9,7 @@ interface RemoveCategoryModalProps {
 const RemoveCategoryModal: React.FC<RemoveCategoryModalProps> = ({
   isOpen,
   onClose,
-  onConfirm
+  onConfirm,
 }) => {
   if (!isOpen) return null;
 
@@ -22,14 +22,18 @@ const RemoveCategoryModal: React.FC<RemoveCategoryModalProps> = ({
     >
       <div className="bg-white rounded-xl w-[580px] h-[270px] overflow-hidden shadow-xl">
         <div className="p-6 flex flex-col">
-          <h2 className="text-[20px] font-semibold text-[#000000] mb-3">Remove Vehicle Category?</h2>
+          <h2 className="text-[20px] font-semibold text-[#000000] mb-3">
+            Remove Vehicle Category?
+          </h2>
 
           <div className="flex flex-col gap-4 mb-6">
             <p className="text-[14px] font-medium text-[#4E616A] leading-[1.6]">
-              Are you sure you want to remove this category? This action will make it unavailable for new ride bookings.
+              Are you sure you want to remove this category? This action will make it unavailable
+              for new ride bookings.
             </p>
             <p className="text-[14px] font-medium text-[#4E616A] leading-[1.6]">
-              Drivers assigned to this category will no longer receive ride requests under this category. Existing and completed rides will not be affected.
+              Drivers assigned to this category will no longer receive ride requests under this
+              category. Existing and completed rides will not be affected.
             </p>
           </div>
 

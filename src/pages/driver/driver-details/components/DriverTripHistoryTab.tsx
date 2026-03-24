@@ -135,8 +135,8 @@ export default function DriverTripHistoryTab() {
           name: 'Standard',
           photo: '/icons/vehicle/vehicle2.svg',
           color: 'Pearl White',
-          registrationNumber: 'LK21 MNX'
-        }
+          registrationNumber: 'LK21 MNX',
+        },
       },
       route: {
         pickupLocation: trip.from,

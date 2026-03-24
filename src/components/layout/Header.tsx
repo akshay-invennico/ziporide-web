@@ -4,21 +4,28 @@ import { useLocation } from 'react-router-dom';
 import { routes } from '@/routes/routes';
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
-  [routes.DASHBOARD]: { title: 'Dashboard', subtitle: "Welcome back! Here's what's happening today." },
+  [routes.DASHBOARD]: {
+    title: 'Dashboard',
+    subtitle: "Welcome back! Here's what's happening today.",
+  },
   [routes.RIDER]: { title: 'Riders', subtitle: 'View and manage rider accounts' },
   [routes.DRIVER]: { title: 'Drivers', subtitle: 'View and manage driver accounts' },
-  [routes.VERIFICATION]: { title: 'Verification Requests', subtitle: 'Review and take action on driver applications' },
+  [routes.VERIFICATION]: {
+    title: 'Verification Requests',
+    subtitle: 'Review and take action on driver applications',
+  },
   [routes.TRIPS]: { title: 'Trip History', subtitle: 'View and manage trip records' },
-  [routes.INVENTORY]: { title: 'Vehicle Inventory', subtitle: 'Manage all vehicles in the fleet with detailed information' }
+  [routes.INVENTORY]: {
+    title: 'Vehicle Inventory',
+    subtitle: 'Manage all vehicles in the fleet with detailed information',
+  },
 };
 
 export default function Header() {
   const location = useLocation();
 
   const getPageTitle = () => {
-    const match = Object.entries(PAGE_TITLES).find(([path]) =>
-      location.pathname.startsWith(path),
-    );
+    const match = Object.entries(PAGE_TITLES).find(([path]) => location.pathname.startsWith(path));
     return match ? match[1] : { title: 'Admin Panel', subtitle: 'Manage your platform here.' };
   };
 

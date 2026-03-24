@@ -52,10 +52,11 @@ const LoginPage = () => {
             </label>
             <div
               className={`flex items-center border rounded-lg px-3 py-3 transition 
-                            ${formik.touched.email && formik.errors.email
-                  ? 'border-red-400 focus-within:border-red-500 '
-                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                }`}
+                            ${
+                              formik.touched.email && formik.errors.email
+                                ? 'border-red-400 focus-within:border-red-500 '
+                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                            }`}
             >
               <img src="/icons/auth/mail.svg" alt="email" className="w-5 h-5 mr-2 shrink-0" />
               <input
@@ -77,10 +78,11 @@ const LoginPage = () => {
             </label>
             <div
               className={`flex items-center border rounded-lg px-3 py-3 transition
-                            ${formik.touched.password && formik.errors.password
-                  ? 'border-red-400 focus-within:border-red-500'
-                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                }`}
+                            ${
+                              formik.touched.password && formik.errors.password
+                                ? 'border-red-400 focus-within:border-red-500'
+                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                            }`}
             >
               <img
                 src={formik.values.password ? '/icons/auth/lockOn.svg' : '/icons/auth/lockOff.svg'}
