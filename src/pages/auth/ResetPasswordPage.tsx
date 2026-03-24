@@ -1,12 +1,15 @@
 import { useFormik } from 'formik';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { routes } from '@/routes/routes';
+import { useAuthData } from '@/hooks/useAuthData';
 
 const ResetPasswordPage = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || '';
+  const { resetPassword, isLoading } = useAuthData();
+
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -25,9 +28,8 @@ const ResetPasswordPage = () => {
         .oneOf([Yup.ref('newPassword')], 'Passwords do not match')
         .required('Please confirm your password'),
     }),
-    onSubmit: (_values, { setSubmitting }) => {
-      setSubmitting(false);
-      navigate(routes.LOGIN);
+    onSubmit: (values) => {
+      resetPassword({ email, newPassword: values.newPassword });
     },
   });
 
@@ -134,10 +136,10 @@ const ResetPasswordPage = () => {
           {/* Reset Button */}
           <button
             type="submit"
-            disabled={formik.isSubmitting}
-            className="w-full bg-[#1DAFA1] cursor-pointer  text-white font-semibold text-[16px] py-2.5 rounded-lg transition"
+            disabled={isLoading}
+            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60"
           >
-            Reset Password
+            {isLoading ? 'Resetting...' : 'Reset Password'}
           </button>
         </form>
 

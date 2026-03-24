@@ -7,7 +7,13 @@ import { useToast } from '@/context/ToastContext';
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
 import { routes } from '@/routes/routes';
-import type { LoginPayload, LoginResponse } from '@/types/auth.types';
+import type {
+  ForgotPasswordPayload,
+  LoginPayload,
+  LoginResponse,
+  ResetPasswordPayload,
+  VerifyOtpPayload,
+} from '@/types/auth.types';
 
 interface ApiError {
   message: string;
@@ -35,5 +41,50 @@ export const useAuthData = () => {
     }
   };
 
-  return { login, isLoading };
+  const forgotPassword = async (payload: ForgotPasswordPayload) => {
+    setIsLoading(true);
+    try {
+      await apiClient.post(API.FORGOT_PASSWORD, payload);
+      showToast('Verification code sent to email!', 'success');
+      navigate(routes.VERIFY_OTP, { state: { email: payload.email } });
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      const message = error.response?.data?.message || 'Failed to send verification code.';
+      showToast(message, 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const verifyOtp = async (payload: VerifyOtpPayload) => {
+    setIsLoading(true);
+    try {
+      await apiClient.post(API.VERIFY_OTP, payload);
+      showToast('OTP verified successfully!', 'success');
+      navigate(routes.RESET_PASSWORD, { state: { email: payload.email, otp: payload.otp } });
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      const message = error.response?.data?.message || 'Failed to verify OTP.';
+      showToast(message, 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetPassword = async (payload: ResetPasswordPayload) => {
+    setIsLoading(true);
+    try {
+      await apiClient.post(API.RESET_PASSWORD, payload);
+      showToast('Password reset successfully!', 'success');
+      navigate(routes.LOGIN);
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      const message = error.response?.data?.message || 'Failed to reset password.';
+      showToast(message, 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { login, forgotPassword, verifyOtp, resetPassword, isLoading };
 };

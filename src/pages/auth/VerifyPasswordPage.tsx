@@ -1,13 +1,16 @@
 import { useFormik } from 'formik';
 import { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { routes } from '@/routes/routes';
+import { useAuthData } from '@/hooks/useAuthData';
 
 const VerifyPasswordPage = () => {
-  const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = useState(15 * 60);
+  const location = useLocation();
+  const email = location.state?.email || '';
+  const { verifyOtp, isLoading } = useAuthData();
+
+  const [timeLeft, setTimeLeft] = useState(10 * 60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -42,9 +45,8 @@ const VerifyPasswordPage = () => {
           (val) => !!val && val.every((d) => d !== ''),
         ),
     }),
-    onSubmit: (_values, { setSubmitting }) => {
-      setSubmitting(false);
-      navigate(routes.RESET_PASSWORD);
+    onSubmit: (values) => {
+      verifyOtp({ email, otp: values.otp.join('') });
     },
   });
 
@@ -141,11 +143,11 @@ const VerifyPasswordPage = () => {
 
           {/* Verify Button */}
           <button
-            type="button"
-            onClick={() => navigate(routes.RESET_PASSWORD)}
-            className="w-full bg-[#1DAFA1] cursor-pointer  text-white font-semibold text-[16px] py-2.5 rounded-lg transition"
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60"
           >
-            Verify Code
+            {isLoading ? 'Verifying...' : 'Verify Code'}
           </button>
         </form>
 

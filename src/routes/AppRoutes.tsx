@@ -37,7 +37,7 @@ export default function AppRoutes() {
         <Route element={<GuestRoute />}>
           <Route path={routes.LOGIN} element={<LoginPage />} />
           <Route path={routes.FORGOT_PASSWORD} element={<ForgetPasswordPage />} />
-          <Route path={routes.VERIFY_PASSWORD} element={<VerifyPasswordPage />} />
+          <Route path={routes.VERIFY_OTP} element={<VerifyPasswordPage />} />
           <Route path={routes.RESET_PASSWORD} element={<ResetPasswordPage />} />
         </Route>
 

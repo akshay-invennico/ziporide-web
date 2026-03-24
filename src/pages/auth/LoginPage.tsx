@@ -24,7 +24,8 @@ const LoginPage = () => {
         .required('Password is required'),
     }),
     onSubmit: (values) => {
-      login({ email: values.email, password: values.password });
+      const payload = { email: values.email, password: values.password };
+      login(payload);
     },
   });
 

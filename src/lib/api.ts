@@ -1,8 +1,8 @@
 export const API = {
   LOGIN: '/auth/login',
-  FORGOT_PASSWORD: '/auth/forgot-password',
-  VERIFY_OTP: '/auth/verify-otp',
-  RESET_PASSWORD: '/auth/reset-password',
+  FORGOT_PASSWORD: '/auth/forgot/password',
+  VERIFY_OTP: '/auth/verify/otp/email',
+  RESET_PASSWORD: '/auth/reset/password',
 
   DASHBOARD_STATS: '/dashboard/stats',
 
