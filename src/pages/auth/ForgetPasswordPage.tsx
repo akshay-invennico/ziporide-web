@@ -2,6 +2,8 @@ import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
+import { routes } from '@/routes/routes';
+
 const ForgetPasswordPage = () => {
   const navigate = useNavigate();
   const formik = useFormik({
@@ -13,7 +15,7 @@ const ForgetPasswordPage = () => {
     }),
     onSubmit: (_values, { setSubmitting }) => {
       setSubmitting(false);
-      navigate('/verify-password');
+      navigate(routes.VERIFY_PASSWORD);
     },
   });
 
@@ -77,7 +79,7 @@ const ForgetPasswordPage = () => {
           Remember Password?{' '}
           <button
             type="button"
-            onClick={() => navigate('/login')}
+            onClick={() => navigate(routes.LOGIN)}
             className="text-[#1DAFA1] cursor-pointer hover:underline font-semibold text-[12px]"
           >
             Log in

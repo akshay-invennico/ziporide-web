@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
+import { routes } from '@/routes/routes';
+
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const [showNew, setShowNew] = useState(false);
@@ -25,7 +27,7 @@ const ResetPasswordPage = () => {
     }),
     onSubmit: (_values, { setSubmitting }) => {
       setSubmitting(false);
-      navigate('/login');
+      navigate(routes.LOGIN);
     },
   });
 

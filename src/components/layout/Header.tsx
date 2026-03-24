@@ -1,25 +1,24 @@
 import { ChevronDown } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
+import { routes } from '@/routes/routes';
+
+const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
+  [routes.DASHBOARD]: { title: 'Dashboard', subtitle: "Welcome back! Here's what's happening today." },
+  [routes.RIDER]: { title: 'Riders', subtitle: 'View and manage rider accounts' },
+  [routes.DRIVER]: { title: 'Drivers', subtitle: 'View and manage driver accounts' },
+  [routes.VERIFICATION]: { title: 'Verification Requests', subtitle: 'Review and take action on driver applications' },
+  [routes.TRIPS]: { title: 'Trip History', subtitle: 'View and manage trip records' },
+};
+
 export default function Header() {
   const location = useLocation();
 
-  // Basic title mapping based on route
   const getPageTitle = () => {
-    if (location.pathname.includes('dashboard'))
-      return { title: 'Dashboard', subtitle: "Welcome back! Here's what's happening today." };
-    if (location.pathname.includes('rider'))
-      return { title: 'Riders', subtitle: 'View and manage rider accounts' };
-    if (location.pathname.includes('driver'))
-      return { title: 'Drivers', subtitle: 'View and manage driver accounts' };
-    if (location.pathname.includes('verification'))
-      return {
-        title: 'Verification Requests',
-        subtitle: 'Review and take action on driver applications',
-      };
-    if (location.pathname.includes('trips'))
-      return { title: 'Trip History', subtitle: 'View and manage trip records' };
-    return { title: 'Admin Panel', subtitle: 'Manage your platform here.' };
+    const match = Object.entries(PAGE_TITLES).find(([path]) =>
+      location.pathname.startsWith(path),
+    );
+    return match ? match[1] : { title: 'Admin Panel', subtitle: 'Manage your platform here.' };
   };
 
   const { title, subtitle } = getPageTitle();

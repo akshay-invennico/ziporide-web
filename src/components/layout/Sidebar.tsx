@@ -1,21 +1,23 @@
 import { Link, useLocation } from 'react-router-dom';
 
+import { routes } from '@/routes/routes';
+
 const navItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: '/icons/sidebar/sidebarIcon1.svg' },
-  { name: 'Riders', path: '/rider', icon: '/icons/sidebar/sidebarIcon2.svg' },
-  { name: 'Drivers', path: '/driver', icon: '/icons/sidebar/sidebarIcon3.svg' },
+  { name: 'Dashboard', path: routes.DASHBOARD, icon: '/icons/sidebar/sidebarIcon1.svg' },
+  { name: 'Riders', path: routes.RIDER, icon: '/icons/sidebar/sidebarIcon2.svg' },
+  { name: 'Drivers', path: routes.DRIVER, icon: '/icons/sidebar/sidebarIcon3.svg' },
   {
     name: 'Verification Req',
-    path: '/verification',
+    path: routes.VERIFICATION,
     icon: '/icons/sidebar/sidebarIcon4.svg',
     badge: '20+',
   },
-  { name: 'Trips', path: '/trips', icon: '/icons/sidebar/sidebarIcon5.svg' },
-  { name: 'Vehicle Inventory', path: '/inventory', icon: '/icons/sidebar/sidebarIcon6.svg' },
-  { name: 'Support Tickets', path: '/support', icon: '/icons/sidebar/sidebarIcon7.svg' },
+  { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
+  { name: 'Vehicle Inventory', path: routes.INVENTORY, icon: '/icons/sidebar/sidebarIcon6.svg' },
+  { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon7.svg' },
   {
     name: 'Settings',
-    path: '/settings',
+    path: routes.SETTINGS,
     icon: '/icons/sidebar/sidebarIcon8.svg',
     hasDropdown: true,
   },

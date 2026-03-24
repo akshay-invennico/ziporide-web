@@ -3,9 +3,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
+import { useAuthData } from '@/hooks/useAuthData';
+import { routes } from '@/routes/routes';
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const { login, isLoading } = useAuthData();
 
   const formik = useFormik({
     initialValues: {
@@ -20,7 +24,7 @@ const LoginPage = () => {
         .required('Password is required'),
     }),
     onSubmit: (values) => {
-      console.log('Login submitted:', values);
+      login({ email: values.email, password: values.password });
     },
   });
 
@@ -118,7 +122,7 @@ const LoginPage = () => {
             </label>
             <button
               type="button"
-              onClick={() => navigate('/forgot-password')}
+              onClick={() => navigate(routes.FORGOT_PASSWORD)}
               className="text-[12px] font-medium  text-[#686262] hover:text-[#1DAFA1] hover:underline cursor-pointer"
             >
               Forgot Password?
@@ -128,9 +132,10 @@ const LoginPage = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-[#1DAFA1] cursor-pointer  text-white font-semibold text-[16px] py-2.5 rounded-lg transition"
+            disabled={isLoading}
+            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Log in
+            {isLoading ? 'Logging in...' : 'Log in'}
           </button>
         </form>
 

@@ -2,6 +2,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+import { routes } from '@/routes/routes';
+
 import SuspendRiderModal from '../../../components/ui/SuspendRiderModal';
 import { driversData } from '../../../data/DriverData';
 
@@ -34,7 +36,7 @@ export default function DriverDetailsPage() {
       <div className="w-full min-h-screen bg-gray-50/50 p-6 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-bold text-gray-800 mb-2">Driver Not Found</h2>
-          <button onClick={() => navigate('/driver')} className="text-teal-600 hover:underline">
+          <button onClick={() => navigate(routes.DRIVER)} className="text-teal-600 hover:underline">
             Return to Drivers List
           </button>
         </div>
@@ -46,7 +48,7 @@ export default function DriverDetailsPage() {
     <div className="w-full min-h-screen bg-white p-2">
       {/* Back Button */}
       <button
-        onClick={() => navigate('/driver')}
+        onClick={() => navigate(routes.DRIVER)}
         className="flex items-center gap-2 text-[14px] font-medium text-[#4E616A] mb-6 w-fit transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-[24px] h-[24px] text-[#4E616A] font-medium" />

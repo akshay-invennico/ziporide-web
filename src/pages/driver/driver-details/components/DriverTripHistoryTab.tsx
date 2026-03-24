@@ -31,7 +31,7 @@ const RIDERS = [
   { name: 'Clara Kim', phone: '+44 231 5705', initials: 'CK', color: COLORS[2] },
 ];
 
-const ROUTES = [
+const routes = [
   { from: 'Uptown', to: 'Station' },
   { from: 'Midtown', to: 'Mall' },
   { from: 'Seaside', to: 'Resort' },
@@ -54,7 +54,7 @@ const STATUSES: TripStatus[] = [
 
 const allTrips: Trip[] = Array.from({ length: 99 }, (_, i) => {
   const rider = RIDERS[i % RIDERS.length];
-  const route = ROUTES[i % ROUTES.length];
+  const route = routes[i % routes.length];
   const status = STATUSES[i % STATUSES.length];
   const ratings = [4.0, null, 2.0, 5.0, null, 3.0, 2.0, 4.0, 3.0];
   return {

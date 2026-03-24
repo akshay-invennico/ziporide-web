@@ -3,6 +3,8 @@ import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
+import { routes } from '@/routes/routes';
+
 const VerifyPasswordPage = () => {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(15 * 60);
@@ -42,7 +44,7 @@ const VerifyPasswordPage = () => {
     }),
     onSubmit: (_values, { setSubmitting }) => {
       setSubmitting(false);
-      navigate('/reset-password');
+      navigate(routes.RESET_PASSWORD);
     },
   });
 
@@ -140,7 +142,7 @@ const VerifyPasswordPage = () => {
           {/* Verify Button */}
           <button
             type="button"
-            onClick={() => navigate('/reset-password')}
+            onClick={() => navigate(routes.RESET_PASSWORD)}
             className="w-full bg-[#1DAFA1] cursor-pointer  text-white font-semibold text-[16px] py-2.5 rounded-lg transition"
           >
             Verify Code

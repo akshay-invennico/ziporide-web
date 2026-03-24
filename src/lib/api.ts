@@ -1,0 +1,20 @@
+export const API = {
+  LOGIN: '/auth/login',
+  FORGOT_PASSWORD: '/auth/forgot-password',
+  VERIFY_OTP: '/auth/verify-otp',
+  RESET_PASSWORD: '/auth/reset-password',
+
+  DASHBOARD_STATS: '/dashboard/stats',
+
+  RIDERS: '/riders',
+  RIDER_DETAILS: (id: string) => `/riders/${id}`,
+
+  DRIVERS: '/drivers',
+  DRIVER_DETAILS: (id: string) => `/drivers/${id}`,
+
+  VERIFICATIONS: '/verifications',
+  VERIFICATION_DETAILS: (id: string) => `/verifications/${id}`,
+
+  TRIPS: '/trips',
+  TRIP_DETAILS: (id: string) => `/trips/${id}`,
+} as const;
