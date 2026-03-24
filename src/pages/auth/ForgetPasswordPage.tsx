@@ -2,10 +2,13 @@ import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
+import { useAuthData } from '@/hooks/useAuthData';
 import { routes } from '@/routes/routes';
 
 const ForgetPasswordPage = () => {
   const navigate = useNavigate();
+  const { forgotPassword, isLoading } = useAuthData();
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -13,9 +16,8 @@ const ForgetPasswordPage = () => {
     validationSchema: Yup.object({
       email: Yup.string().email('Please enter a valid email address').required('Email is required'),
     }),
-    onSubmit: (_values, { setSubmitting }) => {
-      setSubmitting(false);
-      navigate(routes.VERIFY_PASSWORD);
+    onSubmit: (values) => {
+      forgotPassword({ email: values.email });
     },
   });
 
@@ -67,10 +69,10 @@ const ForgetPasswordPage = () => {
           {/* Send Button */}
           <button
             type="submit"
-            disabled={formik.isSubmitting}
-            className="w-full bg-[#1DAFA1] cursor-pointer  text-white font-semibold text-[16px] py-2.5 rounded-lg transition"
+            disabled={isLoading}
+            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60"
           >
-            Send Verification Code
+            {isLoading ? 'Sending...' : 'Send Verification Code'}
           </button>
         </form>
 

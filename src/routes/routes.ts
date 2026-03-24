@@ -1,7 +1,7 @@
 export const routes = {
   LOGIN: '/login',
   FORGOT_PASSWORD: '/forgot/password',
-  VERIFY_PASSWORD: '/verify/password',
+  VERIFY_OTP: '/verify/otp/email',
   RESET_PASSWORD: '/reset/password',
 
   DASHBOARD: '/dashboard',
