@@ -1,6 +1,8 @@
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
+import { useToast } from '@/context/ToastContext';
+import { useFileUpload } from '@/hooks/useFileUpload';
 import { useVehicleCategories } from '@/hooks/useVehicleCategories';
 import type { VehicleCategory } from '@/types/vehicle.types';
 
@@ -9,7 +11,16 @@ import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
 import { vehicleDatabaseData } from '../../data/VehicleDatabaseData';
 
 const VehicleInventoryPage: React.FC = () => {
-  const { categories: vehicleCategories, loading, error, updateCategory } = useVehicleCategories();
+  const {
+    categories: vehicleCategories,
+    loading,
+    error,
+    updateCategory,
+    createCategory,
+    removeCategory,
+  } = useVehicleCategories();
+  const { uploadImage } = useFileUpload();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'category' | 'database'>('category');
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [categoryToRemove, setCategoryToRemove] = useState<string | number | null>(null);
@@ -64,11 +75,21 @@ const VehicleInventoryPage: React.FC = () => {
     setIsRemoveModalOpen(true);
   };
 
-  const handleConfirmRemove = () => {
-    // In a real app, you would make an API call here to remove the category
-    setIsRemoveModalOpen(false);
-    setCategoryToRemove(null);
+  const handleConfirmRemove = async () => {
+    if (categoryToRemove) {
+      try {
+        await removeCategory(categoryToRemove as string);
+        setIsRemoveModalOpen(false);
+        setCategoryToRemove(null);
+        showToast('Category removed successfully', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to remove category', 'error');
+      }
+    }
   };
+
+  // const handleToggleStatus = (id: number) => {};
 
   return (
     <div className="flex flex-col bg-white p-1">
@@ -130,7 +151,7 @@ const VehicleInventoryPage: React.FC = () => {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <img
-                        src={cat.image}
+                        src={cat.categoryIcon}
                         alt={cat.name}
                         className="w-[130px] h-[130px] object-contain mb-4"
                         onError={(e) => {
@@ -406,17 +427,41 @@ const VehicleInventoryPage: React.FC = () => {
         }}
         initialData={categoryToEdit}
         onConfirm={async (values) => {
-          if (categoryToEdit) {
-            const payload = {
-              name: values.categoryName,
-              baseFare: parseFloat(values.baseFare),
-              pricePerMile: parseFloat(values.pricePerMile),
-              pricePerMinute: parseFloat(values.pricePerMinute),
-              seatCapacity: parseInt(values.seatCapacity.split(' ')[0]),
-              categoryIcon: values.categoryIcon, // Use current form value (handles string URL or new state)
-            };
-            await updateCategory(categoryToEdit.id, payload);
+          let iconString = values.categoryIcon;
+
+          if (iconString instanceof File) {
+            try {
+              // The backend provides the uploaded image S3 URL as a string
+              iconString = await uploadImage(iconString as File);
+            } catch (error) {
+              console.error(error);
+              showToast(
+                error instanceof Error ? error.message : 'Image upload failed. Please try again.',
+                'error',
+              );
+              return;
+            }
           }
+
+          const payload: Partial<VehicleCategory> = {
+            name: values.categoryName,
+            basePrice: parseFloat(values.baseFare),
+            pricePerMile: parseFloat(values.pricePerMile),
+            pricePerMinute: parseFloat(values.pricePerMinute),
+            seats: parseInt(values.seatCapacity.split(' ')[0]),
+            vehicleType: values.vehicleType,
+          };
+
+          if (iconString) {
+            payload.categoryIcon = iconString as string;
+          }
+
+          if (categoryToEdit) {
+            await updateCategory(categoryToEdit.id, payload);
+          } else {
+            await createCategory(payload);
+          }
+
           setIsAddModalOpen(false);
           setCategoryToEdit(null);
         }}

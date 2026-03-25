@@ -1,8 +1,9 @@
 import { X, Copy, Star } from 'lucide-react';
 import { useState } from 'react';
-import CancelRideModal from './CancelRideModal';
 
 import type { TripRecord } from '../../data/TripHistoryData';
+
+import CancelRideModal from './CancelRideModal';
 
 interface TripDetailsModalProps {
   isOpen: boolean;
@@ -10,7 +11,7 @@ interface TripDetailsModalProps {
   trip: TripRecord | null;
 }
 
-const STATUS_BADGE: Record<string, { bg: string, dot: string; text: string }> = {
+const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = {
   Assigned: { bg: 'bg-[#EEFFFD]', dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' },
   'In Progress': { bg: 'bg-[#FFF7E4]', dot: 'bg-[#F6921E]', text: 'text-[#F6921E]' },
   Completed: { bg: 'bg-[#EAFFF2]', dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' },
@@ -94,7 +95,9 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                   {cancelledByRider && (
                     <>
                       <div className="w-[5px] h-[5px] rounded-full bg-[#939999]" />
-                      <span className="font-semibold text-[#101828]">£{trip.totalFare.toFixed(2)}</span>
+                      <span className="font-semibold text-[#101828]">
+                        £{trip.totalFare.toFixed(2)}
+                      </span>
                     </>
                   )}
                 </div>
@@ -112,7 +115,9 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[12px] font-medium text-[#747C84]">Distance</span>
-                      <span className="text-[14px] font-semibold text-[#000000]">{trip.distance} Kms</span>
+                      <span className="text-[14px] font-semibold text-[#000000]">
+                        {trip.distance} Kms
+                      </span>
                     </div>
                   </div>
                   <div className="border border-[#DFE6E5] rounded-lg p-3 flex items-center gap-3">
@@ -127,7 +132,9 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                       <span className="text-[12px] font-medium text-[#747C84]">
                         Estimated Duration
                       </span>
-                      <span className="text-[14px] font-semibold text-[#000000]">{trip.estimatedTime} Mins</span>
+                      <span className="text-[14px] font-semibold text-[#000000]">
+                        {trip.estimatedTime} Mins
+                      </span>
                     </div>
                   </div>
                   <div className="border border-[#DFE6E5] rounded-lg p-3 flex items-center gap-3">
@@ -153,7 +160,7 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                           alt="payment"
                           className="w-[20px] h-[20px]"
                           onError={(e) => {
-                            e.currentTarget.src = "/icons/tripDetails/Price.svg"
+                            e.currentTarget.src = '/icons/tripDetails/Price.svg';
                           }}
                         />
                       </div>
@@ -225,14 +232,19 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
               {!cancelledByDriver && (
                 <div className="flex flex-col gap-3">
                   <span className="text-[14px] font-medium text-[#4E616A]">Fare Breakdown</span>
-                  <div className={`border border-[#1DAFA1] ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} rounded-lg overflow-hidden`}>
+                  <div
+                    className={`border border-[#1DAFA1] ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} rounded-lg overflow-hidden`}
+                  >
                     <div className="divide-y divide-[#DFE6E5]">
                       <div className="flex justify-between px-4 py-2.5 text-[14px] font-medium">
                         <span className="text-[#4E616A]">
                           {isCancelled ? 'Cancellation Fee' : 'Base Fare'}
                         </span>
                         <span className="font-semibold text-[12px] text-[#101828]">
-                          £{isCancelled ? (trip.cancellationDetails?.fee || 2.5).toFixed(2) : '12.50'}
+                          £
+                          {isCancelled
+                            ? (trip.cancellationDetails?.fee || 2.5).toFixed(2)
+                            : '12.50'}
                         </span>
                       </div>
                       <div className="flex justify-between px-4 py-2.5 text-[14px] font-medium">
@@ -240,7 +252,10 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                           {isCancelled ? 'Waiting Charge' : 'Distance Fare'}
                         </span>
                         <span className="font-semibold text-[12px] text-[#101828]">
-                          £{isCancelled ? (trip.cancellationDetails?.waitingCharge || 1.0).toFixed(2) : '3.00'}
+                          £
+                          {isCancelled
+                            ? (trip.cancellationDetails?.waitingCharge || 1.0).toFixed(2)
+                            : '3.00'}
                         </span>
                       </div>
                       {!isCancelled && (
@@ -251,7 +266,9 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                           <span className="font-semibold text-[12px] text-[#101828]">£3.00</span>
                         </div>
                       )}
-                      <div className={`flex justify-between px-4 py-2.5 ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} text-[14px] font-semibold`}>
+                      <div
+                        className={`flex justify-between px-4 py-2.5 ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} text-[14px] font-semibold`}
+                      >
                         <span className="text-[#101828]">Total</span>
                         <span className="font-semibold text-[16px] text-[#101828]">
                           £{trip.totalFare.toFixed(2)}
@@ -276,11 +293,15 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                       {trip.rider.name}
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[12px] text-[#1DAFA1] font-medium">{trip.rider.id}</span>
+                      <span className="text-[12px] text-[#1DAFA1] font-medium">
+                        {trip.rider.id}
+                      </span>
                       <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
                       <div className="flex items-center gap-1">
                         <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
-                        <span className="text-[12px] text-[#4E616A] font-medium">{trip.rider.rating}</span>
+                        <span className="text-[12px] text-[#4E616A] font-medium">
+                          {trip.rider.rating}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -319,11 +340,15 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                         {trip.driver.name}
                       </span>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[12px] text-[#1DAFA1] font-medium">{trip.driver.id}</span>
+                        <span className="text-[12px] text-[#1DAFA1] font-medium">
+                          {trip.driver.id}
+                        </span>
                         <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
                         <div className="flex items-center gap-1">
                           <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
-                          <span className="text-[12px] text-[#4E616A] font-medium">{trip.driver.rating}</span>
+                          <span className="text-[12px] text-[#4E616A] font-medium">
+                            {trip.driver.rating}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -331,11 +356,17 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                   <div className=" rounded-lg p-3 flex items-center justify-between mt-1 bg-[#F7F7F7]">
                     <div className="flex flex-col gap-0.5">
                       <span className="text-[12px] font-medium text-[#4E616A]">Vehicle</span>
-                      <span className="text-[14px] font-semibold text-[#101828]">{trip.driver.vehicle.name}</span>
+                      <span className="text-[14px] font-semibold text-[#101828]">
+                        {trip.driver.vehicle.name}
+                      </span>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[12px] font-medium text-[#4E616A]">{trip.driver.vehicle.color}</span>
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          {trip.driver.vehicle.color}
+                        </span>
                         <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
-                        <span className="text-[12px] font-medium text-[#4E616A]">{trip.driver.vehicle.registrationNumber}</span>
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          {trip.driver.vehicle.registrationNumber}
+                        </span>
                       </div>
                     </div>
                     <img
@@ -354,16 +385,19 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
             {isCompleted && (
               <div className="border-t border-[#DFE6E5] pt-5 mt-2 grid grid-cols-2 gap-5">
                 <div className="flex flex-col gap-3">
-                  <span className="text-[14px] font-medium text-[#4E616A]">Rating & Feedback by Rider</span>
+                  <span className="text-[14px] font-medium text-[#4E616A]">
+                    Rating & Feedback by Rider
+                  </span>
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 5)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.riderFeedback?.rating || 5)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>
@@ -374,16 +408,19 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <span className="text-[14px] font-medium text-[#4E616A]">Rating & Feedback by Driver</span>
+                  <span className="text-[14px] font-medium text-[#4E616A]">
+                    Rating & Feedback by Driver
+                  </span>
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 5)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.driverFeedback?.rating || 5)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>
@@ -401,16 +438,24 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                 <div className="grid grid-cols-2 gap-5 ">
                   <div className="flex flex-col gap-2">
                     <span className="text-[12px] font-medium text-[#4E616A]">Cancelled by</span>
-                    <span className="text-[14px] font-semibold uppercase text-[#000000]">{trip.cancellationDetails?.cancelledBy || 'Rider'}</span>
+                    <span className="text-[14px] font-semibold uppercase text-[#000000]">
+                      {trip.cancellationDetails?.cancelledBy || 'Rider'}
+                    </span>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-[12px] font-medium text-[#4E616A]">Trip Stage</span>
-                    <span className="text-[14px] font-semibold text-[#000000]">{trip.cancellationDetails?.tripStage || 'After Driver Arrival'}</span>
+                    <span className="text-[14px] font-semibold text-[#000000]">
+                      {trip.cancellationDetails?.tripStage || 'After Driver Arrival'}
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span className="text-[12px] font-medium text-[#4E616A]">Reason for Cancellation</span>
-                  <span className="text-[14px] font-semibold text-[#000000]">{trip.cancellationDetails?.reason || "Driver's Behaviour"}</span>
+                  <span className="text-[12px] font-medium text-[#4E616A]">
+                    Reason for Cancellation
+                  </span>
+                  <span className="text-[14px] font-semibold text-[#000000]">
+                    {trip.cancellationDetails?.reason || "Driver's Behaviour"}
+                  </span>
                 </div>
               </div>
             )}
@@ -419,12 +464,11 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
               <div className="border-t border-[#DFE6E5] pt-5 mt-2 flex flex-col gap-3">
                 <span className="text-[14px] font-medium text-[#4E616A]">Cancellation Reason</span>
                 <span className="text-[14px] font-medium text-[#000000]">
-                  {trip.cancellationDetails?.reason || "Taking Too Much time to get Ride Confirm"}
+                  {trip.cancellationDetails?.reason || 'Taking Too Much time to get Ride Confirm'}
                 </span>
               </div>
             )}
           </div>
-
 
           {/* Footer Section */}
           {showCancelBtn && (
@@ -433,7 +477,11 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                 onClick={() => setIsCancelModalOpen(true)}
                 className="flex items-center gap-2 px-5 py-2 rounded-md border border-[#DFE6E5] text-[#FF0707] text-[14px] font-medium cursor-pointer"
               >
-                <img src="/icons/tripDetails/cancell.svg" alt="cancel" className='w-[22px] h-[22px]' />
+                <img
+                  src="/icons/tripDetails/cancell.svg"
+                  alt="cancel"
+                  className="w-[22px] h-[22px]"
+                />
                 {isInProgress ? 'Force End Ride' : 'Cancel Ride'}
               </button>
             </div>
@@ -445,7 +493,10 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
         mode={isInProgress ? 'force-end' : 'cancel'}
         onClose={() => setIsCancelModalOpen(false)}
         onConfirm={(reason, details) => {
-          console.log(`${isInProgress ? 'Force End' : 'Cancellation'} confirmed:`, { reason, details });
+          console.warn(`${isInProgress ? 'Force End' : 'Cancellation'} confirmed:`, {
+            reason,
+            details,
+          });
           setIsCancelModalOpen(false);
           // In a real app, you would handle the cancellation logic here (API call, etc.)
         }}

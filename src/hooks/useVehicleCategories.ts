@@ -21,7 +21,7 @@ export const useVehicleCategories = () => {
           name: item.name,
           seats: item.seatCapacity,
           basePrice: item.baseFare,
-          image: item.categoryIcon,
+          categoryIcon: item.categoryIcon,
           pricePerMile: item.pricePerMile,
           pricePerMinute: item.pricePerMinute,
           vehicleType: item.vehicleType,
@@ -45,11 +45,57 @@ export const useVehicleCategories = () => {
   const updateCategory = useCallback(
     async (id: string, payload: Partial<VehicleCategory>) => {
       try {
-        await apiClient.patch(API.UPDATE_CATEGORY(id), payload);
-        fetchCategories(); // Reload list after update
+        const apiPayload = {
+          ...(payload.name !== undefined && { name: payload.name }),
+          ...(payload.basePrice !== undefined && { baseFare: payload.basePrice }),
+          ...(payload.pricePerMile !== undefined && { pricePerMile: payload.pricePerMile }),
+          ...(payload.pricePerMinute !== undefined && { pricePerMinute: payload.pricePerMinute }),
+          ...(payload.seats !== undefined && { seatCapacity: payload.seats }),
+          ...(payload.categoryIcon !== undefined && { categoryIcon: payload.categoryIcon }),
+          ...(payload.vehicleType !== undefined && { vehicleType: payload.vehicleType }),
+        };
+        await apiClient.patch(API.UPDATE_CATEGORY(id), apiPayload);
+        fetchCategories();
       } catch (err: unknown) {
         const error = err as Error;
         setError(error.message || 'Failed to update category');
+      }
+    },
+    [fetchCategories],
+  );
+
+  const createCategory = useCallback(
+    async (payload: Partial<VehicleCategory>) => {
+      try {
+        const apiPayload = {
+          ...(payload.name !== undefined && { name: payload.name }),
+          ...(payload.basePrice !== undefined && { baseFare: payload.basePrice }),
+          ...(payload.pricePerMile !== undefined && { pricePerMile: payload.pricePerMile }),
+          ...(payload.pricePerMinute !== undefined && { pricePerMinute: payload.pricePerMinute }),
+          ...(payload.seats !== undefined && { seatCapacity: payload.seats }),
+          ...(payload.categoryIcon !== undefined && { categoryIcon: payload.categoryIcon }),
+          ...(payload.vehicleType !== undefined && { vehicleType: payload.vehicleType }),
+        };
+        await apiClient.post(API.CREATE_CATEGORY, apiPayload);
+        fetchCategories();
+      } catch (err: unknown) {
+        const error = err as Error;
+        setError(error.message || 'Failed to create category');
+        throw error;
+      }
+    },
+    [fetchCategories],
+  );
+
+  const removeCategory = useCallback(
+    async (id: string) => {
+      try {
+        await apiClient.delete(API.REMOVE_CATEGORY(id));
+        fetchCategories();
+      } catch (err: unknown) {
+        const error = err as Error;
+        setError(error.message || 'Failed to remove category');
+        throw error;
       }
     },
     [fetchCategories],
@@ -59,5 +105,13 @@ export const useVehicleCategories = () => {
     fetchCategories();
   }, [fetchCategories]);
 
-  return { categories, loading, error, refetch: fetchCategories, updateCategory };
+  return {
+    categories,
+    loading,
+    error,
+    refetch: fetchCategories,
+    updateCategory,
+    createCategory,
+    removeCategory,
+  };
 };

@@ -16,6 +16,7 @@ import { spendingData, recentTrips } from '../../../../data/RiderTripsData';
 export default function SpentTripHistoryTab() {
   const [trendFilter, setTrendFilter] = useState('Year');
   const [currentPage, setCurrentPage] = useState(1);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedTrip, setSelectedTrip] = useState<any>(null);
   const itemsPerPage = 6;
 
@@ -34,6 +35,7 @@ export default function SpentTripHistoryTab() {
   };
 
   // Custom generic tooltip for the chart
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -241,6 +243,7 @@ export default function SpentTripHistoryTab() {
               </tr>
             </thead>
             <tbody className="text-sm">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {currentTrips.map((trip: any) => (
                 <tr
                   key={trip.id}

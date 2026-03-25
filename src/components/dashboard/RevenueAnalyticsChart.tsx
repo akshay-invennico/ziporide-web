@@ -45,6 +45,7 @@ const dummyData: Record<FilterKey, { name: string; revenue: number; rides: numbe
 
 const yTickFormatter = (value: number) => `£${value >= 1000 ? `${value / 1000}K` : value}`;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     // const value = payload[0].value;

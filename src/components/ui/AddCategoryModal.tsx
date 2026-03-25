@@ -161,7 +161,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
       pricePerMinute: initialData?.pricePerMinute?.toString() || '',
       vehicleType: initialData?.vehicleType || '',
       seatCapacity: initialData?.seats ? `${initialData.seats} Seats` : '',
-      categoryIcon: initialData?.image || (null as File | string | null),
+      categoryIcon: initialData?.categoryIcon || (null as File | string | null),
     },
     enableReinitialize: true,
     validationSchema,
@@ -292,9 +292,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
             <InputWrapper label="Vehicle Type" required error={formik.errors.vehicleType as string}>
               <CustomDropdown
                 options={[
-                  { label: 'Car', value: 'Car' },
-                  { label: 'Bike', value: 'Bike' },
-                  { label: 'Van', value: 'Van' },
+                  { label: 'Car', value: 'car' },
+                  { label: 'Bike', value: 'bike' },
+                  { label: 'Van', value: 'van' },
                 ]}
                 value={formik.values.vehicleType}
                 onChange={(val) => formik.setFieldValue('vehicleType', val)}

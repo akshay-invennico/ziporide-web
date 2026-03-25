@@ -3,7 +3,7 @@ import axios, { type InternalAxiosRequestConfig, type AxiosResponse, type AxiosE
 import { routes } from '@/routes/routes';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -25,14 +25,14 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      const authRoutes = [
+      const authRoutes: string[] = [
         routes.LOGIN,
         routes.FORGOT_PASSWORD,
         routes.VERIFY_OTP,
         routes.RESET_PASSWORD,
       ];
 
-      if (!authRoutes.includes(window.location.pathname as any)) {
+      if (!authRoutes.includes(window.location.pathname)) {
         window.location.href = routes.LOGIN;
       }
     }

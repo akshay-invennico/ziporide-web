@@ -15,7 +15,7 @@ export interface VehicleCategory {
   name: string;
   seats: number;
   basePrice: number;
-  image: string;
+  categoryIcon: string;
   pricePerMile: number;
   pricePerMinute: number;
   vehicleType: string;
