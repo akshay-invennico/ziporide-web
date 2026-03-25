@@ -13,6 +13,7 @@ export const routes = {
   VERIFICATION_DETAILS: '/verification/details/:id',
   TRIPS: '/trips',
   INVENTORY: '/inventory',
+  TRANSACTIONS: '/transactions',
   SUPPORT: '/support',
   SETTINGS: '/settings',
 } as const;

@@ -1,11 +1,6 @@
 export type TripStatus = 'Assigned' | 'In Progress' | 'Completed' | 'Cancelled';
 
-export type VehicleCategory =
-  | 'Electric'
-  | 'Standard'
-  | 'XL'
-  | 'Executive'
-  | 'Executive XL';
+export type VehicleCategory = 'Electric' | 'Standard' | 'XL' | 'Executive' | 'Executive XL';
 
 // Vehicle category → photo mapping
 // Electric      → /icons/vehicle/vehicle1.svg
@@ -47,7 +42,7 @@ export interface TripRecord {
     /** @deprecated use destination */
     to: string;
   };
-  distance: number;      // km
+  distance: number; // km
   estimatedTime: number; // minutes
   totalFare: number;
   amount: number;
@@ -76,7 +71,6 @@ export interface TripRecord {
 }
 
 export const tripHistoryData: TripRecord[] = [
-
   // ─── 1. ASSIGNED ─────────────────────────────────────────────────────────────
   {
     id: 'ZPT-2845148',

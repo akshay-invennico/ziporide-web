@@ -1,7 +1,7 @@
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { useToast } from '@/context/ToastContext';
+import { useToast } from '@/context/useToast';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useVehicleCategories } from '@/hooks/useVehicleCategories';
 import type { VehicleCategory } from '@/types/vehicle.types';

@@ -14,11 +14,12 @@ const navItems = [
   },
   { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
   { name: 'Vehicle Inventory', path: routes.INVENTORY, icon: '/icons/sidebar/sidebarIcon6.svg' },
-  { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon7.svg' },
+  { name: 'Transactions', path: routes.TRANSACTIONS, icon: '/icons/sidebar/sidebarIcon7.svg' },
+  { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon8.svg' },
   {
     name: 'Settings',
     path: routes.SETTINGS,
-    icon: '/icons/sidebar/sidebarIcon8.svg',
+    icon: '/icons/sidebar/sidebarIcon9.svg',
     hasDropdown: true,
   },
 ];
