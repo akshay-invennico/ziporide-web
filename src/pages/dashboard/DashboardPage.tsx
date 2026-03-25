@@ -8,7 +8,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 ">
       {/* Stats Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <StatCard
           title="Total Riders"
           value="12,458"
@@ -35,7 +35,7 @@ export default function DashboardPage() {
         />
         <StatCard
           title="Revenue"
-          value="£56,64,2356.00"
+          value="£56,64,23.00"
           trend="down"
           trendValue="-15%"
           trendLabel="This Week"
@@ -44,7 +44,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Charts area */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-4">
         <RevenueAnalyticsChart />
         <RidersDriversReportChart />
         <TripsChart />

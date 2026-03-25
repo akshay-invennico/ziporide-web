@@ -16,4 +16,8 @@ export const routes = {
   TRANSACTIONS: '/transactions',
   SUPPORT: '/support',
   SETTINGS: '/settings',
+  PRICING_LOGIC: '/settings/pricing-logic',
+  PUSH_NOTIFICATIONS: '/settings/push-notifications',
+  OPERATORS: '/settings/operators',
+  MY_PROFILE: '/my-profile',
 } as const;

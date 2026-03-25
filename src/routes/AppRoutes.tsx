@@ -19,6 +19,11 @@ import TripHistoryPage from '../pages/trips/TripHistoryPage';
 import VehicleInventoryPage from '../pages/vehicle-inventory/VehicleInventoryPage';
 import ApplicationDetailsPage from '../pages/verification/ApplicationDetailsPage';
 import VerificationPage from '../pages/verification/VerificationPage';
+import PricingLogicPage from '../pages/settings/PricingLogicPage';
+import PushNotificationsPage from '../pages/settings/PushNotificationsPage';
+import OperatorsPage from '../pages/settings/OperatorsPage';
+import MyProfilePage from '../pages/MyProfilePage';
+
 
 function ProtectedRoute() {
   const { isAuthenticated } = useAuth();
@@ -56,6 +61,11 @@ export default function AppRoutes() {
             <Route path={routes.INVENTORY} element={<VehicleInventoryPage />} />
             <Route path={routes.TRANSACTIONS} element={<TransactionsPage />} />
             <Route path={routes.SUPPORT} element={<SupportTicketsPage />} />
+            <Route path={routes.SETTINGS} element={<Navigate to={routes.PRICING_LOGIC} replace />} />
+            <Route path={routes.PRICING_LOGIC} element={<PricingLogicPage />} />
+            <Route path={routes.PUSH_NOTIFICATIONS} element={<PushNotificationsPage />} />
+            <Route path={routes.OPERATORS} element={<OperatorsPage />} />
+            <Route path={routes.MY_PROFILE} element={<MyProfilePage />} />
           </Route>
         </Route>
 
