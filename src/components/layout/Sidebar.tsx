@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+
 
 import { routes } from '@/routes/routes';
 
@@ -21,11 +23,37 @@ const navItems = [
     path: routes.SETTINGS,
     icon: '/icons/sidebar/sidebarIcon9.svg',
     hasDropdown: true,
+    subItems: [
+      { name: 'Pricing Logics', path: routes.PRICING_LOGIC, Icon: '/icons/sidebar/sidebarIcon10.svg' },
+      { name: 'Push Notifications', path: routes.PUSH_NOTIFICATIONS, Icon: '/icons/sidebar/sidebarIcon11.svg' },
+      { name: 'Operators', path: routes.OPERATORS, Icon: '/icons/sidebar/sidebarIcon12.svg' },
+    ],
   },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
+  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const initialOpen: Record<string, boolean> = {};
+    navItems.forEach(item => {
+      if (item.subItems && item.subItems.some(sub => location.pathname === sub.path)) {
+        initialOpen[item.name] = false;
+      }
+    });
+    setOpenDropdowns(initialOpen);
+  }, []);
+
+  const toggleDropdown = (name: string, e: React.MouseEvent, hasSubItems: boolean) => {
+    if (hasSubItems) {
+      e.preventDefault();
+      setOpenDropdowns(prev => ({
+        ...prev,
+        [name]: !prev[name]
+      }));
+    }
+  };
 
   return (
     <div className="w-[250px] bg-[#2D2D2D] text-white flex flex-col h-screen fixed top-0 left-0 overflow-y-auto">
@@ -36,48 +64,73 @@ export default function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 space-y-0.5">
+      <nav className="flex-1 px-3 space-y-0.5 mt-2">
         {navItems.map((item) => {
-          const isActive = location.pathname.startsWith(item.path);
+          const isActive = location.pathname === item.path ||
+            (item.subItems && item.subItems.some(sub => location.pathname === sub.path));
+          const isOpen = openDropdowns[item.name];
+
           return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-150 group ${isActive ? 'bg-[#14B8A6] text-white ' : 'text-[#FFFFFF] '
-                }`}
-            >
-              <img
-                src={item.icon}
-                alt={item.name}
-                className="w-[24px] h-[24px]  shrink-0"
-                draggable={false}
-              />
+            <div key={item.name} className="flex flex-col">
+              <Link
+                to={item.path}
+                onClick={(e) => toggleDropdown(item.name, e, !!item.subItems)}
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
+                  }`}
+              >
+                <img
+                  src={item.icon}
+                  alt={item.name}
+                  className="w-[24px] h-[24px] shrink-0"
+                  draggable={false}
+                />
 
-              <span className="font-medium text-[#FFFFFF] flex-1 text-[14px]">{item.name}</span>
+                <span className="font-medium text-[#FFFFFF] flex-1 text-[14px]">{item.name}</span>
 
-              {item.badge && (
-                <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">
-                  {item.badge}
-                </span>
+                {item.badge && (
+                  <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">
+                    {item.badge}
+                  </span>
+                )}
+
+                {item.hasDropdown && (
+                  <img src="/icons/sidebar/dropdown.svg" alt="dropdown" className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                )}
+              </Link>
+
+              {item.subItems && isOpen && (
+                <div className="relative flex flex-col gap-2 mt-2 ml-4 pl-6">
+                  {/* Vertical main branch stalk */}
+                  <div className="absolute left-[11px] top-[-8px] bottom-[28px] w-[2px] bg-white z-0 pointer-events-none"></div>
+
+                  {item.subItems.map((subItem) => {
+                    const isSubActive = location.pathname === subItem.path;
+                    const Icon = subItem.Icon;
+                    return (
+                      <Link
+                        key={subItem.name}
+                        to={subItem.path}
+                        className={`relative z-10 flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150 ${isSubActive
+                          ? 'bg-[#14B8A6] text-white font-medium'
+                          : 'text-[#FFFFFF] font-medium'
+                          }`}
+                      >
+                        {/* Connecting branch curve connecting to the main stalk */}
+                        <div className="absolute left-[-13px] top-[-8px] w-[13px] h-[32px] border-b-2 border-l-2 border-white rounded-bl-[16px] z-[-1] pointer-events-none"></div>
+
+                        {typeof Icon === 'string' ? (
+                          <img src={Icon} alt={subItem.name} className="w-[24px] h-[24px] shrink-0" draggable={false} />
+                        ) : Icon ? (
+                          // @ts-ignore
+                          <Icon className={`w-[24px] h-[24px] shrink-0 ${isSubActive ? 'text-white' : 'text-[#DFE6E5]'}`} strokeWidth={isSubActive ? 2.5 : 2} />
+                        ) : null}
+                        <span className="text-[14px] font-medium text-[#FFFFFF] leading-none">{subItem.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
-
-              {item.hasDropdown && (
-                <svg
-                  className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'
-                    }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              )}
-            </Link>
+            </div>
           );
         })}
       </nav>

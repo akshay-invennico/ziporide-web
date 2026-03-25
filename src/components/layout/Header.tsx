@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/context/useAuth';
 import { routes } from '@/routes/routes';
+import NotificationDropdown from './NotificationDropdown';
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   [routes.DASHBOARD]: {
@@ -38,6 +39,22 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
     title: 'Support Tickets',
     subtitle: 'Manage all the Support Tickets',
   },
+  [routes.PRICING_LOGIC]: {
+    title: 'Pricing Logic',
+    subtitle: 'Configure fare calculation and pricing rules',
+  },
+  [routes.PUSH_NOTIFICATIONS]: {
+    title: 'Push Notifications',
+    subtitle: 'Manage notification settings and send custom alerts'
+  },
+  [routes.OPERATORS]: {
+    title: 'Operators Management',
+    subtitle: 'Oversee operators and manage their permissions'
+  },
+  [routes.MY_PROFILE]: {
+    title: 'Admin Profile',
+    subtitle: 'Manage your profile settings'
+  }
 };
 
 export default function Header() {
@@ -45,12 +62,17 @@ export default function Header() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setIsNotificationOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -81,11 +103,17 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-5">
-        <img
-          src="/icons/bellIcon.svg"
-          alt="bellIcon"
-          className="w-[44px] h-[44px] cursor-pointer"
-        />
+        <div className="relative" ref={notificationRef}>
+          <img
+            src="/icons/bellIcon.svg"
+            alt="bellIcon"
+            className="w-[44px] h-[44px] cursor-pointer"
+            onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+          />
+          <NotificationDropdown 
+            isOpen={isNotificationOpen} 
+          />
+        </div>
 
         <div className="relative" ref={dropdownRef}>
           <div
@@ -104,11 +132,11 @@ export default function Header() {
           </div>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-3 w-[200px] bg-white shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] rounded-lg py-2 z-50 overflow-hidden">
+            <div className="absolute right-0 mt-3 w-[160px] h-[96px] bg-white shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] rounded-lg py-2 z-50 overflow-hidden">
               <button
                 onClick={() => {
                   setIsDropdownOpen(false);
-                  navigate(routes.SETTINGS);
+                  navigate(routes.MY_PROFILE);
                 }}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] font-medium text-[#4E616A] cursor-pointer"
               >

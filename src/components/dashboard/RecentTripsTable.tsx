@@ -1,4 +1,8 @@
 import { ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import TripDetailsModal from '../ui/TripDetailsModal';
+import CancelRideModal from '../ui/CancelRideModal';
+import { tripHistoryData, type TripRecord } from '../../data/TripHistoryData';
 
 const dummyTrips = [
   {
@@ -76,8 +80,27 @@ const dummyTrips = [
 ];
 
 export default function RecentTripsTable() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
+
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
+
+  const handleViewDetails = (tripId: string) => {
+    const fullTrip = tripHistoryData.find((t) => t.id === tripId);
+    if (fullTrip) {
+      setSelectedTrip(fullTrip);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCancelClick = (status: string) => {
+    setCancelMode(status === 'In Progress' ? 'force-end' : 'cancel');
+    setIsCancelModalOpen(true);
+  };
+
   return (
-    <div className="bg-white rounded-lg border border-[#DFE6E5] col-span-1 lg:col-span-2 xl:col-span-4 overflow-hidden mt-3">
+    <div className="bg-white rounded-lg border border-[#DFE6E5] col-span-1 lg:col-span-2 xl:col-span-4 overflow-hidden mt-1">
       <div className="p-5 lg:p-6 border-b border-[#DFE6E5]">
         <h3 className="text-[20px] font-semibold text-[#000000]">Recent Trips</h3>
       </div>
@@ -161,30 +184,28 @@ export default function RecentTripsTable() {
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                        trip.status === 'Completed'
-                          ? 'bg-[#00A63E]'
-                          : trip.status === 'In Progress'
-                            ? 'bg-[#F6921E]'
-                            : trip.status === 'Assigned'
-                              ? 'bg-[#1DAFA1]'
-                              : trip.status === 'Cancelled'
-                                ? 'bg-[#FF0707]'
-                                : 'bg-[#6B7280]'
-                      }`}
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${trip.status === 'Completed'
+                        ? 'bg-[#00A63E]'
+                        : trip.status === 'In Progress'
+                          ? 'bg-[#F6921E]'
+                          : trip.status === 'Assigned'
+                            ? 'bg-[#1DAFA1]'
+                            : trip.status === 'Cancelled'
+                              ? 'bg-[#FF0707]'
+                              : 'bg-[#6B7280]'
+                        }`}
                     />
                     <span
-                      className={`font-semibold text-[12px] ${
-                        trip.status === 'Completed'
-                          ? 'text-[#00A63E]'
-                          : trip.status === 'In Progress'
-                            ? 'text-[#F6921E]'
-                            : trip.status === 'Assigned'
-                              ? 'text-[#1DAFA1]'
-                              : trip.status === 'Cancelled'
-                                ? 'text-[#FF0707]'
-                                : 'text-[#6B7280]'
-                      }`}
+                      className={`font-semibold text-[12px] ${trip.status === 'Completed'
+                        ? 'text-[#00A63E]'
+                        : trip.status === 'In Progress'
+                          ? 'text-[#F6921E]'
+                          : trip.status === 'Assigned'
+                            ? 'text-[#1DAFA1]'
+                            : trip.status === 'Cancelled'
+                              ? 'text-[#FF0707]'
+                              : 'text-[#6B7280]'
+                        }`}
                     >
                       {trip.status}
                     </span>
@@ -196,22 +217,55 @@ export default function RecentTripsTable() {
 
                 {/* Action */}
                 <td className="px-4 py-3.5">
-                  <button className="flex justify-center gap-3 font-medium text-[14px] text-[#1DAFA1] cursor-pointer transition-colors">
-                    <img src="/icons/dashboard/view.svg" alt="view" className="w-[20px] h-[20px]" />
-                    {trip.status !== 'Completed' && (
+                  <div className="flex justify-start gap-3">
+                    <button
+                      onClick={() => handleViewDetails(trip.id)}
+                      className="font-medium text-[14px] text-[#1DAFA1] cursor-pointer transition-colors"
+                    >
                       <img
-                        src="/icons/dashboard/cancel.svg"
-                        alt="cancel"
+                        src="/icons/dashboard/view.svg"
+                        alt="view"
                         className="w-[20px] h-[20px]"
                       />
+                    </button>
+                    {trip.status !== 'Completed' && trip.status !== 'Cancelled' && (
+                      <button
+                        onClick={() => handleCancelClick(trip.status)}
+                        className="cursor-pointer"
+                      >
+                        <img
+                          src="/icons/dashboard/cancel.svg"
+                          alt="cancel"
+                          className="w-[20px] h-[20px]"
+                        />
+                      </button>
                     )}
-                  </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <TripDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        trip={selectedTrip}
+      />
+
+      <CancelRideModal
+        isOpen={isCancelModalOpen}
+        mode={cancelMode}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={(reason, details) => {
+          console.log(`${cancelMode === 'force-end' ? 'Force End' : 'Cancellation'} confirmed:`, {
+            reason,
+            details,
+          });
+          setIsCancelModalOpen(false);
+        }}
+      />
     </div>
   );
 }
