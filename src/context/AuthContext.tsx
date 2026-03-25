@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
 import type { AuthState, AuthUser } from '@/types/auth.types';
@@ -12,6 +13,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const getInitialState = (): AuthState => {
   const token = localStorage.getItem('token');
   const userStr = localStorage.getItem('user');
+
   if (token && userStr) {
     try {
       return { user: JSON.parse(userStr), token, isAuthenticated: true };
@@ -39,7 +41,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, setAuth, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ ...authState, setAuth, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 

@@ -29,7 +29,7 @@ export const useAuthData = () => {
     setIsLoading(true);
     try {
       const { data } = await apiClient.post<LoginResponse>(API.LOGIN, payload);
-      setAuth(data.user, data.token);
+      setAuth(data.data.user, data.data.tokens.access.token);
       showToast('Login successful!', 'success');
       navigate(routes.DASHBOARD);
     } catch (err) {

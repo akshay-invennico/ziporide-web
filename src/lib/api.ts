@@ -17,4 +17,7 @@ export const API = {
 
   TRIPS: '/trips',
   TRIP_DETAILS: (id: string) => `/trips/${id}`,
+
+  VEHICLE_CATEGORIES: '/inventory/categories',
+  UPDATE_CATEGORY: (id: string) => `/inventory/categories/${id}`,
 } as const;

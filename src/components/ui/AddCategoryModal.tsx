@@ -1,13 +1,23 @@
-import React, { useRef, useState, useEffect } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { X } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import * as Yup from 'yup';
+
+import type { VehicleCategory } from '@/types/vehicle.types';
 
 interface AddCategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm?: (values: any) => void;
-  initialData?: any;
+  onConfirm?: (values: {
+    categoryName: string;
+    baseFare: string;
+    pricePerMile: string;
+    pricePerMinute: string;
+    vehicleType: string;
+    seatCapacity: string;
+    categoryIcon: File | string | null;
+  }) => void;
+  initialData?: VehicleCategory | null;
 }
 
 const InputWrapper = ({
@@ -31,7 +41,7 @@ const InputWrapper = ({
       </label>
       {infoText && (
         <div className="flex items-center gap-1.5 opacity-70">
-          <img src="/icons/vehicle/info.svg" alt="info" className='w-[15px] h-[15px]' />
+          <img src="/icons/vehicle/info.svg" alt="info" className="w-[15px] h-[15px]" />
           <span className="text-[12px] font-medium text-[#4E616A]">{infoText}</span>
         </div>
       )}
@@ -47,7 +57,7 @@ const CustomDropdown = ({
   onChange,
   onBlur,
   placeholder,
-  hasError
+  hasError,
 }: {
   options: { label: string; value: string }[];
   value: string;
@@ -81,9 +91,17 @@ const CustomDropdown = ({
         <span>{value || placeholder}</span>
         <svg
           className={`w-[12px] h-[8px] text-[#4E616A] transition-transform absolute right-4 top-1/2 -translate-y-1/2 ${isOpen ? 'rotate-180' : ''}`}
-          viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 12 8"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path
+            d="M1 1.5L6 6.5L11 1.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </div>
 
@@ -107,7 +125,12 @@ const CustomDropdown = ({
   );
 };
 
-const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, onConfirm, initialData }) => {
+const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  initialData,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isEditing = !!initialData;
 
@@ -127,18 +150,18 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
       .required('Required'),
     vehicleType: Yup.string().required('Required'),
     seatCapacity: Yup.string().required('Required'),
-    categoryIcon: isEditing ? Yup.mixed() : Yup.mixed().required('Required'),
+    categoryIcon: Yup.mixed().required('Required'),
   });
 
   const formik = useFormik({
     initialValues: {
       categoryName: initialData?.name || '',
       baseFare: initialData?.basePrice?.toString() || '',
-      pricePerMile: '',
-      pricePerMinute: '',
-      vehicleType: '',
+      pricePerMile: initialData?.pricePerMile?.toString() || '',
+      pricePerMinute: initialData?.pricePerMinute?.toString() || '',
+      vehicleType: initialData?.vehicleType || '',
       seatCapacity: initialData?.seats ? `${initialData.seats} Seats` : '',
-      categoryIcon: null as File | null,
+      categoryIcon: initialData?.image || (null as File | string | null),
     },
     enableReinitialize: true,
     validationSchema,
@@ -148,17 +171,19 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
       if (onConfirm) {
         onConfirm(values);
       } else {
-        console.log('Form Submitted', values);
         formik.resetForm();
         onClose();
       }
     },
   });
 
-  // Derived state to show a preview if there's a file, or the existing image if editing
-  const previewUrl = formik.values.categoryIcon
-    ? URL.createObjectURL(formik.values.categoryIcon)
-    : (initialData?.image || null);
+  // Derived state to show a preview
+  const previewUrl =
+    typeof formik.values.categoryIcon === 'string'
+      ? formik.values.categoryIcon
+      : formik.values.categoryIcon instanceof File
+        ? URL.createObjectURL(formik.values.categoryIcon)
+        : null;
 
   if (!isOpen) return null;
 
@@ -169,7 +194,11 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#DFE6E5] shrink-0">
           <div className="flex items-center gap-4">
             <div className="w-[58px] h-[58px] bg-[#EEFFFD] rounded-full flex items-center justify-center overflow-hidden">
-              <img src="/icons/vehicle/createCar.svg" alt="add" className="w-[70%] h-[70%] object-contain" />
+              <img
+                src="/icons/vehicle/createCar.svg"
+                alt="add"
+                className="w-[70%] h-[70%] object-contain"
+              />
             </div>
             <div className="flex flex-col">
               <h2 className="text-[18px] font-semibold text-[#000000] font-inter">
@@ -200,8 +229,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
                 value={formik.values.categoryName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`w-full border ${formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
-                  } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
+                className={`w-full border ${
+                  formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
+                } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
               />
             </InputWrapper>
 
@@ -217,8 +247,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
                 value={formik.values.baseFare}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`w-full border ${formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
-                  } rounded-md p-3 text-[14px] text-[#000000] font-medium  placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
+                className={`w-full border ${
+                  formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
+                } rounded-md p-3 text-[14px] text-[#000000] font-medium  placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
               />
             </InputWrapper>
 
@@ -234,8 +265,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
                 value={formik.values.pricePerMile}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`w-full border ${formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
-                  } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
+                className={`w-full border ${
+                  formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
+                } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
               />
             </InputWrapper>
 
@@ -251,16 +283,13 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
                 value={formik.values.pricePerMinute}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`w-full border ${formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
-                  } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
+                className={`w-full border ${
+                  formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
+                } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
               />
             </InputWrapper>
 
-            <InputWrapper
-              label="Vehicle Type"
-              required
-              error={formik.errors.vehicleType as string}
-            >
+            <InputWrapper label="Vehicle Type" required error={formik.errors.vehicleType as string}>
               <CustomDropdown
                 options={[
                   { label: 'Car', value: 'Car' },
@@ -313,7 +342,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
                     }}
                     className="absolute top-[-8px] right-[-8px] w-6 h-6 bg-[#333333] rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-black"
                   >
-                    <X className='w-[20px] h-[20px]' />
+                    <X className="w-[20px] h-[20px]" />
                   </button>
                 </div>
               ) : (
@@ -337,7 +366,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({ isOpen, onClose, on
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-[14px] font-medium text-[#000000]">Click to upload</span>
-                    <span className="text-[10px] font-medium text-[#4E616A]">JPG or PNG (Max 2MB)</span>
+                    <span className="text-[10px] font-medium text-[#4E616A]">
+                      JPG or PNG (Max 2MB)
+                    </span>
                   </div>
                 </div>
               )}
