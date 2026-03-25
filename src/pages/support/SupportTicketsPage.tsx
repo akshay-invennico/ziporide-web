@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+
+import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
 import { supportTicketsData } from '../../data/SupportTicketsData';
 import type { SupportTicket } from '../../data/SupportTicketsData';
-import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
 
 
 const SupportTicketsPage: React.FC = () => {

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+
+import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
 import { transactionsData } from '../../data/TransactionsData';
 import type { TransactionRecord } from '../../data/TransactionsData';
-import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
 
 const TransactionsPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<'All' | 'Pay-in' | 'Payout' | 'Refund'>('All');

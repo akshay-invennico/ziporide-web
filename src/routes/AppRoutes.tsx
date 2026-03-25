@@ -13,12 +13,12 @@ import DriverDetailsPage from '../pages/driver/driver-details/DriverDetailsPage'
 import DriverPage from '../pages/driver/DriverPage';
 import RiderDetailsPage from '../pages/rider/rider-details/RiderDetailsPage';
 import RiderPage from '../pages/rider/RiderPage';
+import SupportTicketsPage from '../pages/support/SupportTicketsPage';
+import TransactionsPage from '../pages/transactions/TransactionsPage';
 import TripHistoryPage from '../pages/trips/TripHistoryPage';
 import VehicleInventoryPage from '../pages/vehicle-inventory/VehicleInventoryPage';
 import ApplicationDetailsPage from '../pages/verification/ApplicationDetailsPage';
 import VerificationPage from '../pages/verification/VerificationPage';
-import TransactionsPage from '../pages/transactions/TransactionsPage';
-import SupportTicketsPage from '../pages/support/SupportTicketsPage';
 
 function ProtectedRoute() {
   const { isAuthenticated } = useAuth();

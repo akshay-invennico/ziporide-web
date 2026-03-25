@@ -1,5 +1,6 @@
-import React from 'react';
 import { X, Copy } from 'lucide-react';
+import React from 'react';
+
 import type { SupportTicket } from '../../data/SupportTicketsData';
 
 interface TicketDetailsModalProps {

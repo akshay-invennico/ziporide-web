@@ -1,8 +1,8 @@
 import { ChevronDown } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/context/useAuth';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import { useAuth } from '@/context/useAuth';
 import { routes } from '@/routes/routes';
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
