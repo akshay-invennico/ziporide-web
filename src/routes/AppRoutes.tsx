@@ -13,6 +13,8 @@ import DriverDetailsPage from '../pages/driver/driver-details/DriverDetailsPage'
 import DriverPage from '../pages/driver/DriverPage';
 import RiderDetailsPage from '../pages/rider/rider-details/RiderDetailsPage';
 import RiderPage from '../pages/rider/RiderPage';
+import SupportTicketsPage from '../pages/support/SupportTicketsPage';
+import TransactionsPage from '../pages/transactions/TransactionsPage';
 import TripHistoryPage from '../pages/trips/TripHistoryPage';
 import VehicleInventoryPage from '../pages/vehicle-inventory/VehicleInventoryPage';
 import ApplicationDetailsPage from '../pages/verification/ApplicationDetailsPage';
@@ -52,6 +54,8 @@ export default function AppRoutes() {
             <Route path={routes.VERIFICATION_DETAILS} element={<ApplicationDetailsPage />} />
             <Route path={routes.TRIPS} element={<TripHistoryPage />} />
             <Route path={routes.INVENTORY} element={<VehicleInventoryPage />} />
+            <Route path={routes.TRANSACTIONS} element={<TransactionsPage />} />
+            <Route path={routes.SUPPORT} element={<SupportTicketsPage />} />
           </Route>
         </Route>
 

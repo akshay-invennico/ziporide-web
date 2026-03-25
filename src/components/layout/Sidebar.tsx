@@ -14,11 +14,12 @@ const navItems = [
   },
   { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
   { name: 'Vehicle Inventory', path: routes.INVENTORY, icon: '/icons/sidebar/sidebarIcon6.svg' },
-  { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon7.svg' },
+  { name: 'Transactions', path: routes.TRANSACTIONS, icon: '/icons/sidebar/sidebarIcon7.svg' },
+  { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon8.svg' },
   {
     name: 'Settings',
     path: routes.SETTINGS,
-    icon: '/icons/sidebar/sidebarIcon8.svg',
+    icon: '/icons/sidebar/sidebarIcon9.svg',
     hasDropdown: true,
   },
 ];
@@ -42,9 +43,8 @@ export default function Sidebar() {
             <Link
               key={item.name}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-150 group ${
-                isActive ? 'bg-[#14B8A6] text-white ' : 'text-[#FFFFFF] '
-              }`}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-150 group ${isActive ? 'bg-[#14B8A6] text-white ' : 'text-[#FFFFFF] '
+                }`}
             >
               <img
                 src={item.icon}
@@ -63,9 +63,8 @@ export default function Sidebar() {
 
               {item.hasDropdown && (
                 <svg
-                  className={`w-3.5 h-3.5 transition-colors ${
-                    isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'
-                  }`}
+                  className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
