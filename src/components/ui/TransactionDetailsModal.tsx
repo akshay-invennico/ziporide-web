@@ -24,7 +24,11 @@ interface TransactionDetailsModalProps {
   transaction: TransactionRecord | null;
 }
 
-const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({ isOpen, onClose, transaction }) => {
+const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
+  isOpen,
+  onClose,
+  transaction,
+}) => {
   if (!isOpen || !transaction) return null;
 
   const handleCopy = (text: string) => {
@@ -65,15 +69,29 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({ isOpe
   };
 
   const formatAmount = (amount: number, type: string) => {
-    const isPositive = ['Ride Payment', 'Subscription Payment', 'Cancellation Fee', 'No-Show Fee', 'Driver Incentive'].includes(type) && amount > 0;
+    const isPositive =
+      [
+        'Ride Payment',
+        'Subscription Payment',
+        'Cancellation Fee',
+        'No-Show Fee',
+        'Driver Incentive',
+      ].includes(type) && amount > 0;
     const sign = isPositive ? '+' : '-';
     const absAmount = Math.abs(amount).toFixed(2);
     const color = isPositive ? 'text-[#1DAFA1]' : 'text-[#FF0707]';
-    return <span className={`text-[16px] font-semibold ${color}`}>{sign} £{absAmount}</span>;
+    return (
+      <span className={`text-[16px] font-semibold ${color}`}>
+        {sign} £{absAmount}
+      </span>
+    );
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="bg-white rounded-xl w-full max-w-[800px] flex flex-col overflow-hidden shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#DFE6E5]">
@@ -91,7 +109,10 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({ isOpe
               <div className="flex items-center gap-2">
                 <span className="text-[14px] font-medium text-[#4E616A]">Transaction ID:</span>
                 <span className="text-[14px] font-semibold text-[#1DAFA1]">{transaction.id}</span>
-                <button onClick={() => handleCopy(transaction.id)} className="p-1  rounded cursor-pointer">
+                <button
+                  onClick={() => handleCopy(transaction.id)}
+                  className="p-1  rounded cursor-pointer"
+                >
                   <Copy className="w-4 h-4 text-[#1DAFA1]" />
                 </button>
               </div>
@@ -119,11 +140,15 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({ isOpe
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-[#747C84]">Payment Method</span>
-              <span className="text-[14px] font-medium text-[#1DAFA1]">{transaction.paymentMethod || 'N/A'}</span>
+              <span className="text-[14px] font-medium text-[#1DAFA1]">
+                {transaction.paymentMethod || 'N/A'}
+              </span>
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-[#747C84]">External Payment ID</span>
-              <span className="text-[14px] font-medium text-[#1DAFA1]">{transaction.externalId || 'N/A'}</span>
+              <span className="text-[14px] font-medium text-[#1DAFA1]">
+                {transaction.externalId || 'N/A'}
+              </span>
             </div>
 
             {/* For most types (except Subscription), show Trip ID */}
@@ -131,9 +156,14 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({ isOpe
               <div className="flex flex-col gap-1.5 col-span-2">
                 <span className="text-[12px] font-medium text-[#747C84]">Trip ID</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-medium text-[#1DAFA1]">{transaction.tripId || 'N/A'}</span>
+                  <span className="text-[14px] font-medium text-[#1DAFA1]">
+                    {transaction.tripId || 'N/A'}
+                  </span>
                   {transaction.tripId && transaction.tripId !== 'N/A' && (
-                    <button onClick={() => handleCopy(transaction.tripId!)} className="p-1 hover:bg-gray-50 rounded cursor-pointer">
+                    <button
+                      onClick={() => handleCopy(transaction.tripId!)}
+                      className="p-1 hover:bg-gray-50 rounded cursor-pointer"
+                    >
                       <Copy className="w-4 h-4 text-[#1DAFA1]" />
                     </button>
                   )}
@@ -142,7 +172,9 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({ isOpe
             )}
 
             {/* Show Driver/Receiver Info for Subscription, Refund, or Driver Payout */}
-            {(transaction.type === 'Subscription Payment' || transaction.type === 'Refund' || transaction.type === 'Driver Payout') && (
+            {(transaction.type === 'Subscription Payment' ||
+              transaction.type === 'Refund' ||
+              transaction.type === 'Driver Payout') && (
               <div className="flex flex-col gap-1.5 col-span-2">
                 <span className="text-[12px] font-medium text-[#667085]">
                   {transaction.type === 'Refund' ? 'Receiver Info' : 'Driver Info'}
@@ -159,7 +191,9 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({ isOpe
                     <span className="text-[14px] font-semibold text-[#101828]">
                       {transaction.driver?.name || 'Unknown User'}
                     </span>
-                    <span className="text-[12px] text-[#1DAFA1] font-medium">{transaction.driver?.id || 'N/A'}</span>
+                    <span className="text-[12px] text-[#1DAFA1] font-medium">
+                      {transaction.driver?.id || 'N/A'}
+                    </span>
                   </div>
                 </div>
               </div>

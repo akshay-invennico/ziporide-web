@@ -1,54 +1,31 @@
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
+import { useToast } from '@/context/useToast';
+import { useFileUpload } from '@/hooks/useFileUpload';
+import { useVehicleCategories } from '@/hooks/useVehicleCategories';
+import type { VehicleCategory } from '@/types/vehicle.types';
+
 import AddCategoryModal from '../../components/ui/AddCategoryModal';
 import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
 import { vehicleDatabaseData } from '../../data/VehicleDatabaseData';
 
-const vehicleCategories = [
-  {
-    id: 1,
-    name: 'Electric',
-    seats: 4,
-    basePrice: 10.99,
-    image: '/icons/vehicle/1.png',
-  },
-  {
-    id: 2,
-    name: 'Standard',
-    seats: 4,
-    basePrice: 10.99,
-    image: '/icons/vehicle/2.png',
-  },
-  {
-    id: 3,
-    name: 'XL',
-    seats: 6,
-    basePrice: 10.99,
-    image: '/icons/vehicle/3.png',
-  },
-  {
-    id: 4,
-    name: 'Executive (Premium)',
-    seats: 6,
-    basePrice: 10.99,
-    image: '/icons/vehicle/4.png',
-  },
-  {
-    id: 5,
-    name: 'Executive XL (Premium)',
-    seats: 6,
-    basePrice: 10.99,
-    image: '/icons/vehicle/5.png',
-  },
-];
-
 const VehicleInventoryPage: React.FC = () => {
+  const {
+    categories: vehicleCategories,
+    loading,
+    error,
+    updateCategory,
+    createCategory,
+    removeCategory,
+  } = useVehicleCategories();
+  const { uploadImage } = useFileUpload();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'category' | 'database'>('category');
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-  const [categoryToRemove, setCategoryToRemove] = useState<number | null>(null);
+  const [categoryToRemove, setCategoryToRemove] = useState<string | number | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [categoryToEdit, setCategoryToEdit] = useState<any | null>(null);
+  const [categoryToEdit, setCategoryToEdit] = useState<VehicleCategory | null>(null);
 
   // Pagination and search for database tab
   const [searchQuery, setSearchQuery] = useState('');
@@ -93,17 +70,26 @@ const VehicleInventoryPage: React.FC = () => {
     }
   };
 
-  const handleRemoveClick = (id: number) => {
+  const handleRemoveClick = (id: string | number) => {
     setCategoryToRemove(id);
     setIsRemoveModalOpen(true);
   };
 
-  const handleConfirmRemove = () => {
-    // In a real app, you would make an API call here to remove the category
-    console.log(`Removing category with ID: ${categoryToRemove}`);
-    setIsRemoveModalOpen(false);
-    setCategoryToRemove(null);
+  const handleConfirmRemove = async () => {
+    if (categoryToRemove) {
+      try {
+        await removeCategory(categoryToRemove as string);
+        setIsRemoveModalOpen(false);
+        setCategoryToRemove(null);
+        showToast('Category removed successfully', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to remove category', 'error');
+      }
+    }
   };
+
+  // const handleToggleStatus = (id: number) => {};
 
   return (
     <div className="flex flex-col bg-white p-1">
@@ -151,91 +137,99 @@ const VehicleInventoryPage: React.FC = () => {
           </div>
 
           {/* Grid of Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {vehicleCategories.map((cat) => (
-              <div
-                key={cat.id}
-                className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-[390px] h-[160px]"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <img
-                      src={cat.image}
-                      alt={cat.name}
-                      className="w-[130px] h-[130px] object-contain mb-4"
-                      onError={(e) => {
-                        // Fallback if image not found
-                        e.currentTarget.src =
-                          'https://img.freepik.com/free-vector/white-sedan-car-isolated-white-background_1308-100223.jpg';
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1 ml-1 pt-1">
-                    <h3 className="text-[18px] font-semibold text-[#000000] mb-4">{cat.name}</h3>
+          {loading ? (
+            <div className="flex justify-center items-center h-40">Loading...</div>
+          ) : error ? (
+            <div>Error: {error}</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vehicleCategories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-[390px] h-[160px]"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <img
+                        src={cat.categoryIcon}
+                        alt={cat.name}
+                        className="w-[130px] h-[130px] object-contain mb-4"
+                        onError={(e) => {
+                          // Fallback if image not found
+                          e.currentTarget.src =
+                            'https://img.freepik.com/free-vector/white-sedan-car-isolated-white-background_1308-100223.jpg';
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 ml-1 pt-1">
+                      <h3 className="text-[18px] font-semibold text-[#000000] mb-4">{cat.name}</h3>
 
-                    <div className="flex flex-col gap-2">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[12px] text-[#4E616A] font-medium">Seats</span>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="/icons/vehicle/seats.svg"
-                              alt="seats"
-                              className="w-[22px] h-[22px]"
-                            />
-                            <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">
-                              {cat.seats} Seats
+                      <div className="flex flex-col gap-2">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[12px] text-[#4E616A] font-medium">Seats</span>
+                            <div className="flex items-center gap-2">
+                              <img
+                                src="/icons/vehicle/seats.svg"
+                                alt="seats"
+                                className="w-[22px] h-[22px]"
+                              />
+                              <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">
+                                {cat.seats} Seats
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[12px] text-[#4E616A] font-medium">
+                              Base Price
                             </span>
+                            <div className="flex items-center gap-2">
+                              <img
+                                src="/icons/vehicle/amount.svg"
+                                alt="amount"
+                                className="w-[22px] h-[22px]"
+                              />
+                              <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">
+                                £{cat.basePrice}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[12px] text-[#4E616A] font-medium">Base Price</span>
-                          <div className="flex items-center gap-2">
+
+                        <div className="flex items-center gap-6 mt-1">
+                          <button
+                            onClick={() => handleRemoveClick(cat.id)}
+                            className="flex cursor-pointer items-center gap-1.5 text-[#FF0707] text-[14px] font-medium"
+                          >
                             <img
-                              src="/icons/vehicle/amount.svg"
-                              alt="amount"
+                              src="/icons/vehicle/remove.svg"
+                              alt="remove"
                               className="w-[22px] h-[22px]"
                             />
-                            <span className="text-[14px] font-medium text-[#000000] whitespace-nowrap">
-                              £{cat.basePrice}
-                            </span>
-                          </div>
+                            Remove
+                          </button>
+                          <button
+                            onClick={() => {
+                              setCategoryToEdit(cat);
+                              setIsAddModalOpen(true);
+                            }}
+                            className="flex cursor-pointer items-center gap-1.5 text-[#1DAFA1] text-[14px] font-medium"
+                          >
+                            <img
+                              src="/icons/vehicle/edit.svg"
+                              alt="edit"
+                              className="w-[22px] h-[22px]"
+                            />
+                            Edit
+                          </button>
                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-6 mt-1">
-                        <button
-                          onClick={() => handleRemoveClick(cat.id)}
-                          className="flex cursor-pointer items-center gap-1.5 text-[#FF0707] text-[14px] font-medium"
-                        >
-                          <img
-                            src="/icons/vehicle/remove.svg"
-                            alt="remove"
-                            className="w-[22px] h-[22px]"
-                          />
-                          Remove
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCategoryToEdit(cat);
-                            setIsAddModalOpen(true);
-                          }}
-                          className="flex cursor-pointer items-center gap-1.5 text-[#1DAFA1] text-[14px] font-medium"
-                        >
-                          <img
-                            src="/icons/vehicle/edit.svg"
-                            alt="edit"
-                            className="w-[22px] h-[22px]"
-                          />
-                          Edit
-                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex flex-col bg-white rounded-lg border border-[#DFE6E5]">
@@ -432,8 +426,42 @@ const VehicleInventoryPage: React.FC = () => {
           setCategoryToEdit(null);
         }}
         initialData={categoryToEdit}
-        onConfirm={(values) => {
-          console.log(categoryToEdit ? 'Updated category data:' : 'New category data:', values);
+        onConfirm={async (values) => {
+          let iconString = values.categoryIcon;
+
+          if (iconString instanceof File) {
+            try {
+              // The backend provides the uploaded image S3 URL as a string
+              iconString = await uploadImage(iconString as File);
+            } catch (error) {
+              console.error(error);
+              showToast(
+                error instanceof Error ? error.message : 'Image upload failed. Please try again.',
+                'error',
+              );
+              return;
+            }
+          }
+
+          const payload: Partial<VehicleCategory> = {
+            name: values.categoryName,
+            basePrice: parseFloat(values.baseFare),
+            pricePerMile: parseFloat(values.pricePerMile),
+            pricePerMinute: parseFloat(values.pricePerMinute),
+            seats: parseInt(values.seatCapacity.split(' ')[0]),
+            vehicleType: values.vehicleType,
+          };
+
+          if (iconString) {
+            payload.categoryIcon = iconString as string;
+          }
+
+          if (categoryToEdit) {
+            await updateCategory(categoryToEdit.id, payload);
+          } else {
+            await createCategory(payload);
+          }
+
           setIsAddModalOpen(false);
           setCategoryToEdit(null);
         }}

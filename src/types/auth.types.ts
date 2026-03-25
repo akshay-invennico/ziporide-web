@@ -10,9 +10,21 @@ export interface AuthUser {
   role: string;
 }
 
-export interface LoginResponse {
-  user: AuthUser;
+export interface TokenDetails {
   token: string;
+  expires: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  data: {
+    tokens: {
+      access: TokenDetails;
+      refresh: TokenDetails;
+    };
+    user: AuthUser;
+  };
 }
 
 export interface AuthState {

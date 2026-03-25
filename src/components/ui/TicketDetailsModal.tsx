@@ -10,7 +10,12 @@ interface TicketDetailsModalProps {
   onStatusChange?: (id: string, newStatus: SupportTicket['status']) => void;
 }
 
-const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({ isOpen, onClose, ticket, onStatusChange }) => {
+const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
+  isOpen,
+  onClose,
+  ticket,
+  onStatusChange,
+}) => {
   if (!isOpen || !ticket) return null;
 
   const handleCopy = (text: string) => {
@@ -26,12 +31,18 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({ isOpen, onClose
   const colors = statusColors[ticket.status];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="bg-white rounded-xl w-full max-w-[800px] flex flex-col overflow-hidden shadow-xl animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#DFE6E5]">
           <h2 className="text-[18px] font-semibold text-[#000000]">Ticket Details</h2>
-          <button onClick={onClose} className="p-1 rounded-full transition-colors cursor-pointer hover:bg-gray-100">
+          <button
+            onClick={onClose}
+            className="p-1 rounded-full transition-colors cursor-pointer hover:bg-gray-100"
+          >
             <X className="w-5 h-5 text-[#4E616A]" />
           </button>
         </div>
@@ -44,7 +55,10 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({ isOpen, onClose
               <div className="flex items-center gap-2">
                 <span className="text-[14px] font-medium text-[#4E616A]">Ticket ID:</span>
                 <span className="text-[14px] font-semibold text-[#1DAFA1]">{ticket.id}</span>
-                <button onClick={() => handleCopy(ticket.id)} className="p-1 rounded cursor-pointer hover:bg-gray-50">
+                <button
+                  onClick={() => handleCopy(ticket.id)}
+                  className="p-1 rounded cursor-pointer hover:bg-gray-50"
+                >
                   <Copy className="w-4 h-4 text-[#1DAFA1]" />
                 </button>
               </div>
@@ -71,7 +85,10 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({ isOpen, onClose
               <div className="flex items-center gap-2">
                 <span className="text-[12px] font-medium text-[#4E616A]">Trip ID: </span>
                 <span className="text-[14px] font-medium text-[#1DAFA1]">{ticket.tripId}</span>
-                <button onClick={() => handleCopy(ticket.tripId)} className="p-1 rounded cursor-pointer hover:bg-gray-50">
+                <button
+                  onClick={() => handleCopy(ticket.tripId)}
+                  className="p-1 rounded cursor-pointer hover:bg-gray-50"
+                >
                   <Copy className="w-4 h-4 text-[#1DAFA1]" />
                 </button>
               </div>

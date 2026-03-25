@@ -58,12 +58,8 @@ export default function Header() {
   }, []);
 
   const getPageTitle = () => {
-    const match = Object.entries(PAGE_TITLES).find(([path]) =>
-      location.pathname.startsWith(path)
-    );
-    return match
-      ? match[1]
-      : { title: 'Admin Panel', subtitle: 'Manage your platform here.' };
+    const match = Object.entries(PAGE_TITLES).find(([path]) => location.pathname.startsWith(path));
+    return match ? match[1] : { title: 'Admin Panel', subtitle: 'Manage your platform here.' };
   };
 
   const { title, subtitle } = getPageTitle();
@@ -98,8 +94,9 @@ export default function Header() {
               className="w-10 h-10 rounded-full"
             />
             <ChevronDown
-              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
-                }`}
+              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${
+                isDropdownOpen ? 'rotate-180' : ''
+              }`}
             />
           </div>
 
@@ -112,11 +109,7 @@ export default function Header() {
                 }}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] font-medium text-[#4E616A] cursor-pointer"
               >
-                <img
-                  src="/icons/profile.svg"
-                  alt="profile"
-                  className="w-[22px] h-[22px]"
-                />
+                <img src="/icons/profile.svg" alt="profile" className="w-[22px] h-[22px]" />
                 My Profile
               </button>
 
@@ -127,11 +120,7 @@ export default function Header() {
                 }}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] font-medium text-[#4E616A] cursor-pointer"
               >
-                <img
-                  src="/icons/log.svg"
-                  alt="logout"
-                  className="w-[22px] h-[22px]"
-                />
+                <img src="/icons/log.svg" alt="logout" className="w-[22px] h-[22px]" />
                 Log out
               </button>
             </div>

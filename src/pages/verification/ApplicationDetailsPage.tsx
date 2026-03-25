@@ -549,7 +549,7 @@ const ApplicationDetailsPage = () => {
         isOpen={isRejectVerificationModalOpen}
         onClose={() => setIsRejectVerificationModalOpen(false)}
         onConfirm={(reasons, note) => {
-          console.log('Rejected with reasons:', reasons, 'and note:', note);
+          console.warn('Rejected with reasons:', reasons, 'and note:', note);
         }}
       />
     </div>

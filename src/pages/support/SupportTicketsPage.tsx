@@ -5,7 +5,6 @@ import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
 import { supportTicketsData } from '../../data/SupportTicketsData';
 import type { SupportTicket } from '../../data/SupportTicketsData';
 
-
 const SupportTicketsPage: React.FC = () => {
   const [tickets, setTickets] = useState<SupportTicket[]>(supportTicketsData);
   const [activeFilter, setActiveFilter] = useState<'All' | 'Open' | 'Checking' | 'Resolved'>('All');
@@ -60,7 +59,15 @@ const SupportTicketsPage: React.FC = () => {
       if (currentPage <= 4) {
         pages.push(1, 2, 3, 4, 5, '...', totalPages);
       } else if (currentPage >= totalPages - 3) {
-        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          '...',
+          totalPages - 4,
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        );
       } else {
         pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
       }
@@ -69,9 +76,9 @@ const SupportTicketsPage: React.FC = () => {
   };
 
   const handleStatusChange = (id: string, newStatus: SupportTicket['status']) => {
-    setTickets(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+    setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
     if (selectedTicket?.id === id) {
-      setSelectedTicket(prev => prev ? { ...prev, status: newStatus } : null);
+      setSelectedTicket((prev) => (prev ? { ...prev, status: newStatus } : null));
     }
   };
 
@@ -105,10 +112,11 @@ const SupportTicketsPage: React.FC = () => {
                     setActiveFilter(filter);
                     setCurrentPage(1);
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${activeFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    activeFilter === filter
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                  }`}
                 >
                   {filter}
                 </button>
@@ -143,9 +151,15 @@ const SupportTicketsPage: React.FC = () => {
                       <div
                         className={`flex items-center ${header.sortable ? 'justify-between' : 'justify-start'}`}
                       >
-                        <span className="text-[#4E616A] font-medium text-[12px] whitespace-nowrap">{header.label}</span>
+                        <span className="text-[#4E616A] font-medium text-[12px] whitespace-nowrap">
+                          {header.label}
+                        </span>
                         {header.sortable && (
-                          <img src="/icons/rider/updown.svg" alt="sort" className="w-[14px] h-[14px]" />
+                          <img
+                            src="/icons/rider/updown.svg"
+                            alt="sort"
+                            className="w-[14px] h-[14px]"
+                          />
                         )}
                       </div>
                     </th>
@@ -164,9 +178,7 @@ const SupportTicketsPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-[14px] font-medium text-[#4E616A]">
-                        {ticket.cause}
-                      </span>
+                      <span className="text-[14px] font-medium text-[#4E616A]">{ticket.cause}</span>
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
@@ -174,7 +186,11 @@ const SupportTicketsPage: React.FC = () => {
                           className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 overflow-hidden"
                           style={{ backgroundColor: ticket.driver.color }}
                         >
-                          <img src={ticket.driver.avatar} alt={ticket.driver.name} className='w-full h-full object-cover' />
+                          <img
+                            src={ticket.driver.avatar}
+                            alt={ticket.driver.name}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] font-semibold text-[#1DAFA1]">
@@ -192,20 +208,22 @@ const SupportTicketsPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <div className="flex items-start">
-                        {getStatusBadge(ticket.status)}
-                      </div>
+                      <div className="flex items-start">{getStatusBadge(ticket.status)}</div>
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex justify-center">
-                        <button 
+                        <button
                           onClick={() => {
                             setSelectedTicket(ticket);
                             setIsModalOpen(true);
                           }}
                           className="flex items-center justify-center cursor-pointer p-1 hover:bg-white rounded-full transition-colors"
                         >
-                          <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px]" />
+                          <img
+                            src="/icons/rider/eye.svg"
+                            alt="view"
+                            className="w-[20px] h-[20px]"
+                          />
                         </button>
                       </div>
                     </td>
@@ -233,10 +251,11 @@ const SupportTicketsPage: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => setCurrentPage(page as number)}
-                      className={`min-w-[34px] h-[34px] flex items-center justify-center rounded-lg text-[14px] font-semibold transition-all cursor-pointer ${currentPage === page
-                        ? 'bg-[#EEFFFD] text-[#1DAFA1] border border-[#1DAFA1]/30'
-                        : 'text-[#4E616A] hover:bg-gray-50'
-                        }`}
+                      className={`min-w-[34px] h-[34px] flex items-center justify-center rounded-lg text-[14px] font-semibold transition-all cursor-pointer ${
+                        currentPage === page
+                          ? 'bg-[#EEFFFD] text-[#1DAFA1] border border-[#1DAFA1]/30'
+                          : 'text-[#4E616A] hover:bg-gray-50'
+                      }`}
                     >
                       {page}
                     </button>

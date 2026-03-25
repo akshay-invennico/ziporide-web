@@ -3,11 +3,21 @@ import { X } from 'lucide-react';
 import React, { useRef, useState, useEffect } from 'react';
 import * as Yup from 'yup';
 
+import type { VehicleCategory } from '@/types/vehicle.types';
+
 interface AddCategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm?: (values: any) => void;
-  initialData?: any;
+  onConfirm?: (values: {
+    categoryName: string;
+    baseFare: string;
+    pricePerMile: string;
+    pricePerMinute: string;
+    vehicleType: string;
+    seatCapacity: string;
+    categoryIcon: File | string | null;
+  }) => void;
+  initialData?: VehicleCategory | null;
 }
 
 const InputWrapper = ({
@@ -140,18 +150,18 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
       .required('Required'),
     vehicleType: Yup.string().required('Required'),
     seatCapacity: Yup.string().required('Required'),
-    categoryIcon: isEditing ? Yup.mixed() : Yup.mixed().required('Required'),
+    categoryIcon: Yup.mixed().required('Required'),
   });
 
   const formik = useFormik({
     initialValues: {
       categoryName: initialData?.name || '',
       baseFare: initialData?.basePrice?.toString() || '',
-      pricePerMile: '',
-      pricePerMinute: '',
-      vehicleType: '',
+      pricePerMile: initialData?.pricePerMile?.toString() || '',
+      pricePerMinute: initialData?.pricePerMinute?.toString() || '',
+      vehicleType: initialData?.vehicleType || '',
       seatCapacity: initialData?.seats ? `${initialData.seats} Seats` : '',
-      categoryIcon: null as File | null,
+      categoryIcon: initialData?.categoryIcon || (null as File | string | null),
     },
     enableReinitialize: true,
     validationSchema,
@@ -161,17 +171,19 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
       if (onConfirm) {
         onConfirm(values);
       } else {
-        console.log('Form Submitted', values);
         formik.resetForm();
         onClose();
       }
     },
   });
 
-  // Derived state to show a preview if there's a file, or the existing image if editing
-  const previewUrl = formik.values.categoryIcon
-    ? URL.createObjectURL(formik.values.categoryIcon)
-    : initialData?.image || null;
+  // Derived state to show a preview
+  const previewUrl =
+    typeof formik.values.categoryIcon === 'string'
+      ? formik.values.categoryIcon
+      : formik.values.categoryIcon instanceof File
+        ? URL.createObjectURL(formik.values.categoryIcon)
+        : null;
 
   if (!isOpen) return null;
 
@@ -280,9 +292,9 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
             <InputWrapper label="Vehicle Type" required error={formik.errors.vehicleType as string}>
               <CustomDropdown
                 options={[
-                  { label: 'Car', value: 'Car' },
-                  { label: 'Bike', value: 'Bike' },
-                  { label: 'Van', value: 'Van' },
+                  { label: 'Car', value: 'car' },
+                  { label: 'Bike', value: 'bike' },
+                  { label: 'Van', value: 'van' },
                 ]}
                 value={formik.values.vehicleType}
                 onChange={(val) => formik.setFieldValue('vehicleType', val)}

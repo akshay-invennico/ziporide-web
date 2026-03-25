@@ -15,14 +15,18 @@ const TransactionsPage: React.FC = () => {
 
   const filteredData = transactionsData.filter((txn) => {
     // Filter by type
-    if (activeFilter === 'Pay-in' && !['Ride Payment', 'Subscription Payment'].includes(txn.type)) return false;
-    if (activeFilter === 'Payout' && !['Driver Payout', 'Driver Incentive'].includes(txn.type)) return false;
+    if (activeFilter === 'Pay-in' && !['Ride Payment', 'Subscription Payment'].includes(txn.type))
+      return false;
+    if (activeFilter === 'Payout' && !['Driver Payout', 'Driver Incentive'].includes(txn.type))
+      return false;
     if (activeFilter === 'Refund' && txn.type !== 'Refund') return false;
 
     // Search
     if (searchQuery) {
-      if (!txn.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !txn.type.toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (
+        !txn.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !txn.type.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
         return false;
       }
     }
@@ -32,7 +36,7 @@ const TransactionsPage: React.FC = () => {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const handlePrev = () => {
@@ -43,11 +47,22 @@ const TransactionsPage: React.FC = () => {
   };
 
   const formatAmount = (amount: number, type: string) => {
-    const isPositive = ['Ride Payment', 'Subscription Payment', 'Cancellation Fee', 'No-Show Fee', 'Driver Incentive'].includes(type) && amount > 0;
+    const isPositive =
+      [
+        'Ride Payment',
+        'Subscription Payment',
+        'Cancellation Fee',
+        'No-Show Fee',
+        'Driver Incentive',
+      ].includes(type) && amount > 0;
     const sign = isPositive ? '+' : '-';
     const absAmount = Math.abs(amount).toFixed(2);
     const color = isPositive ? 'text-[#1DAFA1]' : 'text-[#FF0707]';
-    return <span className={`font-semibold ${color}`}>{sign} £{absAmount}</span>;
+    return (
+      <span className={`font-semibold ${color}`}>
+        {sign} £{absAmount}
+      </span>
+    );
   };
 
   const getStatusBadge = (status: string) => {
@@ -80,7 +95,6 @@ const TransactionsPage: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-white p-1 h-full">
-
       <div className="flex flex-col bg-white rounded-lg border border-[#DFE6E5]">
         {/* Controls Bar */}
         <div className="p-4 border-b border-[#DFE6E5] flex justify-between items-center">
@@ -108,10 +122,11 @@ const TransactionsPage: React.FC = () => {
                     setActiveFilter(filter as any);
                     setCurrentPage(1);
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${activeFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                    }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    activeFilter === filter
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
                 >
                   {filter}
                 </button>
@@ -144,9 +159,15 @@ const TransactionsPage: React.FC = () => {
                     <div
                       className={`flex items-center ${header.sortable ? 'justify-between' : 'justify-start'}`}
                     >
-                      <span className="text-[#4E616A] font-medium text-[12px] whitespace-nowrap">{header.label}</span>
+                      <span className="text-[#4E616A] font-medium text-[12px] whitespace-nowrap">
+                        {header.label}
+                      </span>
                       {header.sortable && (
-                        <img src="/icons/rider/updown.svg" alt="sort" className="w-[14px] h-[14px]" />
+                        <img
+                          src="/icons/rider/updown.svg"
+                          alt="sort"
+                          className="w-[14px] h-[14px]"
+                        />
                       )}
                     </div>
                   </th>
@@ -174,18 +195,20 @@ const TransactionsPage: React.FC = () => {
                     <td className="px-5 py-4 text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
                       {txn.date} <span className="ml-2">{txn.time}</span>
                     </td>
+                    <td className="px-5 py-4">{getStatusBadge(txn.status)}</td>
                     <td className="px-5 py-4">
-                      {getStatusBadge(txn.status)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <button 
+                      <button
                         onClick={() => {
                           setSelectedTransaction(txn);
                           setIsModalOpen(true);
                         }}
                         className="flex items-center justify-center cursor-pointer "
                       >
-                        <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px] text-[#1DAFA1]" />
+                        <img
+                          src="/icons/rider/eye.svg"
+                          alt="view"
+                          className="w-[20px] h-[20px] text-[#1DAFA1]"
+                        />
                       </button>
                     </td>
                   </tr>
@@ -223,10 +246,11 @@ const TransactionsPage: React.FC = () => {
                   <button
                     key={pageNum}
                     onClick={() => setCurrentPage(pageNum)}
-                    className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${currentPage === pageNum
-                      ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold bg-[#EEFFFD]'
-                      : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
-                      }`}
+                    className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${
+                      currentPage === pageNum
+                        ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold bg-[#EEFFFD]'
+                        : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
+                    }`}
                   >
                     {pageNum}
                   </button>

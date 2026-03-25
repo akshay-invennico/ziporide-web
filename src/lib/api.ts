@@ -1,20 +1,27 @@
 export const API = {
-  LOGIN: '/auth/login',
-  FORGOT_PASSWORD: '/auth/forgot/password',
-  VERIFY_OTP: '/auth/verify/otp/email',
-  RESET_PASSWORD: '/auth/reset/password',
+  LOGIN: '/v1/auth/login',
+  FORGOT_PASSWORD: '/v1/auth/forgot/password',
+  VERIFY_OTP: '/v1/auth/verify/otp/email',
+  RESET_PASSWORD: '/v1/auth/reset/password',
 
-  DASHBOARD_STATS: '/dashboard/stats',
+  DASHBOARD_STATS: '/v1/dashboard/stats',
 
-  RIDERS: '/riders',
-  RIDER_DETAILS: (id: string) => `/riders/${id}`,
+  RIDERS: '/v1/riders',
+  RIDER_DETAILS: (id: string) => `/v1/riders/${id}`,
 
-  DRIVERS: '/drivers',
-  DRIVER_DETAILS: (id: string) => `/drivers/${id}`,
+  DRIVERS: '/v1/drivers',
+  DRIVER_DETAILS: (id: string) => `/v1/drivers/${id}`,
 
-  VERIFICATIONS: '/verifications',
-  VERIFICATION_DETAILS: (id: string) => `/verifications/${id}`,
+  VERIFICATIONS: '/v1/verifications',
+  VERIFICATION_DETAILS: (id: string) => `/v1/verifications/${id}`,
 
-  TRIPS: '/trips',
-  TRIP_DETAILS: (id: string) => `/trips/${id}`,
+  TRIPS: '/v1/trips',
+  TRIP_DETAILS: (id: string) => `/v1/trips/${id}`,
+
+  VEHICLE_CATEGORIES: '/v1/inventory/categories',
+  CREATE_CATEGORY: '/v1/inventory/categories',
+  UPDATE_CATEGORY: (id: string) => `/v1/inventory/categories/${id}`,
+  REMOVE_CATEGORY: (id: string) => `/v1/inventory/categories/${id}`,
+
+  UPLOAD_IMAGE: '/v1/image/upload',
 } as const;

@@ -493,7 +493,7 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
         mode={isInProgress ? 'force-end' : 'cancel'}
         onClose={() => setIsCancelModalOpen(false)}
         onConfirm={(reason, details) => {
-          console.log(`${isInProgress ? 'Force End' : 'Cancellation'} confirmed:`, {
+          console.warn(`${isInProgress ? 'Force End' : 'Cancellation'} confirmed:`, {
             reason,
             details,
           });

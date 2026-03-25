@@ -7,6 +7,7 @@ import { AuthContext } from './authContextDef';
 const getInitialState = (): AuthState => {
   const token = localStorage.getItem('token');
   const userStr = localStorage.getItem('user');
+
   if (token && userStr) {
     try {
       return { user: JSON.parse(userStr), token, isAuthenticated: true };
