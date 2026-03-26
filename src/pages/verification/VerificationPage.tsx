@@ -1,47 +1,65 @@
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
-import { verificationRequestsData } from '../../data/VerificationData';
-
-type FilterStatus = 'Pending' | 'Approved' | 'Rejected' | 'All';
+import { useDrivers } from '../../hooks/useVerificationDriver';
 
 const getStatusColor = (status: string) => {
-  switch (status) {
+  const s = status?.charAt(0).toUpperCase() + status?.slice(1).toLowerCase();
+  switch (s) {
     case 'Pending':
-      return { dot: 'bg-[#F6921E]', text: 'text-[#F6921E]' };
+      return { dot: '#F6921E', text: '#F6921E' };
     case 'Approved':
-      return { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' };
+      return { dot: '#00A63E', text: '#00A63E' };
     case 'Rejected':
-      return { dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' };
+      return { dot: '#FF0707', text: '#FF0707' };
     default:
-      return { dot: 'bg-[#6B7280]', text: 'text-[#6B7280]' };
+      return { dot: '#6B7280', text: '#6B7280' };
   }
 };
-
-const ITEMS_PER_PAGE = 12;
 
 const VerificationPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState<FilterStatus>('Pending');
+  const itemsPerPage = 12; // Adjusted based on the image size approx
+  const [filterStatus, setFilterStatus] = useState<'Pending' | 'Approved' | 'Rejected' | 'All'>(
+    'Pending',
+  );
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   const [isExportOpen, setIsExportOpen] = useState(false);
 
-  const filteredData = verificationRequestsData.filter((r) => {
-    const matchesSearch =
-      r.driverName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.phone.includes(searchQuery);
-    const matchesStatus = filterStatus === 'All' || r.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
 
-  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-  const currentData = filteredData.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  const { drivers, loading, totalPages } = useDrivers(
+    filterStatus,
+    currentPage,
+    itemsPerPage,
+    debouncedSearchQuery,
   );
+
+  // Filter based on search query for immediate feedback and as a fallback for server-side search
+  const currentData = drivers.filter((request) => {
+    if (!searchQuery) return true;
+
+    const name = request.driverName || request.name || '';
+    const email = request.email || '';
+    const phone = `${request.countryCode || ''} ${request.phone || ''}`.trim();
+
+    return (
+      name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      phone.includes(searchQuery)
+    );
+  });
 
   const getPages = () => {
     const pages: (number | '...')[] = [];
@@ -167,121 +185,143 @@ const VerificationPage = () => {
                 ))}
               </tr>
             </thead>
-
-            <tbody>
-              {currentData.length > 0 ? (
-                currentData.map((request) => {
-                  const sc = getStatusColor(request.status);
-                  return (
-                    <tr
-                      key={request.id}
-                      className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors last:border-b-0"
-                    >
-                      {/* Driver */}
-                      <td className="px-6 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[15px] shrink-0 overflow-hidden">
-                            {request.avatar.length <= 2 ? (
-                              <span>{request.avatar}</span>
-                            ) : (
-                              <img
-                                src={request.avatar}
-                                alt={request.driverName}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-medium text-[#1DAFA1] text-[14px] leading-tight">
-                              {request.driverName}
+            <tbody className="text-sm">
+              {loading ? (
+                <tr>
+                  <td colSpan={10} className="p-8 text-center text-gray-500">
+                    <div className="flex justify-center items-center h-40">
+                      <Loader2 className="w-8 h-8 animate-spin text-[#1DAFA1]" />
+                    </div>
+                  </td>
+                </tr>
+              ) : currentData.length > 0 ? (
+                currentData.map((request) => (
+                  <tr
+                    key={request.id}
+                    className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors last:border-b-0"
+                  >
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[16px] shrink-0 overflow-hidden">
+                          {!request.avatar || request.avatar.length <= 2 ? (
+                            <span>
+                              {request.avatar ||
+                                request.name?.substring(0, 2).toUpperCase() ||
+                                'DR'}
                             </span>
-                            <span className="text-[12px] font-medium text-[#4E616A]">
-                              {request.phone}
-                            </span>
-                          </div>
+                          ) : (
+                            <img
+                              src={request.avatar}
+                              alt={request.driverName || request.name || 'Driver'}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                         </div>
-                      </td>
-
-                      {/* Email */}
-                      <td className="px-6 py-3">
-                        <span className="text-[#1DAFA1] font-medium text-[14px]">
-                          {request.email}
-                        </span>
-                      </td>
-
-                      {/* Applied On */}
+                        <div className="flex flex-col">
+                          <span className="font-medium text-[#1DAFA1] text-[14px] leading-tight">
+                            {request.driverName || request.name || 'Unknown'}
+                          </span>
+                          <span className="text-[12px] font-medium text-[#4E616A]">
+                            {request.countryCode
+                              ? `${request.countryCode} ${request.phone}`
+                              : request.phone || '-'}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-[#1DAFA1] font-medium text-[14px]">
+                        {request.email || '-'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-[#4E616A] text-[14px] font-medium">
+                        {request.appliedOn || request.consents?.acceptedAt || request.createdAt
+                          ? new Date(
+                              request.appliedOn ||
+                                request.consents?.acceptedAt ||
+                                request.createdAt!,
+                            ).toLocaleDateString()
+                          : '-'}
+                      </span>
+                    </td>
+                    {filterStatus === 'Approved' && (
                       <td className="px-6 py-3">
                         <span className="text-[#4E616A] text-[14px] font-medium">
-                          {request.appliedOn}
+                          {request.actionDate ||
+                          request.updatedAt ||
+                          request.appliedOn ||
+                          request.consents?.acceptedAt ||
+                          request.createdAt
+                            ? new Date(
+                                request.actionDate ||
+                                  request.updatedAt ||
+                                  request.appliedOn ||
+                                  request.consents?.acceptedAt ||
+                                  request.createdAt!,
+                              ).toLocaleDateString()
+                            : '-'}
                         </span>
                       </td>
-
-                      {/* Approved On (conditional) */}
-                      {filterStatus === 'Approved' && (
-                        <td className="px-6 py-3">
-                          <span className="text-[#4E616A] text-[14px] font-medium">
-                            {request.actionDate || request.appliedOn}
-                          </span>
-                        </td>
-                      )}
-
-                      {/* Status */}
+                    )}
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-2 w-2 rounded-full"
+                          style={{ backgroundColor: getStatusColor(request.status).dot }}
+                        />
+                        <span
+                          className="text-[12px] font-semibold"
+                          style={{ color: getStatusColor(request.status).text }}
+                        >
+                          {request.status
+                            ? request.status.charAt(0).toUpperCase() + request.status.slice(1)
+                            : '-'}
+                        </span>
+                      </div>
+                    </td>
+                    {filterStatus === 'Rejected' && (
                       <td className="px-6 py-3">
-                        <div className="flex items-center gap-1.5">
-                          <div className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
-                          <span className={`text-[12px] font-semibold ${sc.text}`}>
-                            {request.status}
-                          </span>
-                        </div>
+                        <span className="text-[#4E616A] font-medium text-[14px]">
+                          {request.reason || '-'}
+                        </span>
                       </td>
-
-                      {/* Reason (conditional) */}
-                      {filterStatus === 'Rejected' && (
-                        <td className="px-6 py-3">
-                          <span className="text-[#4E616A] font-medium text-[14px]">
-                            {request.reason || '-'}
-                          </span>
-                        </td>
+                    )}
+                    <td className="px-6 py-3">
+                      {request.status?.toLowerCase() === 'pending' ? (
+                        <Link
+                          to={`/verification/details/${request.id}`}
+                          className="flex items-center gap-2 text-[#1DAFA1]  font-medium text-[14px] "
+                        >
+                          <img
+                            src="/icons/verification/investigate.svg"
+                            alt="investigate"
+                            className="w-[24px] h-[24px]"
+                          />
+                          Investigate
+                        </Link>
+                      ) : (
+                        <Link
+                          to={`/verification/details/${request.id}`}
+                          className="flex items-center gap-2 text-[#1DAFA1]  font-medium text-[14px]"
+                        >
+                          <img
+                            src="/icons/verification/eyes.svg"
+                            alt="investigate"
+                            className="w-[22px] h-[22px]"
+                          />
+                          View
+                        </Link>
                       )}
-
-                      {/* Action */}
-                      <td className="px-6 py-3">
-                        {request.status === 'Pending' ? (
-                          <Link
-                            to={`/verification/details/${request.id}`}
-                            className="flex items-center gap-1.5 text-[#1DAFA1] font-medium text-[14px]"
-                          >
-                            <img
-                              src="/icons/verification/investigate.svg"
-                              alt="investigate"
-                              className="w-[22px] h-[22px]"
-                            />
-                            Investigate
-                          </Link>
-                        ) : (
-                          <Link
-                            to={`/verification/details/${request.id}`}
-                            className="flex items-center gap-1.5 text-[#1DAFA1] font-medium text-[14px]"
-                          >
-                            <img
-                              src="/icons/rider/eye.svg"
-                              alt="view"
-                              className="w-[22px] h-[22px]"
-                            />
-                            View
-                          </Link>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
+                    </td>
+                  </tr>
+                ))
               ) : (
                 <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="p-8 text-center text-[14px] text-[#4E616A]"
-                  >
-                    No verification requests found.
+                  <td colSpan={10} className="p-8 text-center text-gray-500">
+                    {searchQuery
+                      ? 'No results found for your search.'
+                      : 'No verification requests found.'}
                   </td>
                 </tr>
               )}

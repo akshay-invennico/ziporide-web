@@ -1,45 +1,47 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
+import { usePendingDriverCount } from '@/hooks/useVerificationDriver';
 import { routes } from '@/routes/routes';
-
-const navItems = [
-  { name: 'Dashboard', path: routes.DASHBOARD, icon: '/icons/sidebar/sidebarIcon1.svg' },
-  { name: 'Riders', path: routes.RIDER, icon: '/icons/sidebar/sidebarIcon2.svg' },
-  { name: 'Drivers', path: routes.DRIVER, icon: '/icons/sidebar/sidebarIcon3.svg' },
-  {
-    name: 'Verification Req',
-    path: routes.VERIFICATION,
-    icon: '/icons/sidebar/sidebarIcon4.svg',
-    badge: '20+',
-  },
-  { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
-  { name: 'Vehicle Inventory', path: routes.INVENTORY, icon: '/icons/sidebar/sidebarIcon6.svg' },
-  { name: 'Transactions', path: routes.TRANSACTIONS, icon: '/icons/sidebar/sidebarIcon7.svg' },
-  { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon8.svg' },
-  {
-    name: 'Settings',
-    path: routes.SETTINGS,
-    icon: '/icons/sidebar/sidebarIcon9.svg',
-    hasDropdown: true,
-    subItems: [
-      {
-        name: 'Pricing Logics',
-        path: routes.PRICING_LOGIC,
-        Icon: '/icons/sidebar/sidebarIcon10.svg',
-      },
-      {
-        name: 'Push Notifications',
-        path: routes.PUSH_NOTIFICATIONS,
-        Icon: '/icons/sidebar/sidebarIcon11.svg',
-      },
-      { name: 'Operators', path: routes.OPERATORS, Icon: '/icons/sidebar/sidebarIcon12.svg' },
-    ],
-  },
-];
 
 export default function Sidebar() {
   const location = useLocation();
+  const { count } = usePendingDriverCount();
+
+  const navItems = [
+    { name: 'Dashboard', path: routes.DASHBOARD, icon: '/icons/sidebar/sidebarIcon1.svg' },
+    { name: 'Riders', path: routes.RIDER, icon: '/icons/sidebar/sidebarIcon2.svg' },
+    { name: 'Drivers', path: routes.DRIVER, icon: '/icons/sidebar/sidebarIcon3.svg' },
+    {
+      name: 'Verification Request',
+      path: routes.VERIFICATION,
+      icon: '/icons/sidebar/sidebarIcon4.svg',
+      badge: count > 0 ? (count > 99 ? '99+' : count.toString()) : undefined,
+    },
+    { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
+    { name: 'Vehicle Inventory', path: routes.INVENTORY, icon: '/icons/sidebar/sidebarIcon6.svg' },
+    { name: 'Transactions', path: routes.TRANSACTIONS, icon: '/icons/sidebar/sidebarIcon7.svg' },
+    { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon8.svg' },
+    {
+      name: 'Settings',
+      path: routes.SETTINGS,
+      icon: '/icons/sidebar/sidebarIcon9.svg',
+      hasDropdown: true,
+      subItems: [
+        {
+          name: 'Pricing Logics',
+          path: routes.PRICING_LOGIC,
+          Icon: '/icons/sidebar/sidebarIcon10.svg',
+        },
+        {
+          name: 'Push Notifications',
+          path: routes.PUSH_NOTIFICATIONS,
+          Icon: '/icons/sidebar/sidebarIcon11.svg',
+        },
+        { name: 'Operators', path: routes.OPERATORS, Icon: '/icons/sidebar/sidebarIcon12.svg' },
+      ],
+    },
+  ];
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -97,7 +99,7 @@ export default function Sidebar() {
                 <span className="font-medium text-[#FFFFFF] flex-1 text-[14px]">{item.name}</span>
 
                 {item.badge && (
-                  <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none">
+                  <span className="bg-red-500 text-white text-[12px] font-bold px-2 py-1 rounded-md leading-none">
                     {item.badge}
                   </span>
                 )}

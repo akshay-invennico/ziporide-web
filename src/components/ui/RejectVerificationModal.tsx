@@ -8,6 +8,7 @@ const REJECTION_REASONS = [
   'Duplicate account detected',
   'Does not meet platform requirements',
   'Suspicious or fraudulent activity detected',
+  'Other',
 ];
 
 interface RejectVerificationModalProps {
@@ -29,7 +30,12 @@ const RejectVerificationModal = ({ isOpen, onClose, onConfirm }: RejectVerificat
   };
 
   const handleConfirm = () => {
-    if (onConfirm) onConfirm(selectedReasons, note);
+    if (onConfirm) {
+      const reasonsToSubmit = selectedReasons.includes('Other')
+        ? [note || 'Other']
+        : selectedReasons;
+      onConfirm(reasonsToSubmit, note);
+    }
     handleClose();
   };
 
@@ -109,19 +115,23 @@ const RejectVerificationModal = ({ isOpen, onClose, onConfirm }: RejectVerificat
           </div>
 
           {/* Note */}
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex justify-between items-center">
-              <span className="text-[14px] font-medium text-[#4E616A]">Note</span>
-              <span className="text-[12px] font-medium text-[#4E616A]">(Optional)</span>
+          {selectedReasons.includes('Other') && (
+            <div className="flex flex-col gap-2 mt-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex justify-between items-center">
+                <span className="text-[14px] font-medium text-[#4E616A]">Note</span>
+                <span className="text-[12px] font-medium text-[#FF0707]">
+                  (Required for 'Other')
+                </span>
+              </div>
+              <textarea
+                rows={3}
+                placeholder="Please provide additional details."
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] text-[#000000] placeholder-[#939999] resize-none focus:outline-none focus:border-[#1DAFA1] transition-colors"
+              />
             </div>
-            <textarea
-              rows={3}
-              placeholder="Please provide additional details."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] text-[#000000] placeholder-[#939999] resize-none focus:outline-none focus:border-[#1DAFA1] transition-colors"
-            />
-          </div>
+          )}
         </div>
 
         {/* Footer */}

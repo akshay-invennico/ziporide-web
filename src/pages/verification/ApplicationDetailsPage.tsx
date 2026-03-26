@@ -1,57 +1,97 @@
-import { CheckCircle2, XCircle, X, Check, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, XCircle, X, Check, ArrowLeft, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import DocumentViewerModal from '../../components/ui/DocumentViewerModal';
+import { useToast } from '@/context/useToast';
+
+import DocumentViewModal from '../../components/ui/DocumentViewModal';
 import RejectDocumentModal from '../../components/ui/RejectDocumentModal';
 import RejectVerificationModal from '../../components/ui/RejectVerificationModal';
-import { verificationRequestsData } from '../../data/VerificationData';
+import { useDriverDetails, useVerifyDriverDocument } from '../../hooks/useVerificationDriver';
 
 const ApplicationDetailsPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentDocumentName, setCurrentDocumentName] = useState('');
+  const [currentDocumentUrl, setCurrentDocumentUrl] = useState<string | undefined>(undefined);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectingDocument, setRejectingDocument] = useState('');
+  const [rejectingDocumentType, setRejectingDocumentType] = useState<string>('');
   const [isRejectVerificationModalOpen, setIsRejectVerificationModalOpen] = useState(false);
+  const { showToast } = useToast();
+  const { driver: request, loading, error, refetch } = useDriverDetails(id);
+  const { verifyDocument, updateDriverStatus, isVerifying } = useVerifyDriverDocument(id);
 
-  const request = verificationRequestsData.find((r) => r.id === id) || {
-    id: '0',
-    driverName: 'Mike Smith',
-    driverId: 'DRVR-2001',
-    phone: '+44 1321 65456',
-    email: 'mike.smith@email.com',
-    gender: 'Male',
-    dob: '1990-01-01',
-    appliedOn: '2023-05-12',
-    status: 'Pending',
-    avatar: 'MS',
-    address: '123 Main ST. Anytown, USA',
-    licenceNumber: 'ASAN9011278KA2WX',
-    licenceExpiry: '2028-11-26',
-    issuingAuthority: 'DVLA Lincoln',
-    vehicle: {
-      registrationNumber: 'LN22 EFG',
-      make: 'Ford',
-      model: 'Mustang',
-      year: 2022,
-      color: 'Grabber Blue',
-      vehicleType: 'Executive',
-    },
+  const handleVerifyDocument = async (docType: string, isApproved: boolean, reason?: string) => {
+    try {
+      await verifyDocument(docType, isApproved, reason);
+      showToast(`Document ${isApproved ? 'approved' : 'rejected'} successfully`, 'success');
+      refetch(); // Reload data to show updated status
+    } catch (err: any) {
+      showToast(`Failed to update status: ${err.message}`, 'error');
+    }
   };
 
-  const isApproved = request.status === 'Approved';
-  const isRejected = request.status === 'Rejected';
-  const isPending = !isApproved && !isRejected;
+  const handleOverallStatusUpdate = async (action: 'approve' | 'reject', reason?: string) => {
+    if (!request) return;
+    // Validation: Check if any document is still pending
+    const isLicensePending =
+      !request.licence?.document?.isVerified && !request.licence?.document?.rejectedReason;
+    const isInsurancePending =
+      !request.vehicle?.insurance?.isVerified && !request.vehicle?.insurance?.rejectedReason;
+    const isMOTPending = !request.vehicle?.mot?.isVerified && !request.vehicle?.mot?.rejectedReason;
+    const isBackgroundPending =
+      !request.backgroundCheck?.isVerified && !request.backgroundCheck?.rejectedReason;
 
-  const handleOpenDocument = (docName: string) => {
+    if (isLicensePending || isInsurancePending || isMOTPending || isBackgroundPending) {
+      showToast(
+        'Please review and verify or reject all documents before updating the overall driver status.',
+        'error',
+      );
+      return;
+    }
+
+    try {
+      await updateDriverStatus(action, reason);
+      showToast(`Driver ${action === 'approve' ? 'approved' : 'rejected'} successfully`, 'success');
+      refetch(); // Reload data to show updated status
+    } catch (err: any) {
+      showToast(`Failed to update driver status: ${err.message}`, 'error');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen p-1 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#1DAFA1]" />
+      </div>
+    );
+  }
+
+  if (error || !request) {
+    return (
+      <div className="w-full min-h-screen p-1 flex items-center justify-center">
+        <div className="text-center text-red-500">{error || 'Driver not found'}</div>
+      </div>
+    );
+  }
+
+  const isApproved =
+    request.status?.toLowerCase() === 'approved' || request.status?.toLowerCase() === 'active';
+  const isRejected =
+    request.status?.toLowerCase() === 'rejected' || request.status?.toLowerCase() === 'suspended';
+  const isPending = request.status?.toLowerCase() === 'pending';
+
+  const handleOpenDocument = (docName: string, url?: string) => {
     setCurrentDocumentName(docName);
+    setCurrentDocumentUrl(url);
     setIsModalOpen(true);
   };
 
-  const handleOpenRejectModal = (docName: string) => {
+  const handleOpenRejectModal = (docName: string, docType: string) => {
     setRejectingDocument(docName);
+    setRejectingDocumentType(docType);
     setIsRejectModalOpen(true);
   };
 
@@ -75,19 +115,21 @@ const ApplicationDetailsPage = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-[72px] h-[72px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-lg font-bold shrink-0 overflow-hidden">
-              {request.avatar.length <= 2 ? (
-                <span>{request.avatar}</span>
+              {!request.profilePhotoUrl && (!request.avatar || request.avatar.length <= 2) ? (
+                <span>{request.avatar || request.name?.substring(0, 2).toUpperCase() || 'DR'}</span>
               ) : (
                 <img
-                  src={request.avatar}
-                  alt={request.driverName}
+                  src={request.profilePhotoUrl || request.avatar}
+                  alt={request.name || 'Driver'}
                   className="w-full h-full object-cover"
                 />
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-[20px] font-semibold text-[#101828]">{request.driverName}</span>
-              <span className="text-[14px] font-medium text-[#1DAFA1]">{request.driverId}</span>
+              <span className="text-[20px] font-semibold text-[#101828]">
+                {request.name || 'Unknown'}
+              </span>
+              <span className="text-[14px] font-medium text-[#1DAFA1]">ID: {request.id}</span>
             </div>
           </div>
 
@@ -96,7 +138,7 @@ const ApplicationDetailsPage = () => {
               <div className="bg-[#F9F9F9] px-3 py-1.5 rounded-[600px] flex items-center gap-2">
                 <img src="/icons/verification/info.svg" alt="info" className="w-[15px] h-[15px]" />
                 <span className="text-[14px] font-medium text-[#4E616A]">
-                  Vehicle information is incorrect or incomplete
+                  {request.rejectionReason}
                 </span>
               </div>
             )}
@@ -119,12 +161,17 @@ const ApplicationDetailsPage = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsRejectVerificationModalOpen(true)}
-                  className="flex cursor-pointer items-center gap-1 px-6 py-2 rounded-[500px] bg-[#FFF6F6]   text-[#FF0707] font-medium text-[14px] "
+                  disabled={isVerifying}
+                  className="flex cursor-pointer items-center gap-1 px-6 py-2 rounded-[500px] bg-[#FFF6F6]   text-[#FF0707] font-medium text-[14px] disabled:opacity-50"
                 >
                   <XCircle className="w-5 h-5" />
                   Reject
                 </button>
-                <button className="flex items-center gap-1 px-6 py-2 rounded-[500px] bg-[#EAFFF2]  text-[#00A63E] font-medium text-[14px] ">
+                <button
+                  onClick={() => handleOverallStatusUpdate('approve')}
+                  disabled={isVerifying}
+                  className="flex items-center gap-1 px-6 py-2 rounded-[500px] bg-[#EAFFF2]  text-[#00A63E] font-medium text-[14px] disabled:opacity-50"
+                >
                   <CheckCircle2 className="w-5 h-5" />
                   Approve
                 </button>
@@ -144,7 +191,11 @@ const ApplicationDetailsPage = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Phone Number</span>
-              <span className="text-[14px] font-medium text-[#101828]">{request.phone}</span>
+              <span className="text-[14px] font-medium text-[#101828]">
+                {request.countryCode
+                  ? `${request.countryCode} ${request.phone}`
+                  : request.phone || '-'}
+              </span>
             </div>
           </div>
           <div className="flex gap-3">
@@ -157,7 +208,7 @@ const ApplicationDetailsPage = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Email</span>
-              <span className="text-[14px] font-medium text-[#101828]">{request.email}</span>
+              <span className="text-[14px] font-medium text-[#101828]">{request.email || '-'}</span>
             </div>
           </div>
           <div className="flex gap-3">
@@ -170,7 +221,11 @@ const ApplicationDetailsPage = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Gender</span>
-              <span className="text-[14px] font-medium text-[#101828]">{request.gender}</span>
+              <span className="text-[14px] font-medium text-[#101828]">
+                {request.gender
+                  ? request.gender.charAt(0).toUpperCase() + request.gender.slice(1)
+                  : '-'}
+              </span>
             </div>
           </div>
           <div className="flex gap-3">
@@ -179,7 +234,11 @@ const ApplicationDetailsPage = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Date of Birth</span>
-              <span className="text-[14px] font-medium text-[#101828]">{request.dob}</span>
+              <span className="text-[14px] font-medium text-[#101828]">
+                {request.dateOfBirth
+                  ? new Date(request.dateOfBirth as string).toLocaleDateString()
+                  : '-'}
+              </span>
             </div>
           </div>
           <div className="flex gap-3">
@@ -188,7 +247,13 @@ const ApplicationDetailsPage = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[12px] text-[#4E616A] font-medium">Joined on</span>
-              <span className="text-[14px] font-medium text-[#101828]">{request.appliedOn}</span>
+              <span className="text-[14px] font-medium text-[#101828]">
+                {request.consents?.acceptedAt || request.createdAt
+                  ? new Date(
+                      (request.consents?.acceptedAt || request.createdAt) as string,
+                    ).toLocaleDateString()
+                  : '-'}
+              </span>
             </div>
           </div>
         </div>
@@ -204,7 +269,18 @@ const ApplicationDetailsPage = () => {
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-[14px] font-semibold text-[#000000]">{request.address}</span>
+              <span className="text-[14px] font-semibold text-[#000000]">
+                {request.address
+                  ? [
+                      request.address.line1,
+                      request.address.city,
+                      request.address.postcode,
+                      request.address.country,
+                    ]
+                      .filter(Boolean)
+                      .join(', ')
+                  : '-'}
+              </span>
             </div>
           </div>
         </div>
@@ -218,19 +294,21 @@ const ApplicationDetailsPage = () => {
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">PAN License Number</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.licenceNumber}
+                {request.licence?.number || '-'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Expiry Date</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.licenceExpiry}
+                {request.licence?.expiryDate
+                  ? new Date(request.licence.expiryDate as string).toLocaleDateString()
+                  : '-'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Issuing Authority</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.issuingAuthority}
+                {request.licence?.issuingAuthority || '-'}
               </span>
             </div>
           </div>
@@ -238,22 +316,44 @@ const ApplicationDetailsPage = () => {
           <div className="border border-dashed border-[#DFE6E5] rounded-lg p-4 flex justify-between items-center bg-white">
             <div className="flex gap-4 items-center">
               <div className="w-[80px] h-[60px] bg-gray-200 rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-                <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
+                {request.licence?.document?.url ? (
+                  <img
+                    src={request.licence.document.url}
+                    alt="License"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
+                )}
               </div>
               <div className="flex flex-col gap-1 items-start">
                 <span className="text-[14px] font-medium text-[#000000]">license.pdf</span>
                 <button
-                  onClick={() => handleOpenDocument('license.pdf')}
+                  onClick={() =>
+                    handleOpenDocument('License Document', request.licence?.document?.url)
+                  }
                   className="text-[12px] cursor-pointer font-semibold text-[#1DAFA1] hover:underline"
                 >
                   Click to View
                 </button>
-                <div className="mt-1">
-                  {isRejected ? (
-                    <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
-                      Rejected
-                    </div>
-                  ) : isApproved ? (
+                <div className="mt-1 flex items-center gap-2">
+                  {request.licence?.document?.rejectedReason ? (
+                    <>
+                      <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
+                        Rejected
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-[#F9F9F9] rounded-[400px] px-2 py-1">
+                        <img
+                          src="/icons/verification/info.svg"
+                          alt="info"
+                          className="w-[15px] h-[15px]"
+                        />
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          {request.licence.document.rejectedReason}
+                        </span>
+                      </div>
+                    </>
+                  ) : request.licence?.document?.isVerified ? (
                     <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
                       Verified
                     </div>
@@ -266,19 +366,25 @@ const ApplicationDetailsPage = () => {
               </div>
             </div>
 
-            {isPending && (
-              <div className="flex items-center gap-2 ">
-                <button
-                  onClick={() => handleOpenRejectModal('license.pdf')}
-                  className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
-                >
-                  <X className="w-5 h-5 font-bold" />
-                </button>
-                <button className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer">
-                  <Check className="w-5 h-5 font-bold" />
-                </button>
-              </div>
-            )}
+            {!request.licence?.document?.isVerified &&
+              !request.licence?.document?.rejectedReason && (
+                <div className="flex items-center gap-2 ">
+                  <button
+                    onClick={() => handleOpenRejectModal('License', 'licence')}
+                    disabled={isVerifying}
+                    className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
+                  >
+                    <X className="w-5 h-5 font-bold" />
+                  </button>
+                  <button
+                    onClick={() => handleVerifyDocument('licence', true)}
+                    disabled={isVerifying}
+                    className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
+                  >
+                    <Check className="w-5 h-5 font-bold" />
+                  </button>
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -291,33 +397,39 @@ const ApplicationDetailsPage = () => {
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Registration Number</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.vehicle.registrationNumber}
+                {request.vehicle?.registrationNumber || '-'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Make</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.vehicle.make}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.vehicle?.make || '-'}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Model</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.vehicle.model}
+                {request.vehicle?.model || '-'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Year</span>
-              <span className="text-[14px] font-medium text-[#000000]">{request.vehicle.year}</span>
+              <span className="text-[14px] font-medium text-[#000000]">
+                {request.vehicle?.year || '-'}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Color</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.vehicle.color}
+                {request.vehicle?.colour || request.vehicle?.color || '-'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Vehicle Type</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.vehicle.vehicleType}
+                {request.vehicle?.type
+                  ? request.vehicle.type.charAt(0).toUpperCase() + request.vehicle.type.slice(1)
+                  : '-'}
               </span>
             </div>
           </div>
@@ -326,20 +438,30 @@ const ApplicationDetailsPage = () => {
             <div className="border border-dashed border-[#DFE6E5] rounded-lg p-4 flex justify-between items-center bg-white">
               <div className="flex gap-4 items-center">
                 <div className="w-[80px] h-[60px] bg-gray-200 rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-                  <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
+                  {request.vehicle?.insurance?.url ? (
+                    <img
+                      src={request.vehicle.insurance.url}
+                      alt="Insurance"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
+                  )}
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <span className="text-[14px] font-medium text-[#000000]">
                     Insurance Certificate
                   </span>
                   <button
-                    onClick={() => handleOpenDocument('Insurance Certificate')}
+                    onClick={() =>
+                      handleOpenDocument('Insurance Certificate', request.vehicle?.insurance?.url)
+                    }
                     className="text-[12px] cursor-pointer font-semibold text-[#1DAFA1] hover:underline"
                   >
                     Click to View
                   </button>
                   <div className="flex items-center gap-3 mt-1">
-                    {isRejected ? (
+                    {request.vehicle?.insurance?.rejectedReason ? (
                       <>
                         <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
                           Rejected
@@ -351,11 +473,11 @@ const ApplicationDetailsPage = () => {
                             className="w-[15px] h-[15px]"
                           />
                           <span className="text-[12px] font-medium text-[#4E616A]">
-                            Document is expired
+                            {request.vehicle.insurance.rejectedReason}
                           </span>
                         </div>
                       </>
-                    ) : isApproved ? (
+                    ) : request.vehicle?.insurance?.isVerified ? (
                       <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
                         Verified
                       </div>
@@ -368,36 +490,50 @@ const ApplicationDetailsPage = () => {
                 </div>
               </div>
 
-              {isPending && (
-                <div className="flex items-center gap-2 ">
-                  <button
-                    onClick={() => handleOpenRejectModal('Insurance Certificate')}
-                    className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
-                  >
-                    <X className="w-5 h-5 font-bold" />
-                  </button>
-                  <button className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer">
-                    <Check className="w-5 h-5 font-bold" />
-                  </button>
-                </div>
-              )}
+              {!request.vehicle?.insurance?.isVerified &&
+                !request.vehicle?.insurance?.rejectedReason && (
+                  <div className="flex items-center gap-2 ">
+                    <button
+                      onClick={() => handleOpenRejectModal('Insurance', 'insurance')}
+                      disabled={isVerifying}
+                      className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
+                    >
+                      <X className="w-5 h-5 font-bold" />
+                    </button>
+                    <button
+                      onClick={() => handleVerifyDocument('insurance', true)}
+                      disabled={isVerifying}
+                      className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
+                    >
+                      <Check className="w-5 h-5 font-bold" />
+                    </button>
+                  </div>
+                )}
             </div>
 
             <div className="border border-dashed border-[#DFE6E5] rounded-lg p-4 flex justify-between items-center bg-white">
               <div className="flex gap-4 items-center">
                 <div className="w-[80px] h-[60px] bg-gray-200 rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-                  <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
+                  {request.vehicle?.mot?.url ? (
+                    <img
+                      src={request.vehicle.mot.url}
+                      alt="MOT"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
+                  )}
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <span className="text-[14px] font-medium text-[#000000]">MOT Certificate</span>
                   <button
-                    onClick={() => handleOpenDocument('MOT Certificate')}
+                    onClick={() => handleOpenDocument('MOT Certificate', request.vehicle?.mot?.url)}
                     className="text-[12px] cursor-pointer font-semibold text-[#1DAFA1] hover:underline"
                   >
                     Click to View
                   </button>
                   <div className="flex items-center gap-3 mt-1">
-                    {isRejected ? (
+                    {request.vehicle?.mot?.rejectedReason ? (
                       <>
                         <div className="px-3 py-2 rounded-[500px] bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
                           Rejected
@@ -409,11 +545,11 @@ const ApplicationDetailsPage = () => {
                             className="w-[15px] h-[15px]"
                           />
                           <span className="text-[12px] font-medium text-[#4E616A]">
-                            Criminal record unclear
+                            {request.vehicle.mot.rejectedReason}
                           </span>
                         </div>
                       </>
-                    ) : isApproved ? (
+                    ) : request.vehicle?.mot?.isVerified ? (
                       <div className="px-3 py-2 rounded-[500px] bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
                         Verified
                       </div>
@@ -426,15 +562,20 @@ const ApplicationDetailsPage = () => {
                 </div>
               </div>
 
-              {isPending && (
+              {!request.vehicle?.mot?.isVerified && !request.vehicle?.mot?.rejectedReason && (
                 <div className="flex items-center gap-2 ">
                   <button
-                    onClick={() => handleOpenRejectModal('MOT Certificate')}
-                    className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
+                    onClick={() => handleOpenRejectModal('MOT', 'mot')}
+                    disabled={isVerifying}
+                    className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
                   >
                     <X className="w-5 h-5 font-bold" />
                   </button>
-                  <button className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer">
+                  <button
+                    onClick={() => handleVerifyDocument('mot', true)}
+                    disabled={isVerifying}
+                    className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
+                  >
                     <Check className="w-5 h-5 font-bold" />
                   </button>
                 </div>
@@ -445,10 +586,14 @@ const ApplicationDetailsPage = () => {
       </div>
 
       {/* Background Check */}
-      <div className="bg-white rounded-lg p-6 border h-[130px] border-[#DFE6E5] flex flex-row justify-between gap-6 ">
-        <div className="flex gap-4 items-center">
-          <div className="w-[80px] h-[60px] bg-gray-200 rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-            <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
+      <div className="bg-white rounded-lg p-4 border h-[130px] border-[#DFE6E5] flex flex-row justify-between gap-6">
+        <div className="flex gap-2 items-center">
+          <div className="w-[80px] h-[60px]  rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
+            <img
+              src="/icons/verification/backgroundCheck.svg"
+              alt="pdf"
+              className="w-[80px] h-[60px]"
+            />
           </div>
           <div className="flex flex-col">
             <span className="text-[14px] font-medium text-[#101828] mb-1">Background Check</span>
@@ -456,7 +601,7 @@ const ApplicationDetailsPage = () => {
               Criminal & driving record verification
             </span>
             <div className="flex items-center gap-3">
-              {isRejected ? (
+              {request.backgroundCheck?.rejectedReason ? (
                 <>
                   <div className="px-3 py-1 rounded-full bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
                     Rejected
@@ -468,11 +613,11 @@ const ApplicationDetailsPage = () => {
                       className="w-[15px] h-[15px]"
                     />
                     <span className="text-[12px] font-medium text-[#4E616A]">
-                      Criminal record unclear
+                      {request.backgroundCheck.rejectedReason}
                     </span>
                   </div>
                 </>
-              ) : isApproved ? (
+              ) : request.backgroundCheck?.isVerified ? (
                 <div className="px-3 py-1 rounded-full bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
                   Verified
                 </div>
@@ -485,15 +630,20 @@ const ApplicationDetailsPage = () => {
           </div>
         </div>
 
-        {isPending && (
+        {!request.backgroundCheck?.isVerified && !request.backgroundCheck?.rejectedReason && (
           <div className="flex items-center gap-2 ">
             <button
-              onClick={() => handleOpenRejectModal('Background Check')}
-              className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer"
+              onClick={() => handleOpenRejectModal('Background Check', 'backgroundCheck')}
+              disabled={isVerifying}
+              className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
             >
               <X className="w-5 h-5 font-bold" />
             </button>
-            <button className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer">
+            <button
+              onClick={() => handleVerifyDocument('backgroundCheck', true)}
+              disabled={isVerifying}
+              className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
+            >
               <Check className="w-5 h-5 font-bold" />
             </button>
           </div>
@@ -533,23 +683,27 @@ const ApplicationDetailsPage = () => {
         </div>
       </div>
 
-      <DocumentViewerModal
+      <DocumentViewModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        documentName={currentDocumentName}
+        documentTitle={currentDocumentName}
+        documentUrl={currentDocumentUrl}
       />
 
       <RejectDocumentModal
         isOpen={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
         documentName={rejectingDocument}
+        onConfirm={(reasons) => {
+          handleVerifyDocument(rejectingDocumentType, false, reasons.join(', '));
+        }}
       />
 
       <RejectVerificationModal
         isOpen={isRejectVerificationModalOpen}
         onClose={() => setIsRejectVerificationModalOpen(false)}
-        onConfirm={(reasons, note) => {
-          console.warn('Rejected with reasons:', reasons, 'and note:', note);
+        onConfirm={(reasons) => {
+          handleOverallStatusUpdate('reject', reasons.join(', '));
         }}
       />
     </div>
