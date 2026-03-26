@@ -61,10 +61,11 @@ export default function DriverDetailsPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer ${activeTab === tab.key
-              ? 'border-[#1DAFA1] text-[#1DAFA1]'
-              : 'border-transparent text-[#4E616A] hover:text-[#1DAFA1]'
-              }`}
+            className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer ${
+              activeTab === tab.key
+                ? 'border-[#1DAFA1] text-[#1DAFA1]'
+                : 'border-transparent text-[#4E616A] hover:text-[#1DAFA1]'
+            }`}
           >
             {tab.label}
           </button>

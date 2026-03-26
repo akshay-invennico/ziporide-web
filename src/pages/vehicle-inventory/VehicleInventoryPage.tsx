@@ -97,8 +97,9 @@ const VehicleInventoryPage: React.FC = () => {
       <div className="flex gap-8  mb-6">
         <button
           onClick={() => setActiveTab('category')}
-          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-            }`}
+          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${
+            activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+          }`}
         >
           Vehicle Category
           {activeTab === 'category' && (
@@ -107,8 +108,9 @@ const VehicleInventoryPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('database')}
-          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-            }`}
+          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${
+            activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+          }`}
         >
           Vehicle Database
           {activeTab === 'database' && (
@@ -382,10 +384,11 @@ const VehicleInventoryPage: React.FC = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${currentPage === pageNum
-                        ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold'
-                        : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
-                        }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${
+                        currentPage === pageNum
+                          ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold'
+                          : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>

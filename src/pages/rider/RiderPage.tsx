@@ -2,9 +2,9 @@ import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
-import FilterDropdown from '../../components/ui/filter/FilterDropdown';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
+import FilterDropdown from '../../components/ui/filter/FilterDropdown';
+import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
 import { ridersData } from '../../data/RiderData';
 
 const RiderPage = () => {
@@ -250,10 +250,11 @@ const RiderPage = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
-                        ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                        : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                        }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] font-semibold transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>
@@ -286,7 +287,11 @@ const RiderPage = () => {
         onClose={() => setSuspendedRiderId(null)}
         onConfirm={() => setSuspendedRiderId(null)}
         userType="rider"
-        mode={ridersData.find((r) => r.id === suspendedRiderId)?.status === 'Suspended' ? 'reactivate' : 'suspend'}
+        mode={
+          ridersData.find((r) => r.id === suspendedRiderId)?.status === 'Suspended'
+            ? 'reactivate'
+            : 'suspend'
+        }
       />
     </div>
   );

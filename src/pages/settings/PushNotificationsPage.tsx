@@ -3,19 +3,20 @@ import { ChevronDown } from 'lucide-react';
 const PushNotificationsPage = () => {
   return (
     <div className="flex justify-center  p-6">
-
       {/* Send Custom Notification Card */}
       <div className="w-[641px] h-[588px] border border-[#DFE6E5] bg-white rounded-lg p-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 w-[40px] h-[40px] bg-[#F9F9F9] rounded-sm">
-            <img src="/icons/settings/send.svg" alt="send" className='w-[22px] h-[22px]' />
+            <img src="/icons/settings/send.svg" alt="send" className="w-[22px] h-[22px]" />
           </div>
-          <h2 className="text-[20px] font-inter font-semibold text-[#101828]">Send Custom Notification</h2>
+          <h2 className="text-[20px] font-inter font-semibold text-[#101828]">
+            Send Custom Notification
+          </h2>
         </div>
 
         <div className="space-y-8 font-inter">
           {/* Target Audience */}
-          <div >
+          <div>
             <label className="block text-[14px] font-medium text-[#000000] mb-2">
               Target Audience
             </label>
@@ -45,9 +46,7 @@ const PushNotificationsPage = () => {
 
           {/* Message */}
           <div>
-            <label className="block text-[14px] font-medium text-[#000000] mb-2">
-              Message
-            </label>
+            <label className="block text-[14px] font-medium text-[#000000] mb-2">Message</label>
             <textarea
               placeholder="Enter notification message"
               rows={5}

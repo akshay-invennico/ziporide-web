@@ -1,5 +1,5 @@
-import React from 'react';
 import { X } from 'lucide-react';
+import React from 'react';
 
 interface RemoveOperatorModalProps {
   isOpen: boolean;
@@ -7,11 +7,7 @@ interface RemoveOperatorModalProps {
   onRemove: () => void;
 }
 
-const RemoveOperatorModal: React.FC<RemoveOperatorModalProps> = ({
-  isOpen,
-  onClose,
-  onRemove,
-}) => {
+const RemoveOperatorModal: React.FC<RemoveOperatorModalProps> = ({ isOpen, onClose, onRemove }) => {
   if (!isOpen) return null;
 
   return (
@@ -22,17 +18,15 @@ const RemoveOperatorModal: React.FC<RemoveOperatorModalProps> = ({
             <h2 className="text-[20px] font-semibold text-[#000000] font-inter">
               Remove Operator?
             </h2>
-            <button
-              onClick={onClose}
-              className="p-1 cursor-pointer text-[#4E616A]"
-            >
+            <button onClick={onClose} className="p-1 cursor-pointer text-[#4E616A]">
               <X size={22} />
             </button>
           </div>
 
           <div className="space-y-4">
             <p className="text-[14px] font-medium text-[#4E616A] font-inter leading-relaxed">
-              Are you sure you want to remove this operator? They will lose access to the admin panel immediately.
+              Are you sure you want to remove this operator? They will lose access to the admin
+              panel immediately.
             </p>
             <p className="text-[14px] font-medium text-[#4E616A] font-inter">
               This action cannot be undone. All active sessions will be terminated

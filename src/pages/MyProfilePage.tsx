@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import ChangePasswordModal from '../components/ui/ChangePasswordModal';
 
 const MyProfilePage = () => {
@@ -23,12 +24,16 @@ const MyProfilePage = () => {
         {/* Personal Information Section */}
         <div className="space-y-8">
           <div>
-            <h3 className="text-[18px] font-semibold text-[#000000] mb-4">Personal Information :</h3>
+            <h3 className="text-[18px] font-semibold text-[#000000] mb-4">
+              Personal Information :
+            </h3>
 
             <div className="space-y-6">
               {/* Profile Photo */}
               <div>
-                <label className="block text-[14px] font-medium text-[#4E616A] mb-4">Profile Photo</label>
+                <label className="block text-[14px] font-medium text-[#4E616A] mb-4">
+                  Profile Photo
+                </label>
                 <div className="relative w-[130px] h-[130px]">
                   <div className="w-full h-full rounded-full border-2 border-dashed border-[#1DAFA1] p-1">
                     <img
@@ -46,11 +51,13 @@ const MyProfilePage = () => {
               {/* Form Fields */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[14px] font-medium text-[#4E616A] mb-2">Full Name</label>
+                  <label className="block text-[14px] font-medium text-[#4E616A] mb-2">
+                    Full Name
+                  </label>
                   <input
                     type="text"
                     value={formData.fullName}
-                    placeholder='e.g. olivia rhye'
+                    placeholder="e.g. olivia rhye"
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium text-[#000000] hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-colors placeholder:text-[#939999]"
                   />
@@ -60,7 +67,7 @@ const MyProfilePage = () => {
                   <input
                     type="email"
                     value={formData.email}
-                    placeholder='e.g. olvia@gmail.com'
+                    placeholder="e.g. olvia@gmail.com"
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full border border-[#DFE6E5]  rounded-md p-3 text-[14px] font-medium text-[#000000] hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-colors placeholder:text-[#939999]"
                   />
@@ -83,7 +90,8 @@ const MyProfilePage = () => {
               <div>
                 <h4 className="text-[16px] font-semibold text-[#000000]">Change Password</h4>
                 <p className="text-[14px] font-medium text-[#4E616A] mt-1">
-                  Change your password to keep your account secure. Make sure it's strong and unique.
+                  Change your password to keep your account secure. Make sure it's strong and
+                  unique.
                 </p>
               </div>
               <button

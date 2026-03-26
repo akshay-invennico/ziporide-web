@@ -41,8 +41,12 @@ export default function SuspendRiderModal({
 
   // Dynamic content
   const title = isSuspend
-    ? isRider ? 'Suspend Rider?' : 'Suspend Driver?'
-    : isRider ? 'Reactivate Rider?' : 'Reactivate Driver?';
+    ? isRider
+      ? 'Suspend Rider?'
+      : 'Suspend Driver?'
+    : isRider
+      ? 'Reactivate Rider?'
+      : 'Reactivate Driver?';
 
   const description = isSuspend
     ? isRider
@@ -57,16 +61,18 @@ export default function SuspendRiderModal({
   const labelRight = isRider ? '(Character Limit: 250)' : '(250 character limit)';
   const placeholder = isRider ? 'Please share your reason.' : 'Please provide additional details.';
   const confirmBtnText = isSuspend
-    ? isRider ? 'Confirm Suspend' : 'Confirm Suspension'
+    ? isRider
+      ? 'Confirm Suspend'
+      : 'Confirm Suspension'
     : 'Confirm Reactivate';
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 overflow-y-auto px-4">
-      <div className={`bg-white rounded-xl shadow-xl ${isSuspend ? 'w-[640px]' : 'w-[540px]'} h-auto p-6 lg:p-8 relative my-8 animate-in fade-in zoom-in duration-200`}>
+      <div
+        className={`bg-white rounded-xl shadow-xl ${isSuspend ? 'w-[640px]' : 'w-[540px]'} h-auto p-6 lg:p-8 relative my-8 animate-in fade-in zoom-in duration-200`}
+      >
         <h2 className="text-[18px] font-semibold text-[#000000] mb-2">{title}</h2>
-        <p className="text-[14px] text-[#4E616A] font-medium mb-3 leading-relaxed">
-          {description}
-        </p>
+        <p className="text-[14px] text-[#4E616A] font-medium mb-3 leading-relaxed">{description}</p>
 
         {isSuspend && (
           <>

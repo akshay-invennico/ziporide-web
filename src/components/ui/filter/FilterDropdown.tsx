@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { Star } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface FilterDropdownProps {
   isOpen: boolean;
@@ -128,7 +128,8 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           </div>
           <div className="flex justify-between items-center mt-2">
             <span className="text-[12px] text-[#4E616A] font-medium">
-              From <span className="text-[#000000] text-[14px] font-semibold ml-1">£{spentMin}</span>
+              From{' '}
+              <span className="text-[#000000] text-[14px] font-semibold ml-1">£{spentMin}</span>
             </span>
             <span className="text-[12px] text-[#4E616A] font-medium">
               To <span className="text-[#000000] text-[14px] font-semibold ml-1">£{spentMax}</span>
@@ -169,7 +170,10 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           </div>
           <div className="flex justify-between items-center mt-2">
             <span className="text-[12px] text-[#4E616A] font-medium">
-              From <span className="text-[#000000] text-[14px] font-semibold ml-1">{tripsMin < 10 ? `0${tripsMin}` : tripsMin}</span>
+              From{' '}
+              <span className="text-[#000000] text-[14px] font-semibold ml-1">
+                {tripsMin < 10 ? `0${tripsMin}` : tripsMin}
+              </span>
             </span>
             <span className="text-[12px] text-[#4E616A] font-medium">
               To <span className="text-[#000000] text-[14px] font-semibold ml-1">{tripsMax}</span>
@@ -200,10 +204,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
       {/* Footer */}
       <div className="p-5 cursor-pointer w-full border-t border-[#DFE6E5] flex items-center justify-between">
-        <button
-          onClick={clearAll}
-          className="text-[14px] font-medium text-[#000000]"
-        >
+        <button onClick={clearAll} className="text-[14px] font-medium text-[#000000]">
           Clear all
         </button>
         <button

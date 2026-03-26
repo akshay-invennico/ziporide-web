@@ -2,9 +2,9 @@ import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
-import FilterDropdown from '../../components/ui/filter/FilterDropdown';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
+import FilterDropdown from '../../components/ui/filter/FilterDropdown';
+import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
 import { driversData } from '../../data/DriverData';
 
 const DriverPage = () => {
@@ -125,7 +125,11 @@ const DriverPage = () => {
                     >
                       <span>{header.label}</span>
                       {header.sortable && (
-                        <img src="/icons/rider/updown.svg" alt="sort" className="w-[18px] h-[18px]" />
+                        <img
+                          src="/icons/rider/updown.svg"
+                          alt="sort"
+                          className="w-[18px] h-[18px]"
+                        />
                       )}
                     </div>
                   </th>
@@ -264,10 +268,11 @@ const DriverPage = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center cursor-pointer justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
-                        ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                        : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                        }`}
+                      className={`min-w-[32px] h-8 flex items-center cursor-pointer justify-center rounded-lg text-[14px] font-semibold transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>
@@ -299,7 +304,11 @@ const DriverPage = () => {
         onClose={() => setSuspendedDriverId(null)}
         onConfirm={() => setSuspendedDriverId(null)}
         userType="driver"
-        mode={driversData.find((d) => d.id === suspendedDriverId)?.status === 'Suspended' ? 'reactivate' : 'suspend'}
+        mode={
+          driversData.find((d) => d.id === suspendedDriverId)?.status === 'Suspended'
+            ? 'reactivate'
+            : 'suspend'
+        }
       />
     </div>
   );

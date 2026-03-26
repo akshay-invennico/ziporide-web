@@ -32,12 +32,15 @@ function DocumentCard({ name, src, onView }: DocumentCardProps) {
         </div>
       </div>
       <div>
-        <img src="/icons/rider/vector.svg" alt="arrow" className="w-[20px] h-[20px] cursor-pointer" />
+        <img
+          src="/icons/rider/vector.svg"
+          alt="arrow"
+          className="w-[20px] h-[20px] cursor-pointer"
+        />
       </div>
     </div>
   );
 }
-
 
 export default function DriverInfoTab({ driver }: Props) {
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -143,7 +146,9 @@ export default function DriverInfoTab({ driver }: Props) {
                 </div>
                 <div>
                   <p className="text-[12px] text-[#4E616A] font-medium mb-0.5">Joined on</p>
-                  <p className="text-[14px] font-semibold text-[#101828]">{driver.joinedOn || '-'}</p>
+                  <p className="text-[14px] font-semibold text-[#101828]">
+                    {driver.joinedOn || '-'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -159,7 +164,9 @@ export default function DriverInfoTab({ driver }: Props) {
               <div>
                 <p className="text-[14px] font-semibold text-[#000000]">{driver.address || '-'}</p>
                 {driver.postalCode && (
-                  <p className="text-[12px] text-[#747C84] font-medium mt-0.5">{driver.postalCode}</p>
+                  <p className="text-[12px] text-[#747C84] font-medium mt-0.5">
+                    {driver.postalCode}
+                  </p>
                 )}
               </div>
             </div>
@@ -270,7 +277,9 @@ export default function DriverInfoTab({ driver }: Props) {
               {/* Right: Insurance & MOT Documents */}
               <div className="flex flex-col gap-6">
                 <div>
-                  <p className="text-[12px] font-medium text-[#4E616A] mb-2">Insurance Certificate</p>
+                  <p className="text-[12px] font-medium text-[#4E616A] mb-2">
+                    Insurance Certificate
+                  </p>
                   <DocumentCard name="Insurance Certificate" onView={handleView} />
                 </div>
                 <div>
@@ -281,7 +290,6 @@ export default function DriverInfoTab({ driver }: Props) {
             </div>
           </div>
         </div>
-
 
         {/* Legal Agreements */}
         <div className="border border-[#DFE6E5] rounded-xl overflow-hidden mb-4">

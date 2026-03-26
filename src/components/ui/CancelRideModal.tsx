@@ -89,10 +89,11 @@ const CancelRideModal = ({ isOpen, onClose, onConfirm, mode = 'cancel' }: Cancel
                   <label key={reason} className="flex items-center gap-3 cursor-pointer group">
                     <div
                       onClick={() => setSelectedReason(reason)}
-                      className={`w-[20px] h-[20px] rounded-md border-[1.5px] flex items-center justify-center shrink-0 transition-all ${isSelected
-                        ? 'bg-[#1DAFA1] border-[#1DAFA1]'
-                        : 'border-[#98A2B3] group-hover:border-[#1DAFA1]'
-                        }`}
+                      className={`w-[20px] h-[20px] rounded-md border-[1.5px] flex items-center justify-center shrink-0 transition-all ${
+                        isSelected
+                          ? 'bg-[#1DAFA1] border-[#1DAFA1]'
+                          : 'border-[#98A2B3] group-hover:border-[#1DAFA1]'
+                      }`}
                     >
                       {isSelected && (
                         <svg
@@ -151,10 +152,9 @@ const CancelRideModal = ({ isOpen, onClose, onConfirm, mode = 'cancel' }: Cancel
           <button
             onClick={handleConfirm}
             disabled={!selectedReason}
-            className={`px-8 py-3 rounded-sm text-[14px] font-medium text-white ${selectedReason
-              ? 'bg-[#FF0707]  cursor-pointer'
-              : 'bg-[#FF0707]/50 cursor-not-allowed'
-              }`}
+            className={`px-8 py-3 rounded-sm text-[14px] font-medium text-white ${
+              selectedReason ? 'bg-[#FF0707]  cursor-pointer' : 'bg-[#FF0707]/50 cursor-not-allowed'
+            }`}
           >
             {confirmLabel}
           </button>

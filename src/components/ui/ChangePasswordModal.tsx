@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { X, Eye, EyeOff } from 'lucide-react';
 import { useFormik } from 'formik';
+import { X, Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import * as Yup from 'yup';
 
 interface ChangePasswordModalProps {
@@ -9,11 +9,7 @@ interface ChangePasswordModalProps {
   onUpdate: (values: any) => void;
 }
 
-const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
-  isOpen,
-  onClose,
-  onUpdate,
-}) => {
+const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClose, onUpdate }) => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -66,7 +62,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         <form onSubmit={formik.handleSubmit} className="p-6 space-y-4">
           {/* Current Password */}
           <div>
-            <label className="block text-[14px] font-medium text-[#000000] mb-2">Current Password</label>
+            <label className="block text-[14px] font-medium text-[#000000] mb-2">
+              Current Password
+            </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
                 <img src="/icons/lockPassword.svg" alt="lock" className="w-[18px] h-[18px]" />
@@ -99,7 +97,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
           {/* New Password */}
           <div>
-            <label className="block text-[14px] font-medium text-[#000000] mb-2">New Password</label>
+            <label className="block text-[14px] font-medium text-[#000000] mb-2">
+              New Password
+            </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
                 <img src="/icons/lockPassword.svg" alt="lock" className="w-[18px] h-[18px]" />
@@ -132,7 +132,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-[14px] font-medium text-[#000000] mb-2">Confirm Password</label>
+            <label className="block text-[14px] font-medium text-[#000000] mb-2">
+              Confirm Password
+            </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
                 <img src="/icons/lockPassword.svg" alt="lock" className="w-[18px] h-[18px]" />

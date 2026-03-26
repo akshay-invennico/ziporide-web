@@ -1,5 +1,6 @@
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+
 import OperatorModal from '../../components/ui/OperatorModal';
 import RemoveOperatorModal from '../../components/ui/RemoveOperatorModal';
 
@@ -13,7 +14,37 @@ const operatorsData = [
     createdOn: '2025-03-25',
     status: 'Active',
     avatar: 'MC',
-    permissions: ['view_dashboard_analytics', 'view_revenue_insights', 'view_riders', 'view_rider_details', 'suspend_reactive_rider', 'view_drivers', 'view_driver_details', 'approve_reject_drivers', 'suspend_activate_driver', 'view_verification_requests', 'review_documents', 'approve_reject_verification', 'view_all_trips', 'view_trip_details', 'cancel_ride', 'force_end_ride', 'view_categories', 'create_category', 'edit_category', 'delete_category', 'view_tickets', 'respond_to_tickets', 'close_tickets', 'view_pricing', 'edit_pricing_logic', 'send_notifications', 'view_operators', 'add_edit_operator', 'remove_operator'],
+    permissions: [
+      'view_dashboard_analytics',
+      'view_revenue_insights',
+      'view_riders',
+      'view_rider_details',
+      'suspend_reactive_rider',
+      'view_drivers',
+      'view_driver_details',
+      'approve_reject_drivers',
+      'suspend_activate_driver',
+      'view_verification_requests',
+      'review_documents',
+      'approve_reject_verification',
+      'view_all_trips',
+      'view_trip_details',
+      'cancel_ride',
+      'force_end_ride',
+      'view_categories',
+      'create_category',
+      'edit_category',
+      'delete_category',
+      'view_tickets',
+      'respond_to_tickets',
+      'close_tickets',
+      'view_pricing',
+      'edit_pricing_logic',
+      'send_notifications',
+      'view_operators',
+      'add_edit_operator',
+      'remove_operator',
+    ],
   },
   {
     id: 'ZPT-2845149',
@@ -24,7 +55,22 @@ const operatorsData = [
     createdOn: '2025-04-10',
     status: 'Active',
     avatar: 'AS',
-    permissions: ['view_dashboard_analytics', 'view_revenue_insights', 'view_riders', 'view_rider_details', 'suspend_reactive_rider', 'view_drivers', 'view_driver_details', 'approve_reject_drivers', 'view_all_trips', 'view_trip_details', 'view_categories', 'view_tickets', 'view_pricing', 'view_operators'],
+    permissions: [
+      'view_dashboard_analytics',
+      'view_revenue_insights',
+      'view_riders',
+      'view_rider_details',
+      'suspend_reactive_rider',
+      'view_drivers',
+      'view_driver_details',
+      'approve_reject_drivers',
+      'view_all_trips',
+      'view_trip_details',
+      'view_categories',
+      'view_tickets',
+      'view_pricing',
+      'view_operators',
+    ],
   },
   {
     id: 'ZPT-2845150',
@@ -181,16 +227,17 @@ const OperatorsPage = () => {
   const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedOperator, setSelectedOperator] = useState<any>(null);
 
-  const filteredData = operatorsData.filter((operator) =>
-    operator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    operator.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    operator.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = operatorsData.filter(
+    (operator) =>
+      operator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      operator.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      operator.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const handlePrev = () => {
@@ -254,7 +301,7 @@ const OperatorsPage = () => {
             onClick={() => openModal('add')}
             className="flex items-center gap-2 bg-[#1DAFA1] text-white px-4 py-2 rounded-sm text-[14px] font-medium cursor-pointer"
           >
-            <img src="/icons/settings/add.svg" alt="add" className='w-[22px] h-[22px]' />
+            <img src="/icons/settings/add.svg" alt="add" className="w-[22px] h-[22px]" />
             Add Operator
           </button>
         </div>
@@ -305,8 +352,12 @@ const OperatorsPage = () => {
                         {operator.avatar}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[14px] font-medium text-[#1DAFA1]">{operator.name}</span>
-                        <span className="text-[12px] font-medium text-[#4E616A]">{operator.phone}</span>
+                        <span className="text-[14px] font-medium text-[#1DAFA1]">
+                          {operator.name}
+                        </span>
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          {operator.phone}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -314,7 +365,9 @@ const OperatorsPage = () => {
                     {operator.email}
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-2 rounded-full text-[12px] font-semibold ${getRoleStyle(operator.role)}`}>
+                    <span
+                      className={`px-3 py-2 rounded-full text-[12px] font-semibold ${getRoleStyle(operator.role)}`}
+                    >
                       {operator.role}
                     </span>
                   </td>
@@ -324,7 +377,9 @@ const OperatorsPage = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="w-[6px] h-[6px] rounded-full bg-[#00A63E]" />
-                      <span className="text-[12px] font-semibold text-[#00A63E]">{operator.status}</span>
+                      <span className="text-[12px] font-semibold text-[#00A63E]">
+                        {operator.status}
+                      </span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -333,19 +388,28 @@ const OperatorsPage = () => {
                         onClick={() => openModal('view', operator)}
                         className="  cursor-pointer "
                       >
-                        <img src="/icons/settings/eye.svg" alt="view" className='w-[20px] h-[20px]' />
+                        <img
+                          src="/icons/settings/eye.svg"
+                          alt="view"
+                          className="w-[20px] h-[20px]"
+                        />
                       </button>
                       <button
                         onClick={() => openModal('edit', operator)}
                         className="  cursor-pointer "
                       >
-                        <img src="/icons/settings/edit.svg" alt="edit" className='w-[22px] h-[22px]' />
+                        <img
+                          src="/icons/settings/edit.svg"
+                          alt="edit"
+                          className="w-[22px] h-[22px]"
+                        />
                       </button>
-                      <button 
-                        onClick={() => openRemoveModal(operator)}
-                        className=" cursor-pointer"
-                      >
-                        <img src="/icons/settings/remove.svg" alt="remove" className='w-[22px] h-[22px]' />
+                      <button onClick={() => openRemoveModal(operator)} className=" cursor-pointer">
+                        <img
+                          src="/icons/settings/remove.svg"
+                          alt="remove"
+                          className="w-[22px] h-[22px]"
+                        />
                       </button>
                     </div>
                   </td>
@@ -379,10 +443,11 @@ const OperatorsPage = () => {
                       <button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        className={`min-w-[32px] h-8 flex items-center cursor-pointer justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
-                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                          }`}
+                        className={`min-w-[32px] h-8 flex items-center cursor-pointer justify-center rounded-lg text-[14px] font-semibold transition-colors ${
+                          currentPage === pageNum
+                            ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                            : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                        }`}
                       >
                         {pageNum}
                       </button>

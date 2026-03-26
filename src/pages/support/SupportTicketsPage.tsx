@@ -1,8 +1,8 @@
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
-import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
+import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
 import { supportTicketsData } from '../../data/SupportTicketsData';
 import type { SupportTicket } from '../../data/SupportTicketsData';
 

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-
 import { routes } from '@/routes/routes';
 
 const navItems = [
@@ -24,8 +23,16 @@ const navItems = [
     icon: '/icons/sidebar/sidebarIcon9.svg',
     hasDropdown: true,
     subItems: [
-      { name: 'Pricing Logics', path: routes.PRICING_LOGIC, Icon: '/icons/sidebar/sidebarIcon10.svg' },
-      { name: 'Push Notifications', path: routes.PUSH_NOTIFICATIONS, Icon: '/icons/sidebar/sidebarIcon11.svg' },
+      {
+        name: 'Pricing Logics',
+        path: routes.PRICING_LOGIC,
+        Icon: '/icons/sidebar/sidebarIcon10.svg',
+      },
+      {
+        name: 'Push Notifications',
+        path: routes.PUSH_NOTIFICATIONS,
+        Icon: '/icons/sidebar/sidebarIcon11.svg',
+      },
       { name: 'Operators', path: routes.OPERATORS, Icon: '/icons/sidebar/sidebarIcon12.svg' },
     ],
   },
@@ -37,8 +44,8 @@ export default function Sidebar() {
 
   useEffect(() => {
     const initialOpen: Record<string, boolean> = {};
-    navItems.forEach(item => {
-      if (item.subItems && item.subItems.some(sub => location.pathname === sub.path)) {
+    navItems.forEach((item) => {
+      if (item.subItems && item.subItems.some((sub) => location.pathname === sub.path)) {
         initialOpen[item.name] = false;
       }
     });
@@ -48,9 +55,9 @@ export default function Sidebar() {
   const toggleDropdown = (name: string, e: React.MouseEvent, hasSubItems: boolean) => {
     if (hasSubItems) {
       e.preventDefault();
-      setOpenDropdowns(prev => ({
+      setOpenDropdowns((prev) => ({
         ...prev,
-        [name]: !prev[name]
+        [name]: !prev[name],
       }));
     }
   };
@@ -66,8 +73,9 @@ export default function Sidebar() {
       {/* Nav */}
       <nav className="flex-1 px-3 space-y-0.5 mt-2">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.path ||
-            (item.subItems && item.subItems.some(sub => location.pathname === sub.path));
+          const isActive =
+            location.pathname === item.path ||
+            (item.subItems && item.subItems.some((sub) => location.pathname === sub.path));
           const isOpen = openDropdowns[item.name];
 
           return (
@@ -75,8 +83,9 @@ export default function Sidebar() {
               <Link
                 to={item.path}
                 onClick={(e) => toggleDropdown(item.name, e, !!item.subItems)}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
-                  }`}
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${
+                  isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
+                }`}
               >
                 <img
                   src={item.icon}
@@ -94,7 +103,11 @@ export default function Sidebar() {
                 )}
 
                 {item.hasDropdown && (
-                  <img src="/icons/sidebar/dropdown.svg" alt="dropdown" className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                  <img
+                    src="/icons/sidebar/dropdown.svg"
+                    alt="dropdown"
+                    className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                  />
                 )}
               </Link>
 
@@ -110,21 +123,26 @@ export default function Sidebar() {
                       <Link
                         key={subItem.name}
                         to={subItem.path}
-                        className={`relative z-10 flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150 ${isSubActive
-                          ? 'bg-[#14B8A6] text-white font-medium'
-                          : 'text-[#FFFFFF] font-medium'
-                          }`}
+                        className={`relative z-10 flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150 ${
+                          isSubActive
+                            ? 'bg-[#14B8A6] text-white font-medium'
+                            : 'text-[#FFFFFF] font-medium'
+                        }`}
                       >
                         {/* Connecting branch curve connecting to the main stalk */}
                         <div className="absolute left-[-13px] top-[-8px] w-[13px] h-[32px] border-b-2 border-l-2 border-white rounded-bl-[16px] z-[-1] pointer-events-none"></div>
 
-                        {typeof Icon === 'string' ? (
-                          <img src={Icon} alt={subItem.name} className="w-[24px] h-[24px] shrink-0" draggable={false} />
-                        ) : Icon ? (
-                          // @ts-ignore
-                          <Icon className={`w-[24px] h-[24px] shrink-0 ${isSubActive ? 'text-white' : 'text-[#DFE6E5]'}`} strokeWidth={isSubActive ? 2.5 : 2} />
-                        ) : null}
-                        <span className="text-[14px] font-medium text-[#FFFFFF] leading-none">{subItem.name}</span>
+                        {Icon && (
+                          <img
+                            src={Icon}
+                            alt={subItem.name}
+                            className="w-[24px] h-[24px] shrink-0"
+                            draggable={false}
+                          />
+                        )}
+                        <span className="text-[14px] font-medium text-[#FFFFFF] leading-none">
+                          {subItem.name}
+                        </span>
                       </Link>
                     );
                   })}

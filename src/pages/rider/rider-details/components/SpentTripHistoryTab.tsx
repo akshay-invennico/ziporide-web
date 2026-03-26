@@ -107,10 +107,11 @@ export default function SpentTripHistoryTab() {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-                  }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                  trendFilter === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A] '
+                }`}
               >
                 {filter}
               </button>
@@ -168,10 +169,11 @@ export default function SpentTripHistoryTab() {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-                  }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                  trendFilter === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A] '
+                }`}
               >
                 {filter}
               </button>
@@ -183,23 +185,20 @@ export default function SpentTripHistoryTab() {
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-medium uppercase text-[#4E616A]">
-                {[
-                  'TRIP ID',
-                  'DRIVER',
-                  'ROUTE',
-                  'RATING',
-                  'AMOUNT',
-                  'DATE',
-                  'STATUS',
-                  'ACTION',
-                ].map((header) => (
-                  <th key={header} className="px-4 py-3.5 cursor-pointer group">
-                    <div className="flex items-center justify-between gap-1">
-                      <span>{header}</span>
-                      <img src="/icons/rider/updown.svg" alt="sort" className="w-[18px] h-[18px]" />
-                    </div>
-                  </th>
-                ))}
+                {['TRIP ID', 'DRIVER', 'ROUTE', 'RATING', 'AMOUNT', 'DATE', 'STATUS', 'ACTION'].map(
+                  (header) => (
+                    <th key={header} className="px-4 py-3.5 cursor-pointer group">
+                      <div className="flex items-center justify-between gap-1">
+                        <span>{header}</span>
+                        <img
+                          src="/icons/rider/updown.svg"
+                          alt="sort"
+                          className="w-[18px] h-[18px]"
+                        />
+                      </div>
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -230,7 +229,7 @@ export default function SpentTripHistoryTab() {
                   <td className="p-4 text-[#4E616A] font-medium text-[14px]">
                     <div className="flex items-center gap-2">
                       <span>{trip.route.from}</span>
-                      <ArrowRightIcon className='w-4 h-4' />
+                      <ArrowRightIcon className="w-4 h-4" />
                       <span>{trip.route.to}</span>
                     </div>
                   </td>
@@ -315,10 +314,11 @@ export default function SpentTripHistoryTab() {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
-                        ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                        : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                        }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>

@@ -6,7 +6,7 @@ const notifications = [
     title: 'New Ride Requested',
     message: 'James Walker successfully created an account.',
     time: '2m',
-    icon: '/icons/notifications/ride-req.svg'
+    icon: '/icons/notifications/ride-req.svg',
   },
   {
     id: 2,
@@ -128,15 +128,20 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOpen }) =
         {notifications.map((notif, index) => (
           <div
             key={notif.id}
-            className={`p-4 flex gap-4 hover:bg-gray-50 transition-colors cursor-pointer ${index !== notifications.length - 1 ? 'border-b border-[#DFE6E5]' : ''
-              }`}
+            className={`p-4 flex gap-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+              index !== notifications.length - 1 ? 'border-b border-[#DFE6E5]' : ''
+            }`}
           >
             <img src={notif.icon} alt={notif.title} className="w-[50px] h-[50px]" />
 
             <div className="flex-1">
               <div className="flex justify-between items-start mb-1">
-                <h4 className="text-[16px] font-semibold text-[#000000] font-inter">{notif.title}</h4>
-                <span className="text-[12px] font-medium text-[#4E616A] whitespace-nowrap">{notif.time}</span>
+                <h4 className="text-[16px] font-semibold text-[#000000] font-inter">
+                  {notif.title}
+                </h4>
+                <span className="text-[12px] font-medium text-[#4E616A] whitespace-nowrap">
+                  {notif.time}
+                </span>
               </div>
               <p className="text-[14px] font-medium text-[#4E616A] font-inter line-clamp-2">
                 {notif.message}

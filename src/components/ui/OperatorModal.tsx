@@ -88,9 +88,7 @@ const permissionCategories = [
   {
     id: 'push',
     label: 'Push Notifications',
-    permissions: [
-      { id: 'send_notifications', label: 'Send Notifications' },
-    ],
+    permissions: [{ id: 'send_notifications', label: 'Send Notifications' }],
   },
   {
     id: 'operators',
@@ -140,7 +138,10 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
     if (isView) return;
     const currentPerms = [...formik.values.permissions];
     if (currentPerms.includes(permId)) {
-      formik.setFieldValue('permissions', currentPerms.filter(id => id !== permId));
+      formik.setFieldValue(
+        'permissions',
+        currentPerms.filter((id) => id !== permId),
+      );
     } else {
       formik.setFieldValue('permissions', [...currentPerms, permId]);
     }
@@ -148,15 +149,18 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
 
   const toggleCategory = (catId: string) => {
     if (isView) return;
-    const category = permissionCategories.find(c => c.id === catId);
+    const category = permissionCategories.find((c) => c.id === catId);
     if (!category) return;
 
-    const catPermIds = category.permissions.map(p => p.id);
+    const catPermIds = category.permissions.map((p) => p.id);
     const currentPerms = [...formik.values.permissions];
-    const allSelected = catPermIds.every(id => currentPerms.includes(id));
+    const allSelected = catPermIds.every((id) => currentPerms.includes(id));
 
     if (allSelected) {
-      formik.setFieldValue('permissions', currentPerms.filter(id => !catPermIds.includes(id)));
+      formik.setFieldValue(
+        'permissions',
+        currentPerms.filter((id) => !catPermIds.includes(id)),
+      );
     } else {
       const newPerms = Array.from(new Set([...currentPerms, ...catPermIds]));
       formik.setFieldValue('permissions', newPerms);
@@ -191,15 +195,14 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
               />
             </div>
             <div className="flex flex-col">
-              <h2 className="text-[18px] font-semibold text-[#000000] font-inter">
-                {getTitle()}
-              </h2>
-              <p className="text-[14px] font-medium text-[#4E616A] font-inter">
-                {getSubtitle()}
-              </p>
+              <h2 className="text-[18px] font-semibold text-[#000000] font-inter">{getTitle()}</h2>
+              <p className="text-[14px] font-medium text-[#4E616A] font-inter">{getSubtitle()}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 cursor-pointer text-[#4E616A]  rounded-full transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 cursor-pointer text-[#4E616A]  rounded-full transition-colors"
+          >
             <X size={22} />
           </button>
         </div>
@@ -212,9 +215,13 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
               <h3 className="text-[16px] font-semibold text-[#000000] mb-6">Basic Information</h3>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[14px] font-medium text-[#4E616A] mb-2">Full Name</label>
+                  <label className="block text-[14px] font-medium text-[#4E616A] mb-2">
+                    Full Name
+                  </label>
                   {isView ? (
-                    <p className="text-[14px] font-semibold text-[#000000]">{formik.values.fullName}</p>
+                    <p className="text-[14px] font-semibold text-[#000000]">
+                      {formik.values.fullName}
+                    </p>
                   ) : (
                     <input
                       type="text"
@@ -229,7 +236,9 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                 <div>
                   <label className="block text-[14px] font-medium text-[#4E616A] mb-2">Email</label>
                   {isView ? (
-                    <p className="text-[14px] font-semibold text-[#000000]">{formik.values.email}</p>
+                    <p className="text-[14px] font-semibold text-[#000000]">
+                      {formik.values.email}
+                    </p>
                   ) : (
                     <input
                       type="email"
@@ -242,9 +251,13 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                   )}
                 </div>
                 <div>
-                  <label className="block text-[14px] font-medium text-[#4E616A] mb-2">Password</label>
+                  <label className="block text-[14px] font-medium text-[#4E616A] mb-2">
+                    Password
+                  </label>
                   {isView ? (
-                    <p className="text-[14px] font-semibold text-[#000000]">{formik.values.password}</p>
+                    <p className="text-[14px] font-semibold text-[#000000]">
+                      {formik.values.password}
+                    </p>
                   ) : (
                     <input
                       type="password"
@@ -273,7 +286,10 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                         <option value="Manager">Manager</option>
                         <option value="Operator">Operator</option>
                       </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4E616A] pointer-events-none" size={18} />
+                      <ChevronDown
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4E616A] pointer-events-none"
+                        size={18}
+                      />
                     </div>
                   )}
                 </div>
@@ -285,25 +301,42 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
               <h3 className="text-[16px] font-semibold text-[#000000] mb-6">Permissions</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {permissionCategories.map((category) => {
-                  const catPermIds = category.permissions.map(p => p.id);
-                  const isCatSelected = catPermIds.every(id => formik.values.permissions.includes(id));
-                  const isCatPartial = catPermIds.some(id => formik.values.permissions.includes(id)) && !isCatSelected;
+                  const catPermIds = category.permissions.map((p) => p.id);
+                  const isCatSelected = catPermIds.every((id) =>
+                    formik.values.permissions.includes(id),
+                  );
+                  const isCatPartial =
+                    catPermIds.some((id) => formik.values.permissions.includes(id)) &&
+                    !isCatSelected;
 
                   return (
-                    <div key={category.id} className="border w-[240px] h-[182px] border-[#DFE6E5] rounded-lg p-4 space-y-4">
+                    <div
+                      key={category.id}
+                      className="border w-[240px] h-[182px] border-[#DFE6E5] rounded-lg p-4 space-y-4"
+                    >
                       <div className="flex items-center gap-3">
                         <div
                           onClick={() => toggleCategory(category.id)}
                           className={`w-5 h-5 rounded border ${isCatSelected ? 'bg-[#1DAFA1] border-[#1DAFA1]' : 'border-[#DFE6E5]'} flex items-center justify-center cursor-pointer transition-colors`}
                         >
                           {isCatSelected && (
-                            <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <svg
+                              className="w-3.5 h-3.5 text-white"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
                               <polyline points="20 6 9 17 4 12" />
                             </svg>
                           )}
                           {isCatPartial && <div className="w-2.5 h-0.5 bg-[#1DAFA1]" />}
                         </div>
-                        <span className="text-[14px] font-semibold text-[#000000]">{category.label}</span>
+                        <span className="text-[14px] font-semibold text-[#000000]">
+                          {category.label}
+                        </span>
                       </div>
                       <div className="space-y-3 pl-1">
                         {category.permissions.map((permission) => {
@@ -315,12 +348,22 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                                 className={`w-5 h-5 rounded border ${isSelected ? 'bg-[#1DAFA1] border-[#1DAFA1]' : 'border-[#DFE6E5]'} flex items-center justify-center cursor-pointer transition-colors`}
                               >
                                 {isSelected && (
-                                  <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                  <svg
+                                    className="w-3.5 h-3.5 text-white"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
                                     <polyline points="20 6 9 17 4 12" />
                                   </svg>
                                 )}
                               </div>
-                              <span className="text-[14px] font-medium text-[#4E616A]">{permission.label}</span>
+                              <span className="text-[14px] font-medium text-[#4E616A]">
+                                {permission.label}
+                              </span>
                             </div>
                           );
                         })}

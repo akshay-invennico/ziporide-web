@@ -83,7 +83,8 @@ export default function DriverSubscriptionTab() {
               minHeight: '152px',
               borderRadius: '12px',
               padding: '18px 20px',
-              background: 'linear-gradient(145deg, #1DAFA1 0%, #29b89a 35%, #d4880a 80%, #e09010 100%)',
+              background:
+                'linear-gradient(145deg, #1DAFA1 0%, #29b89a 35%, #d4880a 80%, #e09010 100%)',
               border: '1.5px solid rgba(255,255,255,0.18)',
               boxShadow: '0 4px 24px 0 rgba(29,175,161,0.18)',
               display: 'flex',
@@ -113,8 +114,12 @@ export default function DriverSubscriptionTab() {
                   Z
                 </div>
                 <div>
-                  <p className="text-white font-bold text-[20px] m-0 leading-tight">Zipo Subscription</p>
-                  <p className="text-white text-[12px] font-medium m-0 mt-0.5">Subscribe on : 2025-01-05</p>
+                  <p className="text-white font-bold text-[20px] m-0 leading-tight">
+                    Zipo Subscription
+                  </p>
+                  <p className="text-white text-[12px] font-medium m-0 mt-0.5">
+                    Subscribe on : 2025-01-05
+                  </p>
                 </div>
               </div>
               <span
@@ -145,7 +150,6 @@ export default function DriverSubscriptionTab() {
         </div>
       </div>
 
-
       {/* Billing History */}
       <div className="p-1">
         <div className="border border-[#DFE6E5] rounded-lg overflow-hidden">
@@ -155,7 +159,9 @@ export default function DriverSubscriptionTab() {
                 {/* Billing History title row */}
                 <tr className="border-b border-[#DFE6E5]">
                   <th colSpan={billingTableColumns.length} className="px-4 py-4 bg-white">
-                    <span className="text-[20px] font-semibold text-[#000000]">Billing History</span>
+                    <span className="text-[20px] font-semibold text-[#000000]">
+                      Billing History
+                    </span>
                   </th>
                 </tr>
 
@@ -230,11 +236,12 @@ export default function DriverSubscriptionTab() {
 
                     {/* Action — Download */}
                     <td className="px-4 py-3">
-                      <button
-                        className="cursor-pointer "
-                        title="Download Receipt"
-                      >
-                        <img src="/icons/driver/Download.svg" alt="download" className='w-[22px] h-[22px]' />
+                      <button className="cursor-pointer " title="Download Receipt">
+                        <img
+                          src="/icons/driver/Download.svg"
+                          alt="download"
+                          className="w-[22px] h-[22px]"
+                        />
                       </button>
                     </td>
                   </tr>
@@ -262,10 +269,11 @@ export default function DriverSubscriptionTab() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page as number)}
-                  className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
-                    ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                    : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                    }`}
+                  className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
+                    currentPage === page
+                      ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                      : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+                  }`}
                 >
                   {page}
                 </button>

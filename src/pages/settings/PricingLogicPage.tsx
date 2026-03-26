@@ -20,7 +20,7 @@ const PricingLogicPage = () => {
         <label className="text-[14px] font-medium text-[#4E616A]">{label}</label>
         {info && (
           <div className="flex items-center gap-1.5 text-[#4E616A]">
-            <img src="/icons/settings/info.svg" alt="info" className='w-[15px] h-[15px]' />
+            <img src="/icons/settings/info.svg" alt="info" className="w-[15px] h-[15px]" />
             <span className="text-[12px] font-medium">{info}</span>
           </div>
         )}
@@ -46,7 +46,7 @@ const PricingLogicPage = () => {
       <div className="bg-white rounded-lg h-[174px] border border-[#DFE6E5] p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-[32px] h-[32px] rounded-sm bg-[#F9F9F9] flex items-center justify-center">
-            <img src="/icons/settings/pound.svg" alt="pound" className='w-[20px] h-[20px]' />
+            <img src="/icons/settings/pound.svg" alt="pound" className="w-[20px] h-[20px]" />
           </div>
           <h2 className="text-[18px] font-semibold text-[#101828]">Min Pricing</h2>
         </div>
@@ -63,7 +63,7 @@ const PricingLogicPage = () => {
       <div className="bg-white rounded-lg h-[335px] border border-[#DFE6E5] p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-[32px] h-[32px] rounded-sm bg-[#F9F9F9] flex items-center justify-center">
-            <img src="/icons/settings/clock.svg" alt="clock" className='w-[20px] h-[20px]' />
+            <img src="/icons/settings/clock.svg" alt="clock" className="w-[20px] h-[20px]" />
           </div>
           <h2 className="text-[18px] font-semibold text-[#101828]">Additional Charges</h2>
         </div>
@@ -103,7 +103,7 @@ const PricingLogicPage = () => {
         </div>
 
         <div className="bg-[#FFF6F6] rounded-sm p-3 flex items-center gap-2">
-          <img src="/icons/settings/redInfo.svg" alt="redinfo" className='w-[15px] h-[15px]' />
+          <img src="/icons/settings/redInfo.svg" alt="redinfo" className="w-[15px] h-[15px]" />
           <span className="text-[12px] font-medium text-[#FF0707]">
             Ride will get automatically cancelled after Maximum Paid waiting time
           </span>
@@ -115,7 +115,7 @@ const PricingLogicPage = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-[32px] h-[32px] rounded-sm bg-[#F9F9F9] flex items-center justify-center">
-              <img src="/icons/settings/trendup.svg" alt="trendup" className='w-[20px] h-[20px]' />
+              <img src="/icons/settings/trendup.svg" alt="trendup" className="w-[20px] h-[20px]" />
             </div>
             <h2 className="text-[18px] font-semibold text-[#101828]">Surge Pricing</h2>
           </div>
@@ -123,12 +123,14 @@ const PricingLogicPage = () => {
             <span className="text-[14px] font-medium text-[#4E616A]">Enable Surge Pricing</span>
             <button
               onClick={() => setSurgeEnabled(!surgeEnabled)}
-              className={`relative inline-flex cursor-pointer h-6 w-11 items-center rounded-full transition-colors ${surgeEnabled ? 'bg-[#14B8A6]' : 'bg-gray-300'
-                }`}
+              className={`relative inline-flex cursor-pointer h-6 w-11 items-center rounded-full transition-colors ${
+                surgeEnabled ? 'bg-[#14B8A6]' : 'bg-gray-300'
+              }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${surgeEnabled ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  surgeEnabled ? 'translate-x-6' : 'translate-x-1'
+                }`}
               />
             </button>
           </div>
@@ -149,33 +151,45 @@ const PricingLogicPage = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <span className="w-[5px] h-[5px] rounded-full bg-[#4E616A] mt-2 shrink-0" />
-                <span className="text-[14px] font-medium text-[#4E616A]">Automatically applies during peak hours (7-9 AM, 5-7 PM)</span>
+                <span className="text-[14px] font-medium text-[#4E616A]">
+                  Automatically applies during peak hours (7-9 AM, 5-7 PM)
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="w-[5px] h-[5px] rounded-full bg-[#4E616A] mt-2 shrink-0" />
-                <span className="text-[14px] font-medium text-[#4E616A]">Triggers when driver demand exceeds supply by 30%</span>
+                <span className="text-[14px] font-medium text-[#4E616A]">
+                  Triggers when driver demand exceeds supply by 30%
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="w-[5px] h-[5px] rounded-full bg-[#4E616A] mt-2 shrink-0" />
-                <span className="text-[14px] font-medium text-[#4E616A]">Maximum multiplier capped at 3.0x for rider protection</span>
+                <span className="text-[14px] font-medium text-[#4E616A]">
+                  Maximum multiplier capped at 3.0x for rider protection
+                </span>
               </li>
             </ul>
           </div>
 
           {/* Example Fare Box */}
           <div className="border border-[#1DAFA1] h-[284px] bg-[#EEFFFD] rounded-lg p-3">
-            <h3 className="text-[14px] font-semibold text-[#000000] mb-4">Example Fare Calculation</h3>
+            <h3 className="text-[14px] font-semibold text-[#000000] mb-4">
+              Example Fare Calculation
+            </h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-2 border-b border-dashed border-[#DFE6E5]">
                 <span className="text-[14px] font-medium text-[#4E616A]">Base Fare</span>
                 <span className="text-[14px] font-medium text-[#4E616A]">£10.00</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-dashed border-[#DFE6E5]">
-                <span className="text-[14px] font-medium text-[#4E616A]">Distance (10 miles @ £1.50/mi)</span>
+                <span className="text-[14px] font-medium text-[#4E616A]">
+                  Distance (10 miles @ £1.50/mi)
+                </span>
                 <span className="text-[14px] font-medium text-[#4E616A]">£15.00</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-dashed border-[#DFE6E5]">
-                <span className="text-[14px] font-medium text-[#4E616A]">Time (20 mins @ £0.35/min)</span>
+                <span className="text-[14px] font-medium text-[#4E616A]">
+                  Time (20 mins @ £0.35/min)
+                </span>
                 <span className="text-[14px] font-medium text-[#4E616A]">£07.00</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-dashed border-[#DFE6E5]">

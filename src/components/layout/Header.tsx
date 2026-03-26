@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/context/useAuth';
 import { routes } from '@/routes/routes';
+
 import NotificationDropdown from './NotificationDropdown';
 
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
@@ -45,16 +46,16 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   },
   [routes.PUSH_NOTIFICATIONS]: {
     title: 'Push Notifications',
-    subtitle: 'Manage notification settings and send custom alerts'
+    subtitle: 'Manage notification settings and send custom alerts',
   },
   [routes.OPERATORS]: {
     title: 'Operators Management',
-    subtitle: 'Oversee operators and manage their permissions'
+    subtitle: 'Oversee operators and manage their permissions',
   },
   [routes.MY_PROFILE]: {
     title: 'Admin Profile',
-    subtitle: 'Manage your profile settings'
-  }
+    subtitle: 'Manage your profile settings',
+  },
 };
 
 export default function Header() {
@@ -106,9 +107,7 @@ export default function Header() {
             className="w-[44px] h-[44px] cursor-pointer"
             onClick={() => setIsNotificationOpen(!isNotificationOpen)}
           />
-          <NotificationDropdown 
-            isOpen={isNotificationOpen} 
-          />
+          <NotificationDropdown isOpen={isNotificationOpen} />
         </div>
 
         <div className="relative" ref={dropdownRef}>

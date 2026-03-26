@@ -9,10 +9,14 @@ type FilterStatus = 'Pending' | 'Approved' | 'Rejected' | 'All';
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'Pending': return { dot: 'bg-[#F6921E]', text: 'text-[#F6921E]' };
-    case 'Approved': return { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' };
-    case 'Rejected': return { dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' };
-    default: return { dot: 'bg-[#6B7280]', text: 'text-[#6B7280]' };
+    case 'Pending':
+      return { dot: 'bg-[#F6921E]', text: 'text-[#F6921E]' };
+    case 'Approved':
+      return { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' };
+    case 'Rejected':
+      return { dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' };
+    default:
+      return { dot: 'bg-[#6B7280]', text: 'text-[#6B7280]' };
   }
 };
 
@@ -50,7 +54,8 @@ const VerificationPage = () => {
         let i = Math.max(2, currentPage - 1);
         i <= Math.min(totalPages - 1, currentPage + 1);
         i++
-      ) pages.push(i);
+      )
+        pages.push(i);
       if (currentPage < totalPages - 2) pages.push('...');
       pages.push(totalPages);
     }
@@ -62,7 +67,9 @@ const VerificationPage = () => {
     { key: 'driver', label: 'DRIVER', sortable: true },
     { key: 'email', label: 'EMAIL', sortable: true },
     { key: 'appliedOn', label: 'APPLIED ON', sortable: true },
-    ...(filterStatus === 'Approved' ? [{ key: 'approvedOn', label: 'APPROVED ON', sortable: true }] : []),
+    ...(filterStatus === 'Approved'
+      ? [{ key: 'approvedOn', label: 'APPROVED ON', sortable: true }]
+      : []),
     { key: 'status', label: 'STATUS', sortable: true },
     ...(filterStatus === 'Rejected' ? [{ key: 'reason', label: 'REASON', sortable: true }] : []),
     { key: 'action', label: 'ACTION', sortable: false },
@@ -104,14 +111,15 @@ const VerificationPage = () => {
                             setFilterStatus(status);
                             setCurrentPage(1);
                           }}
-                          className={`px-4 py-1.5 rounded-sm text-[13px] cursor-pointer font-medium border transition-all ${filterStatus === status
-                            ? status === 'Pending'
-                              ? 'bg-[#FFF3D4] text-[#F6921E] border-[#F6921E]'
-                              : status === 'Approved'
-                                ? 'bg-[#EAFFF2] text-[#00A63E] border-[#00A63E]'
-                                : 'bg-[#FFF6F6] text-[#FF0707] border-[#FF0707]'
-                            : 'text-[#4E616A] bg-transparent border-[#DFE6E5]'
-                            }`}
+                          className={`px-4 py-1.5 rounded-sm text-[13px] cursor-pointer font-medium border transition-all ${
+                            filterStatus === status
+                              ? status === 'Pending'
+                                ? 'bg-[#FFF3D4] text-[#F6921E] border-[#F6921E]'
+                                : status === 'Approved'
+                                  ? 'bg-[#EAFFF2] text-[#00A63E] border-[#00A63E]'
+                                  : 'bg-[#FFF6F6] text-[#FF0707] border-[#FF0707]'
+                              : 'text-[#4E616A] bg-transparent border-[#DFE6E5]'
+                          }`}
                         >
                           {status}
                         </button>
@@ -122,7 +130,11 @@ const VerificationPage = () => {
                           onClick={() => setIsExportOpen((o) => !o)}
                           className="flex items-center cursor-pointer gap-2 px-4 py-1.5 border border-[#DFE6E5] rounded-sm text-[13px] font-medium text-[#4E616A]"
                         >
-                          <img src="/icons/rider/export.svg" alt="export" className="w-[20px] h-[20px]" />
+                          <img
+                            src="/icons/rider/export.svg"
+                            alt="export"
+                            className="w-[20px] h-[20px]"
+                          />
                           Export
                         </button>
                         <ExportDropdown
@@ -192,12 +204,16 @@ const VerificationPage = () => {
 
                       {/* Email */}
                       <td className="px-6 py-3">
-                        <span className="text-[#1DAFA1] font-medium text-[14px]">{request.email}</span>
+                        <span className="text-[#1DAFA1] font-medium text-[14px]">
+                          {request.email}
+                        </span>
                       </td>
 
                       {/* Applied On */}
                       <td className="px-6 py-3">
-                        <span className="text-[#4E616A] text-[14px] font-medium">{request.appliedOn}</span>
+                        <span className="text-[#4E616A] text-[14px] font-medium">
+                          {request.appliedOn}
+                        </span>
                       </td>
 
                       {/* Approved On (conditional) */}
@@ -261,7 +277,10 @@ const VerificationPage = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={columns.length} className="p-8 text-center text-[14px] text-[#4E616A]">
+                  <td
+                    colSpan={columns.length}
+                    className="p-8 text-center text-[14px] text-[#4E616A]"
+                  >
                     No verification requests found.
                   </td>
                 </tr>
@@ -289,10 +308,11 @@ const VerificationPage = () => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page as number)}
-                className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
-                  ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                  : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                  }`}
+                className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
+                  currentPage === page
+                    ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                    : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+                }`}
               >
                 {page}
               </button>

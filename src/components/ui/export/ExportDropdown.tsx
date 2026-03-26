@@ -18,15 +18,19 @@ const ExportDropdown: React.FC<ExportDropdownProps> = ({ isOpen, onClose }) => {
           className="w-full flex items-center gap-4 px-5 py-2  text-left group"
           onClick={onClose}
         >
-          <img src="/icons/pdf.svg" alt="pdf" className='w-[22px] h-[22px]' />
-          <span className="text-[14px] cursor-pointer font-medium text-[#000000] font-inter">PDF</span>
+          <img src="/icons/pdf.svg" alt="pdf" className="w-[22px] h-[22px]" />
+          <span className="text-[14px] cursor-pointer font-medium text-[#000000] font-inter">
+            PDF
+          </span>
         </button>
         <button
           className="w-full flex items-center gap-4 px-5 py-2  text-left group"
           onClick={onClose}
         >
-          <img src="/icons/csv.svg" alt="csv" className='w-[22px] h-[22px]' />
-          <span className="text-[14px] cursor-pointer font-medium text-[#000000] font-inter">CSV</span>
+          <img src="/icons/csv.svg" alt="csv" className="w-[22px] h-[22px]" />
+          <span className="text-[14px] cursor-pointer font-medium text-[#000000] font-inter">
+            CSV
+          </span>
         </button>
       </div>
     </div>

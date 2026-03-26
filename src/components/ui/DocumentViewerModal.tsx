@@ -38,13 +38,12 @@ export default function DocumentViewerModal({
         <X className="w-6 h-6 sm:w-8 sm:h-8" />
       </button>
 
-      <div className="relative w-[1000px] h-[800px] max-w-full max-h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="relative w-[1000px] h-[800px] max-w-full max-h-full flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         {documentSrc ? (
-          <img
-            src={documentSrc}
-            alt={documentName}
-            className="w-full h-full object-contain"
-          />
+          <img src={documentSrc} alt={documentName} className="w-full h-full object-contain" />
         ) : (
           <div className="bg-[#2A2A2A] w-full h-full rounded-lg flex items-center justify-center text-[#A0AEC0] text-[14px] font-medium border border-[#333]">
             No preview available.

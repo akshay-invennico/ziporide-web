@@ -1,4 +1,4 @@
-import { Star, ChevronLeft, ChevronRight, Eye, ArrowRightIcon } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
@@ -194,10 +194,11 @@ export default function DriverTripHistoryTab() {
                             setPeriod(p);
                             setCurrentPage(1);
                           }}
-                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
-                            ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                            : 'border-[#DFE6E5] text-[#4E616A]'
-                            }`}
+                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                            period === p
+                              ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                              : 'border-[#DFE6E5] text-[#4E616A]'
+                          }`}
                         >
                           {p}
                         </button>
@@ -243,10 +244,7 @@ export default function DriverTripHistoryTab() {
                   {/* Rider */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
-                      <div
-                        className="w-[36px] h-[36px] rounded-full flex bg-[#1DAFA1] items-center justify-center text-white font-bold text-[14px] shrink-0"
-
-                      >
+                      <div className="w-[36px] h-[36px] rounded-full flex bg-[#1DAFA1] items-center justify-center text-white font-bold text-[14px] shrink-0">
                         {trip.rider.initials}
                       </div>
                       <div>
@@ -262,7 +260,7 @@ export default function DriverTripHistoryTab() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#4E616A]">
                       <span className="whitespace-nowrap">{trip.from}</span>
-                      <ArrowRightIcon className='w-4 h-4' />
+                      <ArrowRightIcon className="w-4 h-4" />
                       <span className="whitespace-nowrap">{trip.to}</span>
                     </div>
                   </td>
@@ -302,7 +300,7 @@ export default function DriverTripHistoryTab() {
                       onClick={() => handleViewTrip(trip)}
                       className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1]  cursor-pointer"
                     >
-                      <img src="/icons/rider/eye.svg" alt="eye" className='w-[22px] h-[22px]' />
+                      <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
                       View
                     </button>
                   </td>
@@ -331,10 +329,11 @@ export default function DriverTripHistoryTab() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page as number)}
-                className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
-                  ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                  : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                  }`}
+                className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
+                  currentPage === page
+                    ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                    : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+                }`}
               >
                 {page}
               </button>

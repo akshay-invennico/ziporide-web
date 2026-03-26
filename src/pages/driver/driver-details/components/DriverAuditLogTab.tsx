@@ -1,5 +1,3 @@
-import { Calendar } from 'lucide-react';
-
 interface TimelineItem {
   id: number;
   title: string;
@@ -88,9 +86,7 @@ export default function DriverAuditLogTab() {
                   {/* Teal circle dot */}
                   <div className="w-[18px] h-[18px] rounded-full border-[2.5px] border-[#1DAFA1] bg-white shrink-0 z-10 mt-0.5" />
                   {/* Connecting line */}
-                  {!isLast && (
-                    <div className="w-px flex-1 bg-[#DFE6E5] my-1" />
-                  )}
+                  {!isLast && <div className="w-px flex-1 bg-[#DFE6E5] my-1" />}
                 </div>
 
                 {/* Content */}
@@ -137,4 +133,3 @@ export default function DriverAuditLogTab() {
     </div>
   );
 }
-

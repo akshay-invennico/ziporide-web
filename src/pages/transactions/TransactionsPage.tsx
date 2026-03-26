@@ -1,8 +1,8 @@
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
-import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
+import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
 import { transactionsData } from '../../data/TransactionsData';
 import type { TransactionRecord } from '../../data/TransactionsData';
 
