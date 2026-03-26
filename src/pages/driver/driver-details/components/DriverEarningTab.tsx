@@ -61,7 +61,7 @@ function CustomTooltip({
 }) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-[#DFE6E5] rounded-xl shadow-lg px-4 py-3 min-w-[130px]">
+      <div className="bg-white border border-[#DFE6E5] rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] px-4 py-3 min-w-[130px]">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-[22px] h-[22px] rounded-md  flex items-center justify-center shrink-0">
             <img src="/icons/driver/driverIncome.svg" />
@@ -93,7 +93,7 @@ function StatCard({ label, value, icon }: StatCardProps) {
     <div className="flex-1 flex items-center justify-between bg-white border border-[#DFE6E5] rounded-xl px-4 py-4 min-w-[150px]">
       <div>
         <p className="text-[12px] text-[#4E616A] font-medium mb-1">{label}</p>
-        <p className="text-[20px] font-bold text-[#101828]">{value}</p>
+        <p className="text-[24px] font-bold text-[#101828]">{value}</p>
       </div>
       <div className={`w-[48px] h-[48px] rounded-lg flex items-center justify-center shrink-0`}>
         <img src={icon} alt={label} className="w-[48px] h-[48px]" />
@@ -117,7 +117,7 @@ export default function DriverEarningTab() {
   };
 
   return (
-    <div className="p-5 flex flex-col gap-5">
+    <div className="p-1 flex flex-col gap-5">
       {/* Stat Cards */}
       <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
         <StatCard label="Total Trips" value="145" icon="/icons/driver/card1.svg" />
@@ -131,7 +131,7 @@ export default function DriverEarningTab() {
         {/* Header */}
         <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
           <div>
-            <h3 className="text-[16px] font-bold text-[#101828]">Earning Report</h3>
+            <h3 className="text-[20px] font-semibold text-[#101828]">Earning Report</h3>
             <p className="text-[12px] text-[#4E616A] font-medium mt-0.5">
               Track Driver's Earning amounts
             </p>
@@ -143,11 +143,10 @@ export default function DriverEarningTab() {
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  period === p
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
               >
                 {p}
               </button>

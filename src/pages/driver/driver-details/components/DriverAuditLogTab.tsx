@@ -1,4 +1,4 @@
-import { Clock, User, Settings } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 interface TimelineItem {
   id: number;
@@ -7,7 +7,6 @@ interface TimelineItem {
   date: string;
   time: string;
   actor: 'System' | 'Driver';
-  isLast?: boolean;
 }
 
 const timelineData: TimelineItem[] = [
@@ -64,60 +63,78 @@ const timelineData: TimelineItem[] = [
   {
     id: 7,
     title: 'Trip Started',
+    description: 'Driver started the trip after confirming passenger on-board',
     date: '20 Mar, 2026',
     time: '04:15 PM',
     actor: 'Driver',
-    isLast: true,
   },
 ];
 
 export default function DriverAuditLogTab() {
   return (
-    <div className="p-6">
-      <h3 className="text-[18px] font-bold text-[#101828] mb-8">Activity Timeline</h3>
+    <div className="p-0">
+      <div className="border border-[#DFE6E5] rounded-lg p-6">
+        <h3 className="text-[20px] font-semibold text-[#000000] mb-4">Activity Timeline</h3>
 
-      <div className="flex flex-col">
-        {timelineData.map((item) => (
-          <div key={item.id} className="flex gap-6 group">
-            {/* Timeline Graphic */}
-            <div className="flex flex-col items-center">
-              <div className="w-[18px] h-[18px] rounded-full border-[3px] border-[#1DAFA1] bg-white  shrink-0 z-10" />
-              {!item.isLast && (
-                <div className="w-px flex-1 bg-[#DFE6E5] my-2 group-hover:bg-[#1DAFA1]/30 transition-colors" />
-              )}
-            </div>
+        <div className="flex flex-col border-t border-[#DFE6E5] ">
+          {timelineData.map((item, index) => {
+            const isLast = index === timelineData.length - 1;
+            const isSystem = item.actor === 'System';
 
-            {/* Content */}
-            <div className={`flex-1 ${item.isLast ? '' : 'pb-10'}`}>
-              <h4 className="text-[15px] font-bold text-[#101828] mb-1.5">{item.title}</h4>
-              {item.description && (
-                <p className="text-[13px] font-medium text-[#4E616A] mb-3 max-w-[600px] leading-relaxed">
-                  {item.description}
-                </p>
-              )}
-
-              {/* Metadata Row */}
-              <div className="flex items-center gap-4 text-[12px] font-semibold text-[#4E616A]">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-[14px] h-[14px] opacity-70" />
-                  <span>{item.date}</span>
-                  <div className="w-[4px] h-[4px] rounded-full bg-gray-300 mx-0.5" />
-                  <span>{item.time}</span>
-                </div>
-                <div className="w-px h-[10px] bg-gray-300" />
-                <div className="flex items-center gap-1.5">
-                  {item.actor === 'Driver' ? (
-                    <User className="w-[14px] h-[14px] opacity-70" />
-                  ) : (
-                    <Settings className="w-[14px] h-[14px] opacity-70" />
+            return (
+              <div key={item.id} className="flex gap-5 mt-5">
+                {/* Timeline Column */}
+                <div className="flex flex-col items-center">
+                  {/* Teal circle dot */}
+                  <div className="w-[18px] h-[18px] rounded-full border-[2.5px] border-[#1DAFA1] bg-white shrink-0 z-10 mt-0.5" />
+                  {/* Connecting line */}
+                  {!isLast && (
+                    <div className="w-px flex-1 bg-[#DFE6E5] my-1" />
                   )}
-                  <span>{item.actor}</span>
+                </div>
+
+                {/* Content */}
+                <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-8'}`}>
+                  <h4 className="text-[16px] font-semibold text-[#000000] mb-1 leading-tight">
+                    {item.title}
+                  </h4>
+
+                  {item.description && (
+                    <p className="text-[14px] font-medium text-[#4E616A] mb-3 max-w-[600px] leading-relaxed">
+                      {item.description}
+                    </p>
+                  )}
+
+                  {/* Metadata Row: 📅 date • time • icon actor */}
+                  <div className="flex items-center gap-2 text-[12px] font-medium text-[#4E616A]">
+                    {/* Calendar icon + date */}
+                    <img src="/icons/driver/dates.svg" alt="date" />
+                    <span>{item.date}</span>
+
+                    {/* Bullet separator */}
+                    <div className="w-[4px] h-[4px] rounded-full bg-[#4E616A]" />
+
+                    {/* Time */}
+                    <span>{item.time}</span>
+
+                    {/* Bullet separator */}
+                    <div className="w-[4px] h-[4px] rounded-full bg-[#4E616A]" />
+
+                    {/* Actor icon + label */}
+                    {isSystem ? (
+                      <img src="/icons/driver/system.svg" alt="system" />
+                    ) : (
+                      <img src="/icons/driver/user.svg" alt="person" />
+                    )}
+                    <span>{item.actor}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 }
+

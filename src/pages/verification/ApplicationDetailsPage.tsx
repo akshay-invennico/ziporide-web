@@ -2,7 +2,7 @@ import { CheckCircle2, XCircle, X, Check, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import DocumentViewModal from '../../components/ui/DocumentViewModal';
+import DocumentViewerModal from '../../components/ui/DocumentViewerModal';
 import RejectDocumentModal from '../../components/ui/RejectDocumentModal';
 import RejectVerificationModal from '../../components/ui/RejectVerificationModal';
 import { verificationRequestsData } from '../../data/VerificationData';
@@ -533,10 +533,10 @@ const ApplicationDetailsPage = () => {
         </div>
       </div>
 
-      <DocumentViewModal
+      <DocumentViewerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        documentTitle={currentDocumentName}
+        documentName={currentDocumentName}
       />
 
       <RejectDocumentModal

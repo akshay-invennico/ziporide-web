@@ -97,9 +97,8 @@ const VehicleInventoryPage: React.FC = () => {
       <div className="flex gap-8  mb-6">
         <button
           onClick={() => setActiveTab('category')}
-          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${
-            activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-          }`}
+          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+            }`}
         >
           Vehicle Category
           {activeTab === 'category' && (
@@ -108,9 +107,8 @@ const VehicleInventoryPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('database')}
-          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${
-            activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-          }`}
+          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+            }`}
         >
           Vehicle Database
           {activeTab === 'database' && (
@@ -256,7 +254,7 @@ const VehicleInventoryPage: React.FC = () => {
           <div className="overflow-x-auto scrollbar-hide">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-inter font-medium uppercase tracking-wider text-[#4E616A]">
+                <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-medium uppercase tracking-wider text-[#4E616A]">
                   {[
                     { label: 'VEHICAL', sortable: true },
                     { label: 'CATEGORY', sortable: true },
@@ -384,11 +382,10 @@ const VehicleInventoryPage: React.FC = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${
-                        currentPage === pageNum
-                          ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold'
-                          : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
-                      }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${currentPage === pageNum
+                        ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold'
+                        : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
+                        }`}
                     >
                       {pageNum}
                     </button>

@@ -2,6 +2,7 @@ import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
 import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
+import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import { transactionsData } from '../../data/TransactionsData';
 import type { TransactionRecord } from '../../data/TransactionsData';
 
@@ -11,6 +12,7 @@ const TransactionsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<TransactionRecord | null>(null);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const itemsPerPage = 12;
 
   const filteredData = transactionsData.filter((txn) => {
@@ -132,10 +134,16 @@ const TransactionsPage: React.FC = () => {
                 </button>
               ))}
             </div>
-            <button className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] ">
-              <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />
-              Export
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsExportOpen(!isExportOpen)}
+                className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A]"
+              >
+                <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />
+                Export
+              </button>
+              <ExportDropdown isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+            </div>
           </div>
         </div>
 

@@ -87,6 +87,7 @@ export default function RiderDetailsPage() {
         isOpen={isSuspendModalOpen}
         onClose={() => setIsSuspendModalOpen(false)}
         onConfirm={() => setIsSuspendModalOpen(false)}
+        userType="rider"
       />
     </div>
   );

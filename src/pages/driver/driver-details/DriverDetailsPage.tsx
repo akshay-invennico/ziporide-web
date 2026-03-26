@@ -56,16 +56,15 @@ export default function DriverDetailsPage() {
       </button>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-8 mb-4 overflow-x-auto border-b border-[#DFE6E5]">
+      <div className="flex items-center gap-8 mb-4 overflow-x-auto ">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer ${
-              activeTab === tab.key
-                ? 'border-[#1DAFA1] text-[#1DAFA1]'
-                : 'border-transparent text-[#4E616A] hover:text-[#1DAFA1]'
-            }`}
+            className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer ${activeTab === tab.key
+              ? 'border-[#1DAFA1] text-[#1DAFA1]'
+              : 'border-transparent text-[#4E616A] hover:text-[#1DAFA1]'
+              }`}
           >
             {tab.label}
           </button>
@@ -73,9 +72,7 @@ export default function DriverDetailsPage() {
       </div>
 
       {/* Tab Content */}
-      <div
-        className={`bg-white rounded-lg ${activeTab === 'info' ? 'border border-t-0 border-[#DFE6E5]' : ''}`}
-      >
+      <div className="bg-white w-full">
         {activeTab === 'info' && <DriverInfoTab driver={driver} />}
         {activeTab === 'subscription' && <DriverSubscriptionTab />}
         {activeTab === 'earning' && <DriverEarningTab />}
@@ -100,6 +97,7 @@ export default function DriverDetailsPage() {
         isOpen={isSuspendModalOpen}
         onClose={() => setIsSuspendModalOpen(false)}
         onConfirm={() => setIsSuspendModalOpen(false)}
+        userType="driver"
       />
     </div>
   );

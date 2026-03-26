@@ -1,4 +1,4 @@
-import { Route as ArrowRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
   AreaChart,
@@ -11,17 +11,17 @@ import {
 } from 'recharts';
 
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
-import { spendingData, recentTrips } from '../../../../data/RiderTripsData';
+import { spendingData } from '../../../../data/RiderTripsData';
+import { tripHistoryData, type TripRecord } from '../../../../data/TripHistoryData';
 
 export default function SpentTripHistoryTab() {
   const [trendFilter, setTrendFilter] = useState('Year');
   const [currentPage, setCurrentPage] = useState(1);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [selectedTrip, setSelectedTrip] = useState<any>(null);
+  const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
   const itemsPerPage = 6;
 
-  const totalPages = Math.ceil(recentTrips.length / itemsPerPage);
-  const currentTrips = recentTrips.slice(
+  const totalPages = Math.ceil(tripHistoryData.length / itemsPerPage);
+  const currentTrips = tripHistoryData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
@@ -107,11 +107,10 @@ export default function SpentTripHistoryTab() {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  trendFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
               >
                 {filter}
               </button>
@@ -140,7 +139,7 @@ export default function SpentTripHistoryTab() {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 500 }}
-                tickFormatter={(value) => (value > 0 ? `£${value / 1000}K` : '£0')}
+                tickFormatter={(value: number) => (value > 0 ? `£${value / 1000}K` : '£0')}
               />
               <Tooltip
                 content={<CustomTooltip />}
@@ -169,11 +168,10 @@ export default function SpentTripHistoryTab() {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  trendFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
               >
                 {filter}
               </button>
@@ -184,102 +182,63 @@ export default function SpentTripHistoryTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-[#F8F9FA] border-y border-[#DFE6E5] text-[14px] font-medium uppercase  text-[#4E616A]">
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>TRIP ID</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
-
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>DRIVER</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
-
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>ROUTE</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
-
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>RATING</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
-
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>AMOUNT</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
-
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>DATE</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
-
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>STATUS</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
-
-                <th className="px-4 py-3.5 cursor-pointer group">
-                  <div className="flex items-center justify-between">
-                    <span>ACTION</span>
-                    <img src="/icons/rider/updown.svg" alt="sort" className="w-3.5 h-3.5 " />
-                  </div>
-                </th>
+              <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-medium uppercase text-[#4E616A]">
+                {[
+                  'TRIP ID',
+                  'DRIVER',
+                  'ROUTE',
+                  'RATING',
+                  'AMOUNT',
+                  'DATE',
+                  'STATUS',
+                  'ACTION',
+                ].map((header) => (
+                  <th key={header} className="px-4 py-3.5 cursor-pointer group">
+                    <div className="flex items-center justify-between gap-1">
+                      <span>{header}</span>
+                      <img src="/icons/rider/updown.svg" alt="sort" className="w-[18px] h-[18px]" />
+                    </div>
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="text-sm">
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              {currentTrips.map((trip: any) => (
+              {currentTrips.map((trip: TripRecord) => (
                 <tr
                   key={trip.id}
                   className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
                 >
-                  <td className="p-4 px-5 text-[#14B8A6] font-medium text-[14px]">{trip.id}</td>
+                  <td className="p-4 px-5 text-[#1DAFA1] font-medium text-[14px]">{trip.id}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden shrink-0">
                         {/* Using a placeholder avatar box if image not present, mimicking image with a colored background */}
-                        <div className="w-full h-full bg-teal-100 flex items-center justify-center text-[#14B8A6] font-bold text-[16px]">
-                          {trip.driver.charAt(0)}
+                        <div className="w-full h-full bg-teal-100 flex items-center justify-center text-[#1DAFA1] font-bold text-[16px]">
+                          {trip.driver.name.charAt(0)}
                         </div>
                       </div>
                       <div className="flex flex-col">
                         <span className="font-medium text-[#1DAFA1] text-[14px] ">
-                          {trip.driver}
+                          {trip.driver.name}
                         </span>
                         <span className="text-[12px] font-medium text-[#4E616A]">
-                          {trip.driverPhone}
+                          {trip.driver.phone}
                         </span>
                       </div>
                     </div>
                   </td>
                   <td className="p-4 text-[#4E616A] font-medium text-[14px]">
                     <div className="flex items-center gap-2">
-                      <span>{trip.routeFrom}</span>
-                      <ArrowRight className="w-4 h-4 text-[#4E616A]" />
-                      <span>{trip.routeTo}</span>
+                      <span>{trip.route.from}</span>
+                      <ArrowRightIcon className='w-4 h-4' />
+                      <span>{trip.route.to}</span>
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-1.5">
-                      <Star className="w-[20px] h-[20px] fill-[#E9A90A] text-[#E9A90A]" />
+                      <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
                       <span className="font-medium text-[#4E616A] text-[14px]">
-                        {trip.rating.toFixed(1)}
+                        {trip.driver.rating.toFixed(1)}
                       </span>
                     </div>
                   </td>
@@ -290,10 +249,26 @@ export default function SpentTripHistoryTab() {
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <div
-                        className={`w-1.5 h-1.5 rounded-full ${trip.status === 'Completed' ? 'bg-[#00A63E]' : trip.status === 'In Progress' ? 'bg-[#F6921E]' : 'bg-[#FF0707]'}`}
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          trip.status === 'Completed'
+                            ? 'bg-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'bg-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'bg-[#1DAFA1]'
+                                : 'bg-[#FF0707]'
+                        }`}
                       ></div>
                       <span
-                        className={`font-semibold text-[12px] ${trip.status === 'Completed' ? 'text-[#00A63E]' : trip.status === 'In Progress' ? 'text-[#F6921E]' : 'text-[#FF0707]'}`}
+                        className={`font-semibold text-[12px] ${
+                          trip.status === 'Completed'
+                            ? 'text-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'text-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'text-[#1DAFA1]'
+                                : 'text-[#FF0707]'
+                        }`}
                       >
                         {trip.status}
                       </span>
@@ -340,11 +315,10 @@ export default function SpentTripHistoryTab() {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${
-                        currentPage === pageNum
-                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                      }`}
+                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
+                        ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                        : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                        }`}
                     >
                       {pageNum}
                     </button>
