@@ -4,9 +4,15 @@ interface DocumentViewModalProps {
   isOpen: boolean;
   onClose: () => void;
   documentTitle: string;
+  documentUrl?: string;
 }
 
-const DocumentViewModal = ({ isOpen, onClose, documentTitle }: DocumentViewModalProps) => {
+const DocumentViewModal = ({
+  isOpen,
+  onClose,
+  documentTitle,
+  documentUrl,
+}: DocumentViewModalProps) => {
   if (!isOpen) return null;
 
   // Use a generic sample image placeholder for documents
@@ -32,7 +38,7 @@ const DocumentViewModal = ({ isOpen, onClose, documentTitle }: DocumentViewModal
           <div className="relative group w-full max-w-2xl bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 min-h-[400px]">
             <div className="w-full h-full flex flex-col items-center justify-center">
               <img
-                src={documentPlaceholderUrl}
+                src={documentUrl || documentPlaceholderUrl}
                 alt={documentTitle}
                 className="w-full h-auto max-h-[60vh] object-contain"
               />

@@ -9,8 +9,10 @@ export const API = {
   RIDERS: '/v1/riders',
   RIDER_DETAILS: (id: string) => `/v1/riders/${id}`,
 
-  DRIVERS: '/v1/drivers',
-  DRIVER_DETAILS: (id: string) => `/v1/drivers/${id}`,
+  DRIVER: '/v1/driver',
+  DRIVER_DETAILS: (id: string) => `/v1/driver/${id}`,
+  DRIVER_STATUS: (id: string) => `/v1/driver/${id}/status`,
+  VERIFY_DOCUMENT: (id: string, docType: string) => `/v1/driver/${id}/verify/${docType}`,
 
   VERIFICATIONS: '/v1/verifications',
   VERIFICATION_DETAILS: (id: string) => `/v1/verifications/${id}`,
