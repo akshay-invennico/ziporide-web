@@ -16,7 +16,7 @@ const getInitialState = (): AuthState => {
       localStorage.removeItem('user');
     }
   }
-  return { user: null, token: null, isAuthenticated: true };
+  return { user: null, token: null, isAuthenticated: false };
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
