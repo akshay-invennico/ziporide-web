@@ -1,14 +1,74 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { useAdminProfile } from '@/hooks/useAdminProfile';
+import { useFileUpload } from '@/hooks/useFileUpload';
+import type { UpdatePasswordPayload } from '@/types/user.types';
 
 import ChangePasswordModal from '../components/ui/ChangePasswordModal';
 
 const MyProfilePage = () => {
+  const { profile, isLoading, getProfile, updateProfile, updatePassword } = useAdminProfile();
+  const { uploadImage, isUploading } = useFileUpload();
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    profileImage: '',
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+
+  useEffect(() => {
+    getProfile();
+  }, [getProfile]);
+
+  useEffect(() => {
+    if (profile && profile.user) {
+      setFormData({
+        fullName: profile.user.name || '',
+        email: profile.user.email || '',
+        profileImage: profile.user.profile || '',
+      });
+      setPreviewUrl(profile.user.profile || '');
+    }
+  }, [profile]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    let imageUrl = formData.profileImage;
+
+    if (selectedFile) {
+      try {
+        imageUrl = await uploadImage(selectedFile);
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+        return;
+      }
+    }
+
+    await updateProfile({
+      name: formData.fullName,
+      profile: imageUrl,
+    });
+    setSelectedFile(null);
+  };
+
+  const handlePasswordUpdate = async (values: UpdatePasswordPayload) => {
+    const success = await updatePassword(values);
+    if (success) {
+      setIsChangePasswordModalOpen(false);
+    }
+  };
 
   return (
     <div className="w-full min-h-full bg-white  p-8 overflow-y-auto">
@@ -35,16 +95,28 @@ const MyProfilePage = () => {
                   Profile Photo
                 </label>
                 <div className="relative w-[130px] h-[130px]">
-                  <div className="w-full h-full rounded-full border-2 border-dashed border-[#1DAFA1] p-1">
+                  <div className="w-full h-full rounded-full border-2 border-dashed border-[#1DAFA1] p-1 overflow-hidden">
                     <img
-                      src="https://i.pravatar.cc/150?img=11"
+                      src={previewUrl || '/images/default-avatar.png'}
                       alt="Profile"
                       className="w-full h-full rounded-full object-cover"
                     />
                   </div>
-                  <button className="absolute bottom-1 right-1 w-[32px] h-[32px] bg-[#1DAFA1] rounded-full flex items-center justify-center cursor-pointer ">
+                  <label className="absolute bottom-1 right-1 w-[32px] h-[32px] bg-[#1DAFA1] rounded-full flex items-center justify-center cursor-pointer ">
                     <img src="/icons/camera.svg" alt="camera" className="w-[18px] h-[18px]" />
-                  </button>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      disabled={isUploading || isLoading}
+                    />
+                  </label>
+                  {(isUploading || isLoading) && (
+                    <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-full">
+                      <div className="w-6 h-6 border-2 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -60,6 +132,7 @@ const MyProfilePage = () => {
                     placeholder="e.g. olivia rhye"
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium text-[#000000] hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-colors placeholder:text-[#939999]"
+                    disabled={isLoading}
                   />
                 </div>
                 <div>
@@ -67,17 +140,21 @@ const MyProfilePage = () => {
                   <input
                     type="email"
                     value={formData.email}
-                    placeholder="e.g. olvia@gmail.com"
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full border border-[#DFE6E5]  rounded-md p-3 text-[14px] font-medium text-[#000000] hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-colors placeholder:text-[#939999]"
+                    placeholder="e.g. ziporideadmin@gmail.com"
+                    readOnly
+                    className="w-full border border-[#DFE6E5] bg-gray-50 rounded-md p-3 text-[14px] font-medium text-[#4E616A] focus:outline-none transition-colors placeholder:text-[#939999] cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Update Button */}
               <div className="flex justify-end pt-2">
-                <button className="bg-[#1DAFA1] text-white px-8 py-2.5 rounded-md text-[14px] font-medium cursor-pointer">
-                  Update Profile
+                <button
+                  onClick={handleUpdateProfile}
+                  disabled={isLoading || isUploading}
+                  className="bg-[#1DAFA1] text-white px-8 py-2.5 rounded-md text-[14px] font-medium cursor-pointer disabled:opacity-50"
+                >
+                  {isLoading ? 'Updating...' : 'Update Profile'}
                 </button>
               </div>
             </div>
@@ -96,7 +173,8 @@ const MyProfilePage = () => {
               </div>
               <button
                 onClick={() => setIsChangePasswordModalOpen(true)}
-                className="bg-[#EEFFFD] text-[#1DAFA1] px-6 py-2.5 rounded-md text-[14px] font-medium cursor-pointer"
+                disabled={isLoading}
+                className="bg-[#EEFFFD] text-[#1DAFA1] px-6 py-2.5 rounded-md text-[14px] font-medium cursor-pointer disabled:opacity-50"
               >
                 Change Password
               </button>
@@ -108,10 +186,8 @@ const MyProfilePage = () => {
       <ChangePasswordModal
         isOpen={isChangePasswordModalOpen}
         onClose={() => setIsChangePasswordModalOpen(false)}
-        onUpdate={(values) => {
-          console.log('Password update values:', values);
-          // Handle password update logic here
-        }}
+        onUpdate={handlePasswordUpdate}
+        isLoading={isLoading}
       />
     </div>
   );

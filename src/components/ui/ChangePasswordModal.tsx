@@ -3,13 +3,21 @@ import { X, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import * as Yup from 'yup';
 
+import type { UpdatePasswordPayload } from '@/types/user.types';
+
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (values: any) => void;
+  onUpdate: (values: UpdatePasswordPayload) => void;
+  isLoading?: boolean;
 }
 
-const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClose, onUpdate }) => {
+const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
+  isOpen,
+  onClose,
+  onUpdate,
+  isLoading,
+}) => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -18,9 +26,13 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
     currentPassword: Yup.string().required('Current password is required'),
     newPassword: Yup.string()
       .min(8, 'Password must be at least 8 characters')
-      .required('New password is required'),
+      .required('New password is required')
+      .notOneOf(
+        [Yup.ref('currentPassword')],
+        'New password cannot be the same as current password',
+      ),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('newPassword')], 'Passwords must match')
+      .oneOf([Yup.ref('newPassword')], 'New and confirm passwords are not matching')
       .required('Confirm password is required'),
   });
 
@@ -32,10 +44,17 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
     },
     validationSchema,
     onSubmit: (values) => {
-      onUpdate(values);
-      onClose();
+      onUpdate({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
     },
   });
+
+  const handleClose = () => {
+    formik.resetForm();
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -53,7 +72,11 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
               Change your password to keep your account secure. Make sure it's strong and unique.
             </p>
           </div>
-          <button onClick={onClose} className="text-[#4E616A] cursor-pointer ">
+          <button
+            onClick={handleClose}
+            className="text-[#4E616A] cursor-pointer disabled:opacity-50"
+            disabled={isLoading}
+          >
             <X size={22} />
           </button>
         </div>
@@ -169,16 +192,18 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
           <div className="flex flex-col sm:flex-row gap-4 pt-2">
             <button
               type="button"
-              onClick={onClose}
-              className="flex-1 py-3 bg-[#F7F7F7] text-[#000000] text-[14px] font-medium rounded-md cursor-pointer"
+              onClick={handleClose}
+              disabled={isLoading}
+              className="flex-1 py-3 bg-[#F7F7F7] text-[#000000] text-[14px] font-medium rounded-md cursor-pointer disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 bg-[#1DAFA1] text-white text-[14px] font-medium rounded-md cursor-pointer"
+              disabled={isLoading}
+              className="flex-1 py-3 bg-[#1DAFA1] text-white text-[14px] font-medium rounded-md cursor-pointer disabled:opacity-50"
             >
-              Update Password
+              {isLoading ? 'Updating...' : 'Update Password'}
             </button>
           </div>
         </form>

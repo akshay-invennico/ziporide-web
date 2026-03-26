@@ -23,5 +23,8 @@ export const API = {
   UPDATE_CATEGORY: (id: string) => `/v1/inventory/categories/${id}`,
   REMOVE_CATEGORY: (id: string) => `/v1/inventory/categories/${id}`,
 
-  UPLOAD_IMAGE: '/v1/image/upload',
+  UPLOAD_IMAGE: '/v1/files/upload',
+  ADMIN_ME: '/v1/users/me',
+  UPDATE_PROFILE: '/v1/users',
+  UPDATE_PASSWORD: '/v1/users/password',
 } as const;
