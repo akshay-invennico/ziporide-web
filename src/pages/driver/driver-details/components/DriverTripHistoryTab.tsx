@@ -1,4 +1,4 @@
-import { Star, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Eye, ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
@@ -71,12 +71,29 @@ const allTrips: Trip[] = Array.from({ length: 99 }, (_, i) => {
 
 const ITEMS_PER_PAGE = 12;
 
+interface TripTableColumn {
+  key: string;
+  label: string;
+  sortable: boolean;
+}
+
+const tripTableColumns: TripTableColumn[] = [
+  { key: 'tripId', label: 'TRIP ID', sortable: true },
+  { key: 'rider', label: 'RIDER', sortable: true },
+  { key: 'route', label: 'ROUTE', sortable: true },
+  { key: 'amount', label: 'AMOUNT', sortable: true },
+  { key: 'date', label: 'DATE', sortable: true },
+  { key: 'rating', label: 'RATING', sortable: true },
+  { key: 'status', label: 'STATUS', sortable: true },
+  { key: 'action', label: 'ACTION', sortable: false },
+];
+
 function StatusBadge({ status }: { status: TripStatus }) {
   const cfg: Record<TripStatus, { dot: string; text: string }> = {
     Completed: { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' },
     Cancelled: { dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' },
     'In Progress': { dot: 'bg-[#F6921E]', text: 'text-[#F6921E]' },
-    Assigned: { dot: 'bg-[#2563EB]', text: 'text-[#2563EB]' },
+    Assigned: { dot: 'bg-[#1DAFA1]', text: 'text-[#1DAFA1]' },
   };
   const { dot, text } = cfg[status];
   return (
@@ -158,52 +175,56 @@ export default function DriverTripHistoryTab() {
   };
 
   return (
-    <div className="p-5">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-        <h3 className="text-[18px] font-bold text-[#101828]">Recent Trips</h3>
-        <div className="flex items-center rounded-lg gap-3 overflow-hidden">
-          {(['Year', 'This Month', 'This Week'] as const).map((p) => (
-            <button
-              key={p}
-              onClick={() => {
-                setPeriod(p);
-                setCurrentPage(1);
-              }}
-              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                period === p
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A]'
-              }`}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <div className="p-1">
       {/* Table */}
       <div className="border border-[#DFE6E5] rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#F8F9FA] border-b border-[#DFE6E5] text-[12px] font-medium uppercase tracking-wider text-[#4E616A]">
-                {['TRIP ID', 'RIDER', 'ROUTE', 'AMOUNT', 'DATE', 'RATING', 'STATUS', 'ACTION'].map(
-                  (col) => (
-                    <th key={col} className="px-4 py-3.5 whitespace-nowrap">
-                      <div className="flex items-center gap-1">
-                        {col}
-                        {col !== 'ACTION' && (
-                          <img
-                            src="/icons/rider/updown.svg"
-                            alt="sort"
-                            className="w-3 h-3 opacity-60"
-                          />
-                        )}
+              {/* Recent Trips title + period filters inside table */}
+              <tr className="border-b border-[#DFE6E5] bg-white">
+                <th colSpan={tripTableColumns.length} className="px-4 py-4">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <span className="text-[20px] font-semibold text-[#000000]">Recent Trips</span>
+                    <div className="flex items-center gap-3">
+                      {(['Year', 'This Month', 'This Week'] as const).map((p) => (
+                        <button
+                          key={p}
+                          onClick={() => {
+                            setPeriod(p);
+                            setCurrentPage(1);
+                          }}
+                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
+                            ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                            : 'border-[#DFE6E5] text-[#4E616A]'
+                            }`}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </th>
+              </tr>
+
+              {/* Column headers via map */}
+              <tr className="bg-[#F9F9F9] border-b border-[#DFE6E5] text-[14px] font-medium uppercase tracking-wider text-[#4E616A]">
+                {tripTableColumns.map((col) => (
+                  <th key={col.key} className="px-4 py-3.5 whitespace-nowrap">
+                    {col.sortable ? (
+                      <div className="flex justify-between gap-1">
+                        {col.label}
+                        <img
+                          src="/icons/rider/updown.svg"
+                          alt="sort"
+                          className="w-[18px] h-[18px]"
+                        />
                       </div>
-                    </th>
-                  ),
-                )}
+                    ) : (
+                      col.label
+                    )}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -214,7 +235,7 @@ export default function DriverTripHistoryTab() {
                 >
                   {/* Trip ID */}
                   <td className="px-4 py-3">
-                    <span className="text-[13px] font-medium text-[#1DAFA1] hover:underline cursor-pointer">
+                    <span className="text-[14px] font-medium text-[#1DAFA1] hover:underline cursor-pointer">
                       {trip.id}
                     </span>
                   </td>
@@ -223,16 +244,16 @@ export default function DriverTripHistoryTab() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
                       <div
-                        className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-white font-bold text-[13px] shrink-0"
-                        style={{ backgroundColor: trip.rider.color }}
+                        className="w-[36px] h-[36px] rounded-full flex bg-[#1DAFA1] items-center justify-center text-white font-bold text-[14px] shrink-0"
+
                       >
                         {trip.rider.initials}
                       </div>
                       <div>
-                        <p className="text-[13px] font-medium text-[#101828] leading-tight">
+                        <p className="text-[14px] font-medium text-[#1DAFA1] leading-tight">
                           {trip.rider.name}
                         </p>
-                        <p className="text-[11px] text-[#4E616A] font-medium">{trip.rider.phone}</p>
+                        <p className="text-[12px] text-[#4E616A] font-medium">{trip.rider.phone}</p>
                       </div>
                     </div>
                   </td>
@@ -241,30 +262,18 @@ export default function DriverTripHistoryTab() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#4E616A]">
                       <span className="whitespace-nowrap">{trip.from}</span>
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#4E616A"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                        <polyline points="12 5 19 12 12 19" />
-                      </svg>
+                      <ArrowRightIcon className='w-4 h-4' />
                       <span className="whitespace-nowrap">{trip.to}</span>
                     </div>
                   </td>
 
                   {/* Amount */}
-                  <td className="px-4 py-3 text-[13px] font-medium text-[#4E616A]">
+                  <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">
                     £{trip.amount.toFixed(2)}
                   </td>
 
                   {/* Date */}
-                  <td className="px-4 py-3 text-[13px] font-medium text-[#4E616A] whitespace-nowrap">
+                  <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A] whitespace-nowrap">
                     {trip.date}
                   </td>
 
@@ -273,12 +282,12 @@ export default function DriverTripHistoryTab() {
                     {trip.rating !== null ? (
                       <div className="flex items-center gap-1">
                         <Star className="w-[14px] h-[14px] fill-[#E9A90A] text-[#E9A90A]" />
-                        <span className="text-[13px] font-medium text-[#4E616A]">
+                        <span className="text-[14px] font-medium text-[#4E616A]">
                           {trip.rating.toFixed(1)}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-[13px] text-[#4E616A]">-</span>
+                      <span className="text-[14px] text-[#4E616A]">-</span>
                     )}
                   </td>
 
@@ -291,9 +300,9 @@ export default function DriverTripHistoryTab() {
                   <td className="px-4 py-3">
                     <button
                       onClick={() => handleViewTrip(trip)}
-                      className="flex items-center gap-1.5 text-[13px] font-medium text-[#1DAFA1] hover:underline cursor-pointer"
+                      className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1]  cursor-pointer"
                     >
-                      <Eye className="w-[15px] h-[15px]" />
+                      <img src="/icons/rider/eye.svg" alt="eye" className='w-[22px] h-[22px]' />
                       View
                     </button>
                   </td>
@@ -322,11 +331,10 @@ export default function DriverTripHistoryTab() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page as number)}
-                className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
-                  currentPage === page
-                    ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                    : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                }`}
+                className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
+                  ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                  : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+                  }`}
               >
                 {page}
               </button>

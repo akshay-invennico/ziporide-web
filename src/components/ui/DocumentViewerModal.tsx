@@ -26,31 +26,27 @@ export default function DocumentViewerModal({
   if (!isOpen) return null;
 
   return (
-    /* Backdrop */
     <div
-      className="fixed inset-0 z-999 flex items-center justify-center bg-black/80 p-6"
+      className="fixed inset-0 z-9999 flex items-center justify-center bg-[#1A1A1A] p-4 sm:p-8"
       onClick={onClose}
     >
-      {/* Modal Box */}
-      <div className="relative w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
-        {/* Close Button — top right outside/overlapping image */}
-        <button
-          onClick={onClose}
-          className="absolute -top-3 -right-3 z-10 w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors cursor-pointer"
-          aria-label="Close"
-        >
-          <X className="w-[18px] h-[18px] text-[#101828]" />
-        </button>
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 text-white hover:text-gray-300 transition-colors cursor-pointer bg-transparent border-none p-2"
+        aria-label="Close"
+      >
+        <X className="w-6 h-6 sm:w-8 sm:h-8" />
+      </button>
 
-        {/* Document Image */}
+      <div className="relative w-[1000px] h-[800px] max-w-full max-h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
         {documentSrc ? (
           <img
             src={documentSrc}
             alt={documentName}
-            className="w-full max-h-[85vh] object-contain rounded-lg"
+            className="w-full h-full object-contain"
           />
         ) : (
-          <div className="bg-white rounded-lg p-8 flex items-center justify-center min-h-[300px] text-[#4E616A] text-[14px] font-medium">
+          <div className="bg-[#2A2A2A] w-full h-full rounded-lg flex items-center justify-center text-[#A0AEC0] text-[14px] font-medium border border-[#333]">
             No preview available.
           </div>
         )}

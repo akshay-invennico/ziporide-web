@@ -2,6 +2,7 @@ import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
 import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
+import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import { supportTicketsData } from '../../data/SupportTicketsData';
 import type { SupportTicket } from '../../data/SupportTicketsData';
 
@@ -12,6 +13,7 @@ const SupportTicketsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
   const itemsPerPage = 12;
 
   const filteredData = tickets.filter((ticket) => {
@@ -123,10 +125,16 @@ const SupportTicketsPage: React.FC = () => {
               ))}
             </div>
 
-            <button className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A]">
-              <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />
-              Export
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsExportOpen(!isExportOpen)}
+                className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A]"
+              >
+                <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />
+                Export
+              </button>
+              <ExportDropdown isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+            </div>
           </div>
         </div>
 

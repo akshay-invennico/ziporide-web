@@ -38,8 +38,8 @@ export default function ActivityTimelineTab() {
                     <span className="w-[5px] h-[5px] rounded-full bg-[#4E616A]"></span>
                     <span>{activity.time}</span>
                     <span className="w-[5px] h-[5px] rounded-full bg-[#4E616A]"></span>
-                    <div className="flex items-center gap-1.5">
-                      {activity.user === 'system' ? (
+                    <div className="flex items-center gap-1.5 text-[#4E616A]">
+                      {activity.user.toLowerCase() === 'system' ? (
                         <img
                           src="/icons/rider/system.svg"
                           alt="system"

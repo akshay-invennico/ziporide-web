@@ -26,11 +26,11 @@ export default function RiderInfoTab({ rider }: Props) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FEFCE8] text-[#000000] rounded-lg text-[14px] font-medium border border-yellow-100/50">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FEFCE8] text-[#000000] rounded-[600px] text-[14px] font-medium border border-yellow-100/50">
               <Star className="w-[18px] h-[18px] fill-[#E9A90A] text-[#E9A90A]" />
               {rider.rating.toFixed(1)}
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#EAFFF2] text-[#00A63E] rounded-lg text-[14px] font-medium border border-green-100/50">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#EAFFF2] text-[#00A63E] rounded-[600px] text-[14px] font-medium border border-green-100/50">
               <div className="w-1.5 h-1.5 rounded-full bg-[#00A63E]"></div>
               {rider.status}
             </div>
@@ -39,7 +39,7 @@ export default function RiderInfoTab({ rider }: Props) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-5">
           <div className="flex items-start gap-4">
-            <div className="mt-1 flex items-center justify-center">
+            <div className="mt-1  bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
               <img src="/icons/rider/callIcon.svg" alt="call" className="w-[20px] h-[20px]" />
             </div>
             <div>
@@ -48,7 +48,7 @@ export default function RiderInfoTab({ rider }: Props) {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="mt-1 flex items-center justify-center">
+            <div className="mt-1 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
               <img src="/icons/rider/mailIcon.svg" alt="call" className="w-[20px] h-[20px]" />
             </div>
             <div>
@@ -57,7 +57,7 @@ export default function RiderInfoTab({ rider }: Props) {
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <div className="mt-1 flex items-center justify-center ">
+            <div className="mt-1 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center ">
               <img src="/icons/rider/gender.svg" alt="call" className="w-[20px] h-[20px]" />
             </div>
             <div>
@@ -66,7 +66,7 @@ export default function RiderInfoTab({ rider }: Props) {
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <div className="mt-1 flex items-center justify-center">
+            <div className="mt-1 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
               <img src="/icons/rider/dates.svg" alt="call" className="w-[20px] h-[20px]" />
             </div>
             <div>
@@ -82,7 +82,7 @@ export default function RiderInfoTab({ rider }: Props) {
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 p-2 flex items-center justify-center  shrink-0">
+              <div className="mt-0.5 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
                 <img src="/icons/rider/homeIcon.svg" alt="home" className="w-[18px] h-[20px]" />
               </div>
               <div>
@@ -93,7 +93,7 @@ export default function RiderInfoTab({ rider }: Props) {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 p-2  flex items-center justify-center  shrink-0">
+              <div className="mt-0.5 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
                 <img src="/icons/rider/work.svg" alt="work" className="w-[18px] h-[18px]" />
               </div>
               <div>
@@ -104,7 +104,7 @@ export default function RiderInfoTab({ rider }: Props) {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 p-2  flex items-center justify-center  shrink-0">
+              <div className="mt-0.5 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
                 <img src="/icons/rider/address.svg" alt="address" className="w-[18px] h-[18px]" />
               </div>
               <div>
