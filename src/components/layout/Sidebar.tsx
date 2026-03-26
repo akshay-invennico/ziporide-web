@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { usePendingDriverCount } from '@/hooks/useVerificationDriver';
 import { routes } from '@/routes/routes';
@@ -8,64 +8,82 @@ export default function Sidebar() {
   const location = useLocation();
   const { count } = usePendingDriverCount();
 
-  const navItems = [
-    { name: 'Dashboard', path: routes.DASHBOARD, icon: '/icons/sidebar/sidebarIcon1.svg' },
-    { name: 'Riders', path: routes.RIDER, icon: '/icons/sidebar/sidebarIcon2.svg' },
-    { name: 'Drivers', path: routes.DRIVER, icon: '/icons/sidebar/sidebarIcon3.svg' },
-    {
-      name: 'Verification Request',
-      path: routes.VERIFICATION,
-      icon: '/icons/sidebar/sidebarIcon4.svg',
-      badge: count > 0 ? (count > 99 ? '99+' : count.toString()) : undefined,
-    },
-    { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
-    { name: 'Vehicle Inventory', path: routes.INVENTORY, icon: '/icons/sidebar/sidebarIcon6.svg' },
-    { name: 'Transactions', path: routes.TRANSACTIONS, icon: '/icons/sidebar/sidebarIcon7.svg' },
-    { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon8.svg' },
-    {
-      name: 'Settings',
-      path: routes.SETTINGS,
-      icon: '/icons/sidebar/sidebarIcon9.svg',
-      hasDropdown: true,
-      subItems: [
-        {
-          name: 'Pricing Logics',
-          path: routes.PRICING_LOGIC,
-          Icon: '/icons/sidebar/sidebarIcon10.svg',
-        },
-        {
-          name: 'Push Notifications',
-          path: routes.PUSH_NOTIFICATIONS,
-          Icon: '/icons/sidebar/sidebarIcon11.svg',
-        },
-        { name: 'Operators', path: routes.OPERATORS, Icon: '/icons/sidebar/sidebarIcon12.svg' },
-      ],
-    },
-  ];
+  const navigate = useNavigate();
+
+  const navItems = useMemo(
+    () => [
+      { name: 'Dashboard', path: routes.DASHBOARD, icon: '/icons/sidebar/sidebarIcon1.svg' },
+      { name: 'Riders', path: routes.RIDER, icon: '/icons/sidebar/sidebarIcon2.svg' },
+      { name: 'Drivers', path: routes.DRIVER, icon: '/icons/sidebar/sidebarIcon3.svg' },
+      {
+        name: 'Verification Request',
+        path: routes.VERIFICATION,
+        badge: count > 0 ? (count > 99 ? '99+' : count.toString()) : undefined,
+        icon: '/icons/sidebar/sidebarIcon4.svg',
+      },
+      { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
+      {
+        name: 'Vehicle Inventory',
+        path: routes.INVENTORY,
+        icon: '/icons/sidebar/sidebarIcon6.svg',
+      },
+      { name: 'Transactions', path: routes.TRANSACTIONS, icon: '/icons/sidebar/sidebarIcon7.svg' },
+      { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon8.svg' },
+      {
+        name: 'Settings',
+        path: routes.SETTINGS,
+        icon: '/icons/sidebar/sidebarIcon9.svg',
+        hasDropdown: true,
+        subItems: [
+          {
+            name: 'Pricing Logics',
+            path: routes.PRICING_LOGIC,
+            Icon: '/icons/sidebar/sidebarIcon10.svg',
+          },
+          {
+            name: 'Push Notifications',
+            path: routes.PUSH_NOTIFICATIONS,
+            Icon: '/icons/sidebar/sidebarIcon11.svg',
+          },
+          { name: 'Operators', path: routes.OPERATORS, Icon: '/icons/sidebar/sidebarIcon12.svg' },
+        ],
+      },
+    ],
+    [count],
+  );
+
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const initialOpen: Record<string, boolean> = {};
     navItems.forEach((item) => {
-      if (item.subItems && item.subItems.some((sub) => location.pathname === sub.path)) {
-        initialOpen[item.name] = false;
+      if (item.subItems && item.subItems.some((sub) => location.pathname.startsWith(sub.path))) {
+        initialOpen[item.name] = true;
       }
     });
     setOpenDropdowns(initialOpen);
   }, []);
 
-  const toggleDropdown = (name: string, e: React.MouseEvent, hasSubItems: boolean) => {
+  const handleNavClick = (
+    name: string,
+    path: string,
+    e: React.MouseEvent,
+    hasSubItems: boolean,
+  ) => {
     if (hasSubItems) {
       e.preventDefault();
       setOpenDropdowns((prev) => ({
         ...prev,
         [name]: !prev[name],
       }));
+    } else {
+      e.preventDefault();
+      navigate(path);
     }
   };
 
   return (
-    <div className="w-[250px] bg-[#2D2D2D] text-white flex flex-col h-screen fixed top-0 left-0 overflow-y-auto">
+    <div className="w-[250px] bg-[#2D2D2D] text-white flex flex-col h-screen fixed top-0 left-0 overflow-y-auto z-50">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 mb-1">
         <img src="/logo.svg" alt="ZipoRide" className="h-[30px] w-[30px]" />
@@ -84,7 +102,7 @@ export default function Sidebar() {
             <div key={item.name} className="flex flex-col">
               <Link
                 to={item.path}
-                onClick={(e) => toggleDropdown(item.name, e, !!item.subItems)}
+                onClick={(e) => handleNavClick(item.name, item.path, e, !!item.subItems)}
                 className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${
                   isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
                 }`}
