@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Props {
   isOpen: boolean;
@@ -37,14 +37,21 @@ export default function SuspendRiderModal({
   mode = 'suspend',
   loading = false,
 }: Props) {
-  const [selectedReason, setSelectedReason] = useState<string>('Other');
+  const [selectedReason, setSelectedReason] = useState<string>('');
   const [note, setNote] = useState<string>('');
-
-  if (!isOpen) return null;
 
   const isRider = userType === 'rider';
   const isSuspend = mode === 'suspend';
   const reasons = isRider ? RIDER_REASONS : DRIVER_REASONS;
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedReason(reasons[0]);
+      setNote('');
+    }
+  }, [isOpen, mode, userType, reasons]); // Reset when opening or changing mode/type
+
+  if (!isOpen) return null;
 
   // Dynamic content
   const title = isSuspend

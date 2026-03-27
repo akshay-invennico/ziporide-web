@@ -2,10 +2,10 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+import { useRiderDetails, useUpdateRiderStatus } from '@/hooks/useRider';
 import { routes } from '@/routes/routes';
 
 import SuspendRiderModal from '../../../components/ui/SuspendRiderModal';
-import { ridersData } from '../../../data/RiderData';
 
 import ActivityTimelineTab from './components/ActivityTimelineTab';
 import RiderInfoTab from './components/RiderInfoTab';
@@ -17,13 +17,22 @@ export default function RiderDetailsPage() {
   const [activeTab, setActiveTab] = useState('info');
   const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
 
-  const rider = ridersData.find((r) => r.id === id);
+  const { rider, loading, error, refetch } = useRiderDetails(id);
+  const { updateStatus, isUpdating } = useUpdateRiderStatus();
 
-  if (!rider) {
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-white p-6 flex items-center justify-center">
+        <div className="text-center text-gray-500">Loading rider details...</div>
+      </div>
+    );
+  }
+
+  if (error || !rider) {
     return (
       <div className="w-full min-h-screen bg-gray-50/50 p-6 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Rider Not Found</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">{error || 'Rider Not Found'}</h2>
           <button onClick={() => navigate(routes.RIDER)} className="text-teal-600 hover:underline">
             Return to Riders List
           </button>
@@ -67,7 +76,7 @@ export default function RiderDetailsPage() {
         className={`bg-white rounded-lg ${activeTab === 'info' ? 'border border-[#DFE6E5] p-4' : ''}`}
       >
         {activeTab === 'info' && <RiderInfoTab rider={rider} />}
-        {activeTab === 'history' && <SpentTripHistoryTab />}
+        {activeTab === 'history' && <SpentTripHistoryTab rider={rider} />}
         {activeTab === 'timeline' && <ActivityTimelineTab />}
       </div>
 
@@ -75,10 +84,20 @@ export default function RiderDetailsPage() {
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}
-            className="flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white  text-[14px] font-medium text-[#FF0707]"
+            className={`flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium ${
+              rider.status?.toLowerCase() === 'suspended' ? 'text-[#00A63E]' : 'text-[#FF0707]'
+            }`}
           >
-            <img src="/icons/rider/person.svg" alt="suspend" className="w-[20px] h-[20px]" />
-            Suspend Rider
+            {rider.status?.toLowerCase() === 'suspended' ? (
+              <img
+                src="/icons/driver/greenUser.svg"
+                alt="reactivate"
+                className="w-[20px] h-[20px]"
+              />
+            ) : (
+              <img src="/icons/driver/redUser.svg" alt="suspend" className="w-[20px] h-[20px]" />
+            )}
+            {rider.status?.toLowerCase() === 'suspended' ? 'Reactivate Rider' : 'Suspend Rider'}
           </button>
         </div>
       )}
@@ -86,8 +105,22 @@ export default function RiderDetailsPage() {
       <SuspendRiderModal
         isOpen={isSuspendModalOpen}
         onClose={() => setIsSuspendModalOpen(false)}
-        onConfirm={() => setIsSuspendModalOpen(false)}
+        onConfirm={async (reason) => {
+          if (!id) return;
+          const newStatus = rider.status?.toLowerCase() === 'suspended' ? 'active' : 'suspended';
+          try {
+            const success = await updateStatus([id], newStatus, reason);
+            if (success) {
+              setIsSuspendModalOpen(false);
+              refetch();
+            }
+          } catch (err) {
+            console.error('Failed to update status:', err);
+          }
+        }}
         userType="rider"
+        loading={isUpdating}
+        mode={rider.status?.toLowerCase() === 'suspended' ? 'reactivate' : 'suspend'}
       />
     </div>
   );

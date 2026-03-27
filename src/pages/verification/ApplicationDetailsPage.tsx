@@ -273,14 +273,16 @@ const ApplicationDetailsPage = () => {
             <div className="flex flex-col">
               <span className="text-[14px] font-semibold text-[#000000]">
                 {request.address
-                  ? [
-                      request.address.line1,
-                      request.address.city,
-                      request.address.postcode,
-                      request.address.country,
-                    ]
-                      .filter(Boolean)
-                      .join(', ')
+                  ? typeof request.address === 'string'
+                    ? request.address
+                    : [
+                        request.address.line1,
+                        request.address.city,
+                        request.address.postcode,
+                        request.address.country,
+                      ]
+                        .filter(Boolean)
+                        .join(', ')
                   : '-'}
               </span>
             </div>

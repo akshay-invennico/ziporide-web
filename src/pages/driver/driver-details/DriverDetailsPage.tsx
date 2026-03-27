@@ -113,7 +113,11 @@ export default function DriverDetailsPage() {
             onClick={() => setIsSuspendModalOpen(true)}
             className={`flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium ${isSuspended ? 'text-[#00A63E]' : 'text-[#FF0707]'}`}
           >
-            <img src="/icons/rider/person.svg" alt="status" className="w-[20px] h-[20px]" />
+            <img
+              src={isSuspended ? '/icons/driver/greenUser.svg' : '/icons/driver/redUser.svg'}
+              alt="status"
+              className="w-[20px] h-[20px]"
+            />
             {isSuspended ? 'Reactivate Driver' : 'Suspend Driver'}
           </button>
         </div>

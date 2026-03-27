@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react';
 
-import type { Rider } from '../../../../data/RiderData';
+import type { Rider } from '@/types/rider.types';
 
 interface Props {
   rider: Rider;
@@ -28,10 +28,18 @@ export default function RiderInfoTab({ rider }: Props) {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FEFCE8] text-[#000000] rounded-[600px] text-[14px] font-medium border border-yellow-100/50">
               <Star className="w-[18px] h-[18px] fill-[#E9A90A] text-[#E9A90A]" />
-              {rider.rating.toFixed(1)}
+              {Number(rider.rating || rider.avgRating || 0).toFixed(1)}
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#EAFFF2] text-[#00A63E] rounded-[600px] text-[14px] font-medium border border-green-100/50">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#00A63E]"></div>
+            <div
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[600px] text-[14px] font-medium border ${
+                rider.status?.toLowerCase() === 'active'
+                  ? 'bg-[#EAFFF2] text-[#00A63E] border-green-100/50'
+                  : 'bg-[#FFF1F1] text-[#FF0707] border-red-100/50'
+              }`}
+            >
+              <div
+                className={`w-1.5 h-1.5 rounded-full ${rider.status?.toLowerCase() === 'active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
+              ></div>
               {rider.status}
             </div>
           </div>
@@ -44,7 +52,7 @@ export default function RiderInfoTab({ rider }: Props) {
             </div>
             <div>
               <p className="text-[12px] text-[#4E616A] font-medium mb-1">Phone Number</p>
-              <p className="text-[14px] font-medium text-[#101828]">{rider.phone}</p>
+              <p className="text-[14px] font-medium text-[#101828]">{rider.phone || '-'}</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -62,7 +70,7 @@ export default function RiderInfoTab({ rider }: Props) {
             </div>
             <div>
               <p className="text-[12px] text-[#4E616A] font-medium mb-1">Gender</p>
-              <p className="text-[14px] font-medium text-[#101828]">{rider.gender}</p>
+              <p className="text-[14px] font-medium text-[#101828]">{rider.gender || '-'}</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
@@ -71,7 +79,11 @@ export default function RiderInfoTab({ rider }: Props) {
             </div>
             <div>
               <p className="text-[12px] text-[#4E616A] font-medium mb-1">Joined on</p>
-              <p className="text-[14px] font-medium text-[#101828]">{rider.joinedOn}</p>
+              <p className="text-[14px] font-medium text-[#101828]">
+                {rider.joinedOn || rider.createdAt
+                  ? new Date(rider.joinedOn || rider.createdAt || '').toLocaleDateString()
+                  : '-'}
+              </p>
             </div>
           </div>
         </div>
@@ -88,7 +100,7 @@ export default function RiderInfoTab({ rider }: Props) {
               <div>
                 <p className="text-[14px] font-semibold text-[#000000] mb-1">Home</p>
                 <p className="text-[12px] text-[#747C84] leading-relaxed font-medium">
-                  {rider.addresses.home}
+                  {rider.addresses?.home || '-'}
                 </p>
               </div>
             </div>
@@ -99,7 +111,7 @@ export default function RiderInfoTab({ rider }: Props) {
               <div>
                 <p className="text-[14px] font-semibold text-[#000000] mb-1">Work</p>
                 <p className="text-[12px] text-[#747C84] leading-relaxed font-medium">
-                  {rider.addresses.work}
+                  {rider.addresses?.work || '-'}
                 </p>
               </div>
             </div>
@@ -110,7 +122,7 @@ export default function RiderInfoTab({ rider }: Props) {
               <div>
                 <p className="text-[14px] font-semibold text-[#000000] mb-1">Other</p>
                 <p className="text-[12px] text-[#747C84] leading-relaxed font-medium">
-                  {rider.addresses.other}
+                  {rider.addresses?.other || '-'}
                 </p>
               </div>
             </div>

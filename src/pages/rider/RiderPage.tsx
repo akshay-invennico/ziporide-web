@@ -1,40 +1,59 @@
 import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useRiders, useUpdateRiderStatus } from '@/hooks/useRider';
+
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
-import FilterDropdown from '../../components/ui/filter/FilterDropdown';
+import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
-import { ridersData } from '../../data/RiderData';
 
 const RiderPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('All');
   const [isExportOpen, setIsExportOpen] = useState(false);
 
-  // NEW STATE: track the rider being suspended
-  const [suspendedRiderId, setSuspendedRiderId] = useState<string | null>(null);
-
-  // Filter based on search query
-  const filteredData = ridersData.filter((rider) => {
-    const matchesSearch =
-      rider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      rider.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      rider.phone.includes(searchQuery);
-    const matchesStatus = filterStatus === 'All' || rider.status === filterStatus;
-    return matchesSearch && matchesStatus;
+  const [filters, setFilters] = useState<FilterType>({
+    status: 'All',
+    minSpent: 0,
+    maxSpent: 1000,
+    minTrips: 0,
+    maxTrips: 500,
+    rating: 'All',
   });
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-  // Get current page data
-  const currentData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+  const { riders, loading, totalPages, refetch } = useRiders(
+    filters,
+    currentPage,
+    itemsPerPage,
+    searchQuery,
   );
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  const [selectedRiderIds, setSelectedRiderIds] = useState<string[]>([]);
+  const [suspendedRiderId, setSuspendedRiderId] = useState<string | null>(null);
+
+  const { updateStatus, isUpdating } = useUpdateRiderStatus();
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedRiderIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedRiderIds.length === riders.length) {
+      setSelectedRiderIds([]);
+    } else {
+      setSelectedRiderIds(riders.map((r) => r.id));
+    }
+  };
 
   // Pagination Handlers
   const handlePrev = () => {
@@ -46,7 +65,7 @@ const RiderPage = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#FFFFFF] p-1 relative">
-      <div className="bg-white rounded-lg  border border-[#DFE6E5] overflow-hidden">
+      <div className="bg-white rounded-lg  border border-[#DFE6E5]">
         {/* Controls Row */}
         <div className="p-4 border-b border-[#DFE6E5] flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="relative w-full sm:w-96">
@@ -77,8 +96,8 @@ const RiderPage = () => {
               <FilterDropdown
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
-                filterStatus={filterStatus}
-                setFilterStatus={setFilterStatus}
+                filters={filters}
+                setFilters={setFilters}
               />
             </div>
 
@@ -104,6 +123,8 @@ const RiderPage = () => {
                 <th className="px-4 py-3.5 w-[48px] text-center">
                   <input
                     type="checkbox"
+                    checked={riders.length > 0 && selectedRiderIds.length === riders.length}
+                    onChange={handleSelectAll}
                     className="rounded-[4px]  border-[#4E616A] text-[#20B2AA] focus:ring-[#20B2AA] w-4 h-4 cursor-pointer"
                   />
                 </th>
@@ -133,8 +154,8 @@ const RiderPage = () => {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {currentData.length > 0 ? (
-                currentData.map((rider) => (
+              {riders.length > 0 ? (
+                riders.map((rider) => (
                   <tr
                     key={rider.id}
                     className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
@@ -142,14 +163,26 @@ const RiderPage = () => {
                     <td className="p-4">
                       <input
                         type="checkbox"
+                        checked={selectedRiderIds.includes(rider.id)}
+                        onChange={() => handleToggleSelect(rider.id)}
                         className="rounded-sm w-[16px] h-[16px] border-[#4E616A] text-teal-600 focus:ring-teal-500"
                       />
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
-                          {rider.initials}
-                        </div>
+                        {rider.profilePhotoUrl || rider.avatar ? (
+                          <div className="h-[40px] w-[40px] rounded-full overflow-hidden shrink-0 border border-gray-200">
+                            <img
+                              src={rider.profilePhotoUrl || rider.avatar}
+                              alt={rider.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
+                            {rider.initials || rider.name[0].toUpperCase()}
+                          </div>
+                        )}
                         <div className="flex flex-col">
                           <span className="font-medium text-[#1DAFA1] text-[14px] ">
                             {rider.name}
@@ -164,28 +197,28 @@ const RiderPage = () => {
                       {rider.email || '-'}
                     </td>
                     <td className="p-4 text-[#4E616A] text-[14px] font-medium">
-                      {rider.totalTrips}
+                      {rider.totalTrips || 0}
                     </td>
                     <td className="p-4 text-[#4E616A] text-[14px] font-medium">
-                      £{rider.totalSpent.toFixed(2)}
+                      £{Number(rider.totalSpent || 0).toFixed(2)}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-1.5">
                         <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
                         <span className="text-[#4E616A] text-[14px] font-medium">
-                          {rider.rating.toFixed(1)}
+                          {Number(rider.rating || rider.avgRating || 0).toFixed(1)}
                         </span>
                       </div>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`h-2 w-2 rounded-full ${rider.status === 'Active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
+                          className={`h-2 w-2 rounded-full ${rider.status?.toLowerCase() === 'active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
                         />
                         <span
-                          className={`font-medium ${rider.status === 'Active' ? 'text-[#00A63E] text-[12px] font-semibold' : 'text-[#FF0707] text-[12px] font-medium'}`}
+                          className={`font-medium ${rider.status?.toLowerCase() === 'active' ? 'text-[#00A63E] text-[12px] font-semibold' : 'text-[#FF0707] text-[12px] font-medium'}`}
                         >
-                          {rider.status}
+                          {rider.status?.toLowerCase() === 'active' ? 'Active' : 'Suspended'}
                         </span>
                       </div>
                     </td>
@@ -201,18 +234,36 @@ const RiderPage = () => {
                         <button
                           onClick={() => setSuspendedRiderId(rider.id)}
                           className="cursor-pointer"
-                          title={rider.status === 'Active' ? 'Suspend Rider' : 'Activate Rider'}
+                          title={
+                            rider.status?.toLowerCase() === 'suspended'
+                              ? 'Reactivate Rider'
+                              : 'Suspend Rider'
+                          }
                         >
-                          <img
-                            src="/icons/rider/person.svg"
-                            alt="suspend"
-                            className="w-[24px] h-[24px]"
-                          />
+                          {rider.status?.toLowerCase() === 'suspended' ? (
+                            <img
+                              src="/icons/driver/greenUser.svg"
+                              alt="reactivate"
+                              className="w-[22px] h-[22px]"
+                            />
+                          ) : (
+                            <img
+                              src="/icons/driver/redUser.svg"
+                              alt="suspend"
+                              className="w-[22px] h-[22px]"
+                            />
+                          )}
                         </button>
                       </div>
                     </td>
                   </tr>
                 ))
+              ) : loading ? (
+                <tr>
+                  <td colSpan={8} className="p-8 text-center text-gray-500">
+                    Loading riders...
+                  </td>
+                </tr>
               ) : (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-gray-500">
@@ -285,10 +336,25 @@ const RiderPage = () => {
       <SuspendRiderModal
         isOpen={!!suspendedRiderId}
         onClose={() => setSuspendedRiderId(null)}
-        onConfirm={() => setSuspendedRiderId(null)}
+        onConfirm={async (reason) => {
+          if (!suspendedRiderId) return;
+          const currentRider = riders.find((r) => r.id === suspendedRiderId);
+          const newStatus =
+            currentRider?.status?.toLowerCase() === 'suspended' ? 'active' : 'suspended';
+          try {
+            const success = await updateStatus([suspendedRiderId], newStatus, reason);
+            if (success) {
+              setSuspendedRiderId(null);
+              refetch();
+            }
+          } catch (err) {
+            console.error('Failed to update status:', err);
+          }
+        }}
         userType="rider"
+        loading={isUpdating}
         mode={
-          ridersData.find((r) => r.id === suspendedRiderId)?.status === 'Suspended'
+          riders.find((r) => r.id === suspendedRiderId)?.status?.toLowerCase() === 'suspended'
             ? 'reactivate'
             : 'suspend'
         }
