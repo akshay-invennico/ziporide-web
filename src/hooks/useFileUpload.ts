@@ -12,7 +12,7 @@ export const useFileUpload = () => {
     setError(null);
     try {
       const formData = new FormData();
-      formData.append('images', file);
+      formData.append('files', file);
 
       const response = await apiClient.post(API.UPLOAD_IMAGE, formData, {
         headers: {
@@ -21,6 +21,9 @@ export const useFileUpload = () => {
       });
       const data = response.data;
 
+      if (data.data && Array.isArray(data.data.files) && data.data.files.length > 0) {
+        return data.data.files[0].url;
+      }
       if (data.data && Array.isArray(data.data.images) && data.data.images.length > 0) {
         return data.data.images[0];
       }

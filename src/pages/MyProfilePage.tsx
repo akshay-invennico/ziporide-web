@@ -15,7 +15,7 @@ const MyProfilePage = () => {
     email: '',
     profileImage: '',
   });
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const [previewUrl, setPreviewUrl] = useState<string>('');
 
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
@@ -35,32 +35,26 @@ const MyProfilePage = () => {
     }
   }, [profile]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
+
+      try {
+        const imageUrl = await uploadImage(file);
+        setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+      }
     }
   };
 
   const handleUpdateProfile = async () => {
-    let imageUrl = formData.profileImage;
-
-    if (selectedFile) {
-      try {
-        imageUrl = await uploadImage(selectedFile);
-      } catch (error) {
-        console.error('Failed to upload image:', error);
-        return;
-      }
-    }
-
     await updateProfile({
       name: formData.fullName,
-      profile: imageUrl,
+      profile: formData.profileImage,
     });
-    setSelectedFile(null);
   };
 
   const handlePasswordUpdate = async (values: UpdatePasswordPayload) => {

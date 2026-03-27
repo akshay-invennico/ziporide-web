@@ -62,7 +62,7 @@ export default function Sidebar() {
       }
     });
     setOpenDropdowns(initialOpen);
-  }, []);
+  }, [location.pathname, navItems]);
 
   const handleNavClick = (
     name: string,
