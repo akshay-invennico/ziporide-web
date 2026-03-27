@@ -62,13 +62,17 @@ export interface Driver {
   // Possible date fields for "Applied On" and "Approved/Rejected On"
   createdAt?: string;
   updatedAt?: string;
+  appliedOn?: string;
+  actionDate?: string;
+  driverName?: string;
   consents?: {
     acceptedAt?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 
   // Verification specific
   reason?: string;
+  rejectedReason?: string;
 
   // Example of other fields from backend
   userStatus?: string;
@@ -77,7 +81,7 @@ export interface Driver {
   totalEarnings?: number;
   totalTrips?: number;
   avgRating?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DriverResponse {

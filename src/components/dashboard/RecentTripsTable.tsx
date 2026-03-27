@@ -261,11 +261,7 @@ export default function RecentTripsTable() {
         isOpen={isCancelModalOpen}
         mode={cancelMode}
         onClose={() => setIsCancelModalOpen(false)}
-        onConfirm={(reason, details) => {
-          console.log(`${cancelMode === 'force-end' ? 'Force End' : 'Cancellation'} confirmed:`, {
-            reason,
-            details,
-          });
+        onConfirm={() => {
           setIsCancelModalOpen(false);
         }}
       />

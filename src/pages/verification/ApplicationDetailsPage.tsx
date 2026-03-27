@@ -28,8 +28,9 @@ const ApplicationDetailsPage = () => {
       await verifyDocument(docType, isApproved, reason);
       showToast(`Document ${isApproved ? 'approved' : 'rejected'} successfully`, 'success');
       refetch(); // Reload data to show updated status
-    } catch (err: any) {
-      showToast(`Failed to update status: ${err.message}`, 'error');
+    } catch (err: unknown) {
+      const error = err as Error;
+      showToast(`Failed to update status: ${error.message}`, 'error');
     }
   };
 
@@ -56,8 +57,9 @@ const ApplicationDetailsPage = () => {
       await updateDriverStatus(action, reason);
       showToast(`Driver ${action === 'approve' ? 'approved' : 'rejected'} successfully`, 'success');
       refetch(); // Reload data to show updated status
-    } catch (err: any) {
-      showToast(`Failed to update driver status: ${err.message}`, 'error');
+    } catch (err: unknown) {
+      const error = err as Error;
+      showToast(`Failed to update driver status: ${error.message}`, 'error');
     }
   };
 
@@ -138,7 +140,7 @@ const ApplicationDetailsPage = () => {
               <div className="bg-[#F9F9F9] px-3 py-1.5 rounded-[600px] flex items-center gap-2">
                 <img src="/icons/verification/info.svg" alt="info" className="w-[15px] h-[15px]" />
                 <span className="text-[14px] font-medium text-[#4E616A]">
-                  {request.rejectedReason}
+                  {request.rejectedReason || 'unknown'}
                 </span>
               </div>
             )}

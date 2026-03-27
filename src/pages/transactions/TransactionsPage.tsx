@@ -121,7 +121,7 @@ const TransactionsPage: React.FC = () => {
                 <button
                   key={filter}
                   onClick={() => {
-                    setActiveFilter(filter as any);
+                    setActiveFilter(filter as typeof activeFilter);
                     setCurrentPage(1);
                   }}
                   className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${

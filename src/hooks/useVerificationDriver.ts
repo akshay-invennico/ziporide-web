@@ -31,7 +31,7 @@ export const useDrivers = (
       setLoading(true);
       setError(null);
       try {
-        const params: Record<string, any> = {
+        const params: Record<string, string | number> = {
           page,
           limit,
         };
@@ -138,9 +138,10 @@ export const useVerifyDriverDocument = (driverId: string | undefined) => {
         return true;
       }
       return false;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       const errorMessage =
-        err.response?.data?.message || err.message || 'Failed to update verification status';
+        error.response?.data?.message || error.message || 'Failed to update verification status';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -161,9 +162,10 @@ export const useVerifyDriverDocument = (driverId: string | undefined) => {
         return true;
       }
       return false;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       const errorMessage =
-        err.response?.data?.message || err.message || 'Failed to update driver status';
+        error.response?.data?.message || error.message || 'Failed to update driver status';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {

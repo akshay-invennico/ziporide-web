@@ -4,7 +4,20 @@ import { useState } from 'react';
 import OperatorModal from '../../components/ui/OperatorModal';
 import RemoveOperatorModal from '../../components/ui/RemoveOperatorModal';
 
-const operatorsData = [
+export interface Operator {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  role: string;
+  createdOn: string;
+  status: string;
+  avatar: string;
+  permissions: string[];
+  password?: string;
+}
+
+const operatorsData: Operator[] = [
   {
     id: 'ZPT-2845148',
     name: 'Mia Chen',
@@ -225,7 +238,7 @@ const OperatorsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
-  const [selectedOperator, setSelectedOperator] = useState<any>(null);
+  const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
 
   const filteredData = operatorsData.filter(
     (operator) =>
@@ -247,19 +260,18 @@ const OperatorsPage = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-  const openModal = (mode: 'add' | 'edit' | 'view', operator?: any) => {
+  const openModal = (mode: 'add' | 'edit' | 'view', operator?: Operator) => {
     setModalMode(mode);
     setSelectedOperator(operator || null);
     setIsModalOpen(true);
   };
 
-  const openRemoveModal = (operator: any) => {
+  const openRemoveModal = (operator: Operator) => {
     setSelectedOperator(operator);
     setIsRemoveModalOpen(true);
   };
 
   const handleRemoveConfirm = () => {
-    console.log('Removing operator:', selectedOperator?.id);
     // Add removal logic here
     setIsRemoveModalOpen(false);
   };
@@ -481,8 +493,7 @@ const OperatorsPage = () => {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         initialData={selectedOperator}
-        onConfirm={(values) => {
-          console.log('Form values:', values);
+        onConfirm={() => {
           // Handle add/edit logic here
         }}
       />

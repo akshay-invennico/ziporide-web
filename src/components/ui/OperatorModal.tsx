@@ -3,12 +3,14 @@ import { X, ChevronDown } from 'lucide-react';
 import React from 'react';
 import * as Yup from 'yup';
 
+import type { Operator } from '@/pages/settings/OperatorsPage';
+
 interface OperatorModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'add' | 'edit' | 'view';
-  initialData?: any;
-  onConfirm?: (values: any) => void;
+  initialData?: Operator | null;
+  onConfirm?: (values: Operator) => void;
 }
 
 const permissionCategories = [
@@ -129,7 +131,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
     enableReinitialize: true,
     validationSchema,
     onSubmit: (values) => {
-      if (onConfirm) onConfirm(values);
+      if (onConfirm) onConfirm(values as unknown as Operator);
       onClose();
     },
   });
