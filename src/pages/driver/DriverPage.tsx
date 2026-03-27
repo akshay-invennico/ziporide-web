@@ -1,40 +1,59 @@
 import { Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
+import { useDrivers, useUpdateDriverStatus } from '@/hooks/useDriver';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
-import { driversData } from '../../data/DriverData';
 
 const DriverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('All');
   const [isExportOpen, setIsExportOpen] = useState(false);
 
-  // track the driver being suspended
-  const [suspendedDriverId, setSuspendedDriverId] = useState<string | null>(null);
-
-  // Filter based on search query
-  const filteredData = driversData.filter((driver) => {
-    const matchesSearch =
-      driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      driver.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      driver.phone.includes(searchQuery);
-    const matchesStatus = filterStatus === 'All' || driver.status === filterStatus;
-    return matchesSearch && matchesStatus;
+  const [filters, setFilters] = useState({
+    status: 'Active',
+    minEarnings: 0,
+    maxEarnings: 1000,
+    minTrips: 0,
+    maxTrips: 500,
+    rating: 'All',
   });
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-  // Get current page data
-  const currentData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+  const { drivers, loading, totalPages, refetch } = useDrivers(
+    filters,
+    currentPage,
+    itemsPerPage,
+    searchQuery,
   );
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  const [selectedDriverIds, setSelectedDriverIds] = useState<string[]>([]);
+  const [suspendedDriverId, setSuspendedDriverId] = useState<string | null>(null);
+
+  const { updateStatus, isUpdating } = useUpdateDriverStatus();
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedDriverIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedDriverIds.length === drivers.length) {
+      setSelectedDriverIds([]);
+    } else {
+      setSelectedDriverIds(drivers.map((d) => (d.id || d._id || '') as string));
+    }
+  };
 
   // Pagination Handlers
   const handlePrev = () => {
@@ -46,7 +65,7 @@ const DriverPage = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#FFFFFF] p-1 relative">
-      <div className="bg-white rounded-lg border border-[#DFE6E5] overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#DFE6E5] relative">
         {/* Controls Row */}
         <div className="p-4 border-b border-[#DFE6E5] flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="relative w-full sm:w-96">
@@ -77,8 +96,8 @@ const DriverPage = () => {
               <FilterDropdown
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
-                filterStatus={filterStatus}
-                setFilterStatus={setFilterStatus}
+                filters={filters}
+                setFilters={setFilters}
                 userType="driver"
               />
             </div>
@@ -104,6 +123,8 @@ const DriverPage = () => {
                 <th className="px-4 py-3.5 w-[48px] text-center">
                   <input
                     type="checkbox"
+                    checked={drivers.length > 0 && selectedDriverIds.length === drivers.length}
+                    onChange={handleSelectAll}
                     className="rounded-[4px] border-gray-300 text-[#14B8A6] focus:ring-[#14B8A6] w-4 h-4 cursor-pointer"
                   />
                 </th>
@@ -137,104 +158,141 @@ const DriverPage = () => {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {currentData.length > 0 ? (
-                currentData.map((driver) => (
-                  <tr
-                    key={driver.id}
-                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
-                  >
-                    <td className="p-4 relative">
-                      <input
-                        type="checkbox"
-                        className="rounded-[4px] absolute top-1/2 -translate-y-1/2 left-[50%] -translate-x-[50%] w-[16px] h-[16px] border-[#4E616A] text-teal-600 focus:ring-teal-500"
-                      />
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        {driver.avatar ? (
-                          <div className="h-[40px] w-[40px] rounded-full overflow-hidden shrink-0 border border-gray-200">
-                            <img
-                              src={driver.avatar}
-                              alt={driver.name}
-                              className="w-full h-full object-cover"
-                            />
+              {drivers.length > 0 ? (
+                drivers.map((driver) => {
+                  const id = (driver.id || driver._id || '') as string;
+                  return (
+                    <tr
+                      key={id}
+                      className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                    >
+                      <td className="p-4 relative">
+                        <input
+                          type="checkbox"
+                          checked={selectedDriverIds.includes(id)}
+                          onChange={() => handleToggleSelect(id)}
+                          className="rounded-[4px] absolute top-1/2 -translate-y-1/2 left-[50%] -translate-x-[50%] w-[16px] h-[16px] border-[#4E616A] text-teal-600 focus:ring-teal-500"
+                        />
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          {driver.profilePhotoUrl || driver.avatar ? (
+                            <div className="h-[40px] w-[40px] rounded-full overflow-hidden shrink-0 border border-gray-200">
+                              <img
+                                src={driver.profilePhotoUrl || driver.avatar}
+                                alt={driver.name || driver.driverName}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
+                              {(driver.name || driver.driverName || 'D')[0].toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex flex-col">
+                            <span className="font-medium text-[#1DAFA1] text-[14px] ">
+                              {driver.name || driver.driverName}
+                            </span>
+                            <span className="text-[12px] font-medium  text-[#4E616A]">
+                              {driver.phone}
+                            </span>
                           </div>
-                        ) : (
-                          <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
-                            {driver.initials}
-                          </div>
-                        )}
-                        <div className="flex flex-col">
-                          <span className="font-medium text-[#1DAFA1] text-[14px] ">
-                            {driver.name}
-                          </span>
-                          <span className="text-[12px] font-medium  text-[#4E616A]">
-                            {driver.phone}
+                        </div>
+                      </td>
+                      <td className="p-4 text-[#1DAFA1] font-medium text-[14px] ">
+                        {driver.email || '-'}
+                      </td>
+                      <td className="p-4 text-[#4E616A] text-[14px] font-medium">
+                        {driver.totalTrips || 0}
+                      </td>
+                      <td className="p-4 text-[#4E616A] text-[14px] font-medium">
+                        £{Number(driver.totalEarnings || driver.totalEarned || 0).toFixed(2)}
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-1.5">
+                          <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
+                          <span className="text-[#4E616A] text-[14px] font-medium">
+                            {Number(driver.avgRating || driver.rating || 0).toFixed(1)}
                           </span>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-4 text-[#1DAFA1] font-medium text-[14px] ">
-                      {driver.email || '-'}
-                    </td>
-                    <td className="p-4 text-[#4E616A] text-[14px] font-medium">
-                      {driver.totalTrips}
-                    </td>
-                    <td className="p-4 text-[#4E616A] text-[14px] font-medium">
-                      £{driver.totalEarned.toFixed(2)}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-1.5">
-                        <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
-                        <span className="text-[#4E616A] text-[14px] font-medium">
-                          {driver.rating.toFixed(1)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`h-2 w-2 rounded-full ${driver.status === 'Active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
-                        />
-                        <span
-                          className={`font-medium ${driver.status === 'Active' ? 'text-[#00A63E] text-[12px] font-semibold' : 'text-[#FF0707] text-[12px] font-medium'}`}
-                        >
-                          {driver.status}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <Link
-                          to={`/driver/details/${driver.id}`}
-                          className="cursor-pointer"
-                          title="View Driver"
-                        >
-                          <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px]" />
-                        </Link>
-                        <button
-                          onClick={() => setSuspendedDriverId(driver.id)}
-                          className="cursor-pointer"
-                          title={driver.status === 'Active' ? 'Suspend Driver' : 'Activate Driver'}
-                        >
-                          {driver.status === 'Suspended' ? (
-                            <img src="icons/driver/greenUser.svg" alt="suspend" />
-                          ) : (
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-2 w-2 rounded-full ${
+                              driver.status?.toLowerCase() === 'approved'
+                                ? 'bg-[#00A63E]'
+                                : driver.status?.toLowerCase() === 'suspended'
+                                  ? 'bg-[#FF0707]'
+                                  : 'bg-[#E9A90A]'
+                            }`}
+                          />
+                          <span
+                            className={`text-[12px] font-semibold ${
+                              driver.status?.toLowerCase() === 'approved'
+                                ? 'text-[#00A63E]'
+                                : driver.status?.toLowerCase() === 'suspended'
+                                  ? 'text-[#FF0707]'
+                                  : 'text-[#E9A90A]'
+                            }`}
+                          >
+                            {driver.status?.toLowerCase() === 'approved'
+                              ? 'Active'
+                              : driver.status?.toLowerCase() === 'suspended'
+                                ? 'Suspended'
+                                : driver.status
+                                  ? driver.status.charAt(0).toUpperCase() + driver.status.slice(1)
+                                  : '-'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <Link
+                            to={`/driver/details/${id}`}
+                            className="cursor-pointer"
+                            title="View Driver"
+                          >
                             <img
-                              src="/icons/driver/redUser.svg"
-                              alt="suspend"
+                              src="/icons/rider/eye.svg"
+                              alt="eye"
                               className="w-[24px] h-[24px]"
                             />
-                          )}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                          </Link>
+                          <button
+                            onClick={() => setSuspendedDriverId(id)}
+                            className="cursor-pointer"
+                            title={
+                              driver.status?.toLowerCase() === 'approved'
+                                ? 'Suspend Driver'
+                                : 'Activate Driver'
+                            }
+                          >
+                            {driver.status?.toLowerCase() === 'suspended' ? (
+                              <img src="icons/driver/greenUser.svg" alt="suspend" />
+                            ) : (
+                              <img
+                                src="/icons/driver/redUser.svg"
+                                alt="suspend"
+                                className="w-[24px] h-[24px]"
+                              />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : loading ? (
+                <tr>
+                  <td colSpan={8} className="p-8 text-center text-gray-500">
+                    Loading drivers...
+                  </td>
+                </tr>
               ) : (
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-gray-500">
-                    No drivers found matching your search.
+                    No drivers found.
                   </td>
                 </tr>
               )}
@@ -302,10 +360,26 @@ const DriverPage = () => {
       <SuspendRiderModal
         isOpen={!!suspendedDriverId}
         onClose={() => setSuspendedDriverId(null)}
-        onConfirm={() => setSuspendedDriverId(null)}
+        onConfirm={async (reason) => {
+          if (!suspendedDriverId) return;
+          const currentDriver = drivers.find((d) => (d.id || d._id) === suspendedDriverId);
+          const newStatus =
+            currentDriver?.status?.toLowerCase() === 'suspended' ? 'approved' : 'suspended';
+          try {
+            const success = await updateStatus([suspendedDriverId], newStatus, reason);
+            if (success) {
+              setSuspendedDriverId(null);
+              refetch();
+            }
+          } catch (err) {
+            console.error('Failed to update status:', err);
+          }
+        }}
         userType="driver"
+        loading={isUpdating}
         mode={
-          driversData.find((d) => d.id === suspendedDriverId)?.status === 'Suspended'
+          drivers.find((d) => (d.id || d._id) === suspendedDriverId)?.status?.toLowerCase() ===
+          'suspended'
             ? 'reactivate'
             : 'suspend'
         }

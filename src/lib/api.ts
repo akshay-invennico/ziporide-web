@@ -12,6 +12,7 @@ export const API = {
   DRIVER: '/v1/driver',
   DRIVER_DETAILS: (id: string) => `/v1/driver/${id}`,
   DRIVER_STATUS: (id: string) => `/v1/driver/${id}/status`,
+  DRIVER_BULK_STATUS: '/v1/driver/status',
   VERIFY_DOCUMENT: (id: string, docType: string) => `/v1/driver/${id}/verify/${docType}`,
 
   VERIFICATIONS: '/v1/verifications',
