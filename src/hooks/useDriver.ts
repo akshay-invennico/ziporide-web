@@ -40,7 +40,7 @@ export const useDrivers = (
     try {
       // Check if any filters are actually applied (not default)
       const hasAppliedFilters =
-        (initialFilters.status && initialFilters.status !== 'All') ||
+        !!initialFilters.status || // Any status counts as a filter to use the specialized endpoint
         (initialFilters.minEarnings && initialFilters.minEarnings > 0) ||
         (initialFilters.maxEarnings && initialFilters.maxEarnings < 1000) ||
         (initialFilters.minTrips && initialFilters.minTrips > 0) ||
@@ -59,9 +59,10 @@ export const useDrivers = (
       if (hasAppliedFilters) {
         if (initialFilters.status) {
           const s = initialFilters.status.toLowerCase();
-          // Map 'Active' or 'All' UI filters to 'approvedDrivers' API status
-          if (s === 'active' || s === 'all') {
-            // params.status = 'approvedDrivers';
+          // Map 'All' to 'approvedDrivers' for the combined list
+          if (s === 'all') {
+            params.status = 'approvedDrivers';
+          } else if (s === 'active' || s === 'approved') {
             params.status = 'approved';
           } else if (s === 'suspended') {
             params.status = 'suspended';

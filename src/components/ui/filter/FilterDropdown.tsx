@@ -1,18 +1,22 @@
 import { Star } from 'lucide-react';
 import React from 'react';
 
+export interface FilterType {
+  status: string;
+  minEarnings?: number;
+  maxEarnings?: number;
+  minSpent?: number;
+  maxSpent?: number;
+  minTrips: number;
+  maxTrips: number;
+  rating: string;
+}
+
 interface FilterDropdownProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: {
-    status: string;
-    minEarnings: number;
-    maxEarnings: number;
-    minTrips: number;
-    maxTrips: number;
-    rating: string;
-  };
-  setFilters: (filters: FilterDropdownProps['filters']) => void;
+  filters: FilterType;
+  setFilters: (filters: FilterType) => void;
   userType?: 'rider' | 'driver';
 }
 
@@ -34,18 +38,30 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
   if (!isOpen) return null;
 
+  const isRider = userType === 'rider';
+  const minAmount = isRider ? localFilters.minSpent : localFilters.minEarnings;
+  const maxAmount = isRider ? localFilters.maxSpent : localFilters.maxEarnings;
+
   const handleStatusChange = (status: string) => {
     setLocalFilters({ ...localFilters, status });
   };
 
-  const handleSpentMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.min(Number(e.target.value), localFilters.maxEarnings - 10);
-    setLocalFilters({ ...localFilters, minEarnings: value });
+  const handleAmountMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Math.min(Number(e.target.value), (maxAmount || 1000) - 10);
+    if (isRider) {
+      setLocalFilters({ ...localFilters, minSpent: value });
+    } else {
+      setLocalFilters({ ...localFilters, minEarnings: value });
+    }
   };
 
-  const handleSpentMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.max(Number(e.target.value), localFilters.minEarnings + 10);
-    setLocalFilters({ ...localFilters, maxEarnings: value });
+  const handleAmountMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Math.max(Number(e.target.value), (minAmount || 0) + 10);
+    if (isRider) {
+      setLocalFilters({ ...localFilters, maxSpent: value });
+    } else {
+      setLocalFilters({ ...localFilters, maxEarnings: value });
+    }
   };
 
   const handleTripsMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,10 +79,12 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   };
 
   const clearAll = () => {
-    const defaults = {
+    const defaults: FilterDropdownProps['filters'] = {
       status: 'All',
       minEarnings: 0,
       maxEarnings: 1000,
+      minSpent: 0,
+      maxSpent: 1000,
       minTrips: 0,
       maxTrips: 500,
       rating: 'All',
@@ -82,7 +100,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   };
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-[460px] h-[550px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 flex flex-col items-start overflow-hidden z">
+    <div className="absolute right-0 top-full mt-2 w-[460px] h-[550px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 flex flex-col items-start overflow-hidden">
       <div className="p-5 w-full border-b border-[#DFE6E5]">
         <h3 className="font-semibold text-[#000000] text-[18px]">Filters</h3>
       </div>
@@ -125,15 +143,15 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         {/* Range Label (Spent or Earn) */}
         <div className="flex flex-col gap-3">
           <label className="text-[12px] text-[#4E616A] font-medium">
-            {userType === 'driver' ? 'Earn Range' : 'Spent Range'}
+            {isRider ? 'Spent Range' : 'Earn Range'}
           </label>
           <div className="relative h-[6px] w-[96%] mx-auto bg-gray-100 rounded-full mt-3 flex items-center">
             {/* Range Progress Bar */}
             <div
               className="absolute h-full bg-[#20B2AA] rounded-full pointer-events-none"
               style={{
-                left: `${((localFilters.minEarnings - 0) / (1000 - 0)) * 100}%`,
-                right: `${100 - ((localFilters.maxEarnings - 0) / (1000 - 0)) * 100}%`,
+                left: `${(((minAmount || 0) - 0) / (1000 - 0)) * 100}%`,
+                right: `${100 - (((maxAmount || 1000) - 0) / (1000 - 0)) * 100}%`,
               }}
             ></div>
 
@@ -142,16 +160,16 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
               type="range"
               min="0"
               max="1000"
-              value={localFilters.minEarnings}
-              onChange={handleSpentMinChange}
+              value={minAmount || 0}
+              onChange={handleAmountMinChange}
               className="absolute w-full h-full bg-transparent appearance-none pointer-events-none z-10 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-[18px] [&::-webkit-slider-thumb]:h-[18px] [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#20B2AA] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none"
             />
             <input
               type="range"
               min="0"
               max="1000"
-              value={localFilters.maxEarnings}
-              onChange={handleSpentMaxChange}
+              value={maxAmount || 1000}
+              onChange={handleAmountMaxChange}
               className="absolute w-full h-full bg-transparent appearance-none pointer-events-none z-10 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-[18px] [&::-webkit-slider-thumb]:h-[18px] [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#20B2AA] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none"
             />
           </div>
@@ -159,13 +177,13 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
             <span className="text-[12px] text-[#4E616A] font-medium">
               From{' '}
               <span className="text-[#000000] text-[14px] font-semibold ml-1">
-                £{localFilters.minEarnings}
+                £{minAmount || 0}
               </span>
             </span>
             <span className="text-[12px] text-[#4E616A] font-medium">
               To{' '}
               <span className="text-[#000000] text-[14px] font-semibold ml-1">
-                £{localFilters.maxEarnings}
+                £{maxAmount || 1000}
               </span>
             </span>
           </div>

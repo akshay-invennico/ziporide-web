@@ -8,6 +8,7 @@ export const API = {
 
   RIDERS: '/v1/riders',
   RIDER_DETAILS: (id: string) => `/v1/riders/${id}`,
+  RIDER_BULK_STATUS: '/v1/riders/status',
 
   DRIVER: '/v1/driver',
   DRIVER_DETAILS: (id: string) => `/v1/driver/${id}`,

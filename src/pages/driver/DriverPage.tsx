@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useDrivers, useUpdateDriverStatus } from '@/hooks/useDriver';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
-import FilterDropdown from '../../components/ui/filter/FilterDropdown';
+import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
 
 const DriverPage = () => {
@@ -15,7 +15,7 @@ const DriverPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<FilterType>({
     status: 'Active',
     minEarnings: 0,
     maxEarnings: 1000,
@@ -65,7 +65,7 @@ const DriverPage = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#FFFFFF] p-1 relative">
-      <div className="bg-white rounded-lg border border-[#DFE6E5] relative">
+      <div className="bg-white rounded-lg  border border-[#DFE6E5]">
         {/* Controls Row */}
         <div className="p-4 border-b border-[#DFE6E5] flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="relative w-full sm:w-96">

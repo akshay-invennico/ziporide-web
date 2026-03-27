@@ -8,23 +8,30 @@ import { useAuthData } from '@/hooks/useAuthData';
 const VerifyPasswordPage = () => {
   const location = useLocation();
   const email = location.state?.email || '';
-  const { verifyOtp, isLoading } = useAuthData();
-
-  const [timeLeft, setTimeLeft] = useState(10 * 60);
+  const { verifyOtp, forgotPassword, isLoading } = useAuthData();
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
+    if (timeLeft === 0) {
+      setCanResend(true);
+      return;
+    }
+
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
+
     return () => clearInterval(timer);
-  }, []);
+  }, [timeLeft]);
+
+  const handleResend = async () => {
+    if (!canResend) return;
+    await forgotPassword({ email });
+    setTimeLeft(15);
+    setCanResend(false);
+  };
 
   const formatTime = (secs: number) => {
     const m = String(Math.floor(secs / 60)).padStart(2, '0');
@@ -138,7 +145,17 @@ const VerifyPasswordPage = () => {
           {/* Resend */}
           <p className="text-[12px] font-medium text-[#4E616A] mb-25">
             Resend code?{' '}
-            <span className="text-[#1DAFA1] text-[12px] font-bold">{formatTime(timeLeft)}</span>
+            {canResend ? (
+              <button
+                type="button"
+                onClick={handleResend}
+                className="text-[#1DAFA1] text-[12px] font-bold cursor-pointer hover:underline bg-transparent border-none p-0"
+              >
+                Resend
+              </button>
+            ) : (
+              <span className="text-[#1DAFA1] text-[12px] font-bold">{formatTime(timeLeft)}</span>
+            )}
           </p>
 
           {/* Verify Button */}
