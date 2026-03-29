@@ -264,7 +264,7 @@ export default function TripHistoryPage() {
         <DataTable<TripRecord>
           columns={columns}
           data={paginated}
-          rowKey={(trip, idx) => `${trip.id}-${idx}`}
+          rowKey={(trip) => trip.id}
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}

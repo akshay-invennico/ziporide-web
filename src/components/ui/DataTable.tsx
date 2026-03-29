@@ -255,7 +255,9 @@ function DataTable<T extends object>({
                       >
                         {col.render
                           ? col.render(row, rowIndex)
-                          : (String(row[col.key] ?? '') as React.ReactNode)}
+                          : (String(
+                              (row as Record<string, unknown>)[col.key] ?? '',
+                            ) as React.ReactNode)}
                       </td>
                     ))}
                   </tr>
