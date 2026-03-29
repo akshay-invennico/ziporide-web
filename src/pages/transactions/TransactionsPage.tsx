@@ -1,5 +1,7 @@
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import React, { useState } from 'react';
+import { Search } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+
+import DataTable, { type Column } from '@/components/ui/DataTable';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
@@ -16,14 +18,11 @@ const TransactionsPage: React.FC = () => {
   const itemsPerPage = 12;
 
   const filteredData = transactionsData.filter((txn) => {
-    // Filter by type
     if (activeFilter === 'Pay-in' && !['Ride Payment', 'Subscription Payment'].includes(txn.type))
       return false;
     if (activeFilter === 'Payout' && !['Driver Payout', 'Driver Incentive'].includes(txn.type))
       return false;
     if (activeFilter === 'Refund' && txn.type !== 'Refund') return false;
-
-    // Search
     if (searchQuery) {
       if (
         !txn.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -40,13 +39,6 @@ const TransactionsPage: React.FC = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
-
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
 
   const formatAmount = (amount: number, type: string) => {
     const isPositive =
@@ -95,6 +87,70 @@ const TransactionsPage: React.FC = () => {
     );
   };
 
+  const columns = useMemo<Column<TransactionRecord>[]>(
+    () => [
+      {
+        key: 'id',
+        label: 'TRANSACTION ID',
+        sortable: true,
+        render: (txn) => (
+          <span className="font-medium text-[#1DAFA1] text-[14px] cursor-pointer hover:underline">
+            {txn.id}
+          </span>
+        ),
+      },
+      {
+        key: 'type',
+        label: 'TYPE',
+        render: (txn) => (
+          <span className="text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
+            {txn.type}
+          </span>
+        ),
+      },
+      {
+        key: 'amount',
+        label: 'AMOUNT',
+        sortable: true,
+        render: (txn) => (
+          <span className="whitespace-nowrap">{formatAmount(txn.amount, txn.type)}</span>
+        ),
+      },
+      {
+        key: 'date',
+        label: 'TIME & DATE',
+        sortable: true,
+        render: (txn) => (
+          <span className="text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
+            {txn.date} <span className="ml-2">{txn.time}</span>
+          </span>
+        ),
+      },
+      {
+        key: 'status',
+        label: 'STATUS',
+        sortable: true,
+        render: (txn) => getStatusBadge(txn.status),
+      },
+      {
+        key: 'action',
+        label: 'ACTION',
+        render: (txn) => (
+          <button
+            onClick={() => {
+              setSelectedTransaction(txn);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center justify-center cursor-pointer"
+          >
+            <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px]" />
+          </button>
+        ),
+      },
+    ],
+    [],
+  );
+
   return (
     <div className="flex flex-col bg-white p-1 h-full">
       <div className="flex flex-col bg-white rounded-lg border border-[#DFE6E5]">
@@ -127,7 +183,7 @@ const TransactionsPage: React.FC = () => {
                   className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
                     activeFilter === filter
                       ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                      : 'border-[#DFE6E5] text-[#4E616A] '
+                      : 'border-[#DFE6E5] text-[#4E616A]'
                   }`}
                 >
                   {filter}
@@ -147,141 +203,15 @@ const TransactionsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Table container */}
-        <div className="overflow-x-auto scrollbar-hide">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-inter font-medium uppercase tracking-wider text-[#4E616A]">
-                {[
-                  { label: 'TRANSACTION ID', sortable: true },
-                  { label: 'TYPE', sortable: false },
-                  { label: 'AMOUNT', sortable: true },
-                  { label: 'TIME & DATE', sortable: true },
-                  { label: 'STATUS', sortable: true },
-                  { label: 'ACTION', sortable: false },
-                ].map((header) => (
-                  <th
-                    key={header.label}
-                    className={`px-5 py-3.5 ${header.sortable ? 'cursor-pointer group' : ''}`}
-                  >
-                    <div
-                      className={`flex items-center ${header.sortable ? 'justify-between' : 'justify-start'}`}
-                    >
-                      <span className="text-[#4E616A] font-medium text-[12px] whitespace-nowrap">
-                        {header.label}
-                      </span>
-                      {header.sortable && (
-                        <img
-                          src="/icons/rider/updown.svg"
-                          alt="sort"
-                          className="w-[14px] h-[14px]"
-                        />
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="text-[14px]">
-              {currentData.length > 0 ? (
-                currentData.map((txn) => (
-                  <tr
-                    key={txn.id}
-                    className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
-                  >
-                    <td className="px-5 py-4">
-                      <span className="font-medium text-[#1DAFA1] text-[14px] cursor-pointer hover:underline">
-                        {txn.id}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
-                      {txn.type}
-                    </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      {formatAmount(txn.amount, txn.type)}
-                    </td>
-                    <td className="px-5 py-4 text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
-                      {txn.date} <span className="ml-2">{txn.time}</span>
-                    </td>
-                    <td className="px-5 py-4">{getStatusBadge(txn.status)}</td>
-                    <td className="px-5 py-4">
-                      <button
-                        onClick={() => {
-                          setSelectedTransaction(txn);
-                          setIsModalOpen(true);
-                        }}
-                        className="flex items-center justify-center cursor-pointer "
-                      >
-                        <img
-                          src="/icons/rider/eye.svg"
-                          alt="view"
-                          className="w-[20px] h-[20px] text-[#1DAFA1]"
-                        />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">
-                    No transactions found matching your criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="p-4 border-t border-gray-100 flex items-center justify-end gap-2">
-          <button
-            onClick={handlePrev}
-            disabled={currentPage === 1}
-            className="p-1.5 rounded-full border border-gray-200 text-[#4E616A] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="h-[20px] w-[20px] cursor-pointer" />
-          </button>
-
-          <div className="flex items-center gap-1">
-            {[...Array(totalPages)].map((_, i) => {
-              const pageNum = i + 1;
-              if (
-                pageNum === 1 ||
-                pageNum === totalPages ||
-                (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
-              ) {
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${
-                      currentPage === pageNum
-                        ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold bg-[#EEFFFD]'
-                        : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
-                return (
-                  <span key={pageNum} className="text-[#4E616A] px-1 font-semibold">
-                    ...
-                  </span>
-                );
-              }
-              return null;
-            })}
-          </div>
-
-          <button
-            onClick={handleNext}
-            disabled={currentPage === totalPages || totalPages === 0}
-            className="p-1.5 rounded-full border border-gray-200 text-[#4E616A] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronRight className="h-[20px] w-[20px] cursor-pointer" />
-          </button>
-        </div>
+        <DataTable<TransactionRecord>
+          columns={columns}
+          data={currentData}
+          rowKey={(txn) => txn.id}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          emptyText="No transactions found matching your criteria."
+        />
       </div>
 
       <TransactionDetailsModal

@@ -1,6 +1,7 @@
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import React, { useState } from 'react';
+import { Search } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
 
+import DataTable, { type Column } from '@/components/ui/DataTable';
 import { useToast } from '@/context/useToast';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useVehicleCategories } from '@/hooks/useVehicleCategories';
@@ -9,6 +10,7 @@ import type { VehicleCategory } from '@/types/vehicle.types';
 import AddCategoryModal from '../../components/ui/AddCategoryModal';
 import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
 import { vehicleDatabaseData } from '../../data/VehicleDatabaseData';
+import type { VehicleDatabaseRow } from '../../data/VehicleDatabaseData';
 
 const VehicleInventoryPage: React.FC = () => {
   const {
@@ -46,13 +48,6 @@ const VehicleInventoryPage: React.FC = () => {
     currentPage * itemsPerPage,
   );
 
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
-  };
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
-  };
-
   const getCategoryTheme = (category: string) => {
     switch (category) {
       case 'Electric':
@@ -89,7 +84,86 @@ const VehicleInventoryPage: React.FC = () => {
     }
   };
 
-  // const handleToggleStatus = (id: number) => {};
+  const vehicleColumns = useMemo<Column<VehicleDatabaseRow>[]>(
+    () => [
+      {
+        key: 'name',
+        label: 'VEHICAL',
+        sortable: true,
+        render: (vehicle) => (
+          <div className="flex items-center gap-3">
+            <img
+              src={vehicle.image}
+              alt={vehicle.name}
+              className="w-[40px] h-[40px] object-contain shrink-0"
+            />
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium text-[#1DAFA1] text-[14px]">{vehicle.name}</span>
+              <span className="text-[12px] font-medium text-[#4E616A]">
+                {vehicle.year} • {vehicle.color}
+              </span>
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: 'category',
+        label: 'CATEGORY',
+        sortable: true,
+        render: (vehicle) => (
+          <span
+            className={`px-4 py-1.5 rounded-[500px] text-[14px] font-medium whitespace-nowrap ${getCategoryTheme(vehicle.category)}`}
+          >
+            {vehicle.category}
+          </span>
+        ),
+      },
+      {
+        key: 'licencePlate',
+        label: 'LICENCE PLATE',
+        sortable: true,
+        render: (vehicle) => (
+          <span className="text-[#4E616A] text-[14px] font-medium">{vehicle.licencePlate}</span>
+        ),
+      },
+      {
+        key: 'driver',
+        label: 'DRIVER',
+        sortable: true,
+        render: (vehicle) => (
+          <div className="flex items-center gap-3">
+            <img
+              src={vehicle.driver.image}
+              alt={vehicle.driver.name}
+              className="w-[40px] h-[40px] rounded-full object-cover shrink-0"
+            />
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium text-[#1DAFA1] text-[14px]">{vehicle.driver.name}</span>
+              <span className="text-[12px] font-medium text-[#4E616A]">{vehicle.driver.phone}</span>
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: 'status',
+        label: 'STATUS',
+        sortable: true,
+        render: (vehicle) => (
+          <div className="flex items-center gap-2">
+            <div
+              className={`h-2 w-2 rounded-full ${vehicle.status === 'Active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
+            />
+            <span
+              className={`text-[12px] font-semibold ${vehicle.status === 'Active' ? 'text-[#00A63E]' : 'text-[#FF0707]'}`}
+            >
+              {vehicle.status}
+            </span>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="flex flex-col bg-white p-1">
@@ -155,7 +229,6 @@ const VehicleInventoryPage: React.FC = () => {
                         alt={cat.name}
                         className="w-[130px] h-[130px] object-contain mb-4"
                         onError={(e) => {
-                          // Fallback if image not found
                           e.currentTarget.src =
                             'https://img.freepik.com/free-vector/white-sedan-car-isolated-white-background_1308-100223.jpg';
                         }}
@@ -252,166 +325,15 @@ const VehicleInventoryPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Table container */}
-          <div className="overflow-x-auto scrollbar-hide">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-medium uppercase tracking-wider text-[#4E616A]">
-                  {[
-                    { label: 'VEHICAL', sortable: true },
-                    { label: 'CATEGORY', sortable: true },
-                    { label: 'LICENCE PLATE', sortable: true },
-                    { label: 'DRIVER', sortable: true },
-                    { label: 'STATUS', sortable: true },
-                  ].map((header) => (
-                    <th
-                      key={header.label}
-                      className={`px-5 py-3.5 ${header.sortable ? 'cursor-pointer group' : ''}`}
-                    >
-                      <div
-                        className={`flex items-center ${header.sortable ? 'justify-between' : 'justify-start'}`}
-                      >
-                        <span className="text-[#4E616A] font-medium text-[12px]">
-                          {header.label}
-                        </span>
-                        {header.sortable && (
-                          <img
-                            src="/icons/rider/updown.svg"
-                            alt="sort"
-                            className="w-[14px] h-[14px]"
-                          />
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="text-[14px]">
-                {currentData.length > 0 ? (
-                  currentData.map((vehicle) => (
-                    <tr
-                      key={vehicle.id}
-                      className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
-                    >
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={vehicle.image}
-                            alt={vehicle.name}
-                            className="w-[40px] h-[40px] object-contain shrink-0"
-                          />
-                          <div className="flex flex-col gap-0.5">
-                            <span className="font-medium text-[#1DAFA1] text-[14px]">
-                              {vehicle.name}
-                            </span>
-                            <span className="text-[12px] font-medium text-[#4E616A]">
-                              {vehicle.year} • {vehicle.color}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span
-                          className={`px-4 py-1.5 rounded-[500px] text-[14px] font-medium whitespace-nowrap ${getCategoryTheme(vehicle.category)}`}
-                        >
-                          {vehicle.category}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-[#4E616A] text-[14px] font-medium">
-                        {vehicle.licencePlate}
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={vehicle.driver.image}
-                            alt={vehicle.driver.name}
-                            className="w-[40px] h-[40px] rounded-full object-cover shrink-0"
-                          />
-                          <div className="flex flex-col gap-0.5">
-                            <span className="font-medium text-[#1DAFA1] text-[14px]">
-                              {vehicle.driver.name}
-                            </span>
-                            <span className="text-[12px] font-medium text-[#4E616A]">
-                              {vehicle.driver.phone}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-2 w-2 rounded-full ${vehicle.status === 'Active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
-                          />
-                          <span
-                            className={`font-medium ${vehicle.status === 'Active' ? 'text-[#00A63E] text-[12px] font-semibold' : 'text-[#FF0707] text-[12px] font-semibold'}`}
-                          >
-                            {vehicle.status}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="p-8 text-center text-gray-500">
-                      No vehicles found matching your search.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="p-4 border-t border-gray-100 flex items-center justify-end gap-2">
-            <button
-              onClick={handlePrev}
-              disabled={currentPage === 1}
-              className="p-1.5 rounded-full border border-gray-200 text-[#4E616A] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft className="h-[20px] w-[20px] cursor-pointer" />
-            </button>
-
-            <div className="flex items-center gap-1">
-              {[...Array(totalPages)].map((_, i) => {
-                const pageNum = i + 1;
-                if (
-                  pageNum === 1 ||
-                  pageNum === totalPages ||
-                  (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
-                ) {
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${
-                        currentPage === pageNum
-                          ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold'
-                          : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                } else if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
-                  return (
-                    <span key={pageNum} className="text-[#4E616A] px-1 font-semibold">
-                      ...
-                    </span>
-                  );
-                }
-                return null;
-              })}
-            </div>
-
-            <button
-              onClick={handleNext}
-              disabled={currentPage === totalPages || totalPages === 0}
-              className="p-1.5 rounded-full border border-gray-200 text-[#4E616A] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronRight className="h-[20px] w-[20px] cursor-pointer" />
-            </button>
-          </div>
+          <DataTable<VehicleDatabaseRow>
+            columns={vehicleColumns}
+            data={currentData}
+            rowKey={(v) => v.id}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            emptyText="No vehicles found matching your search."
+          />
         </div>
       )}
       <RemoveCategoryModal
@@ -431,7 +353,6 @@ const VehicleInventoryPage: React.FC = () => {
 
           if (iconString instanceof File) {
             try {
-              // The backend provides the uploaded image S3 URL as a string
               iconString = await uploadImage(iconString as File);
             } catch (error) {
               console.error(error);

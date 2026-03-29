@@ -5,9 +5,15 @@ interface RemoveOperatorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRemove: () => void;
+  isRemoving?: boolean;
 }
 
-const RemoveOperatorModal: React.FC<RemoveOperatorModalProps> = ({ isOpen, onClose, onRemove }) => {
+const RemoveOperatorModal: React.FC<RemoveOperatorModalProps> = ({
+  isOpen,
+  onClose,
+  onRemove,
+  isRemoving = false,
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -18,7 +24,11 @@ const RemoveOperatorModal: React.FC<RemoveOperatorModalProps> = ({ isOpen, onClo
             <h2 className="text-[20px] font-semibold text-[#000000] font-inter">
               Remove Operator?
             </h2>
-            <button onClick={onClose} className="p-1 cursor-pointer text-[#4E616A]">
+            <button
+              onClick={onClose}
+              disabled={isRemoving}
+              className="p-1 cursor-pointer text-[#4E616A]"
+            >
               <X size={22} />
             </button>
           </div>
@@ -36,15 +46,17 @@ const RemoveOperatorModal: React.FC<RemoveOperatorModalProps> = ({ isOpen, onClo
           <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4">
             <button
               onClick={onClose}
+              disabled={isRemoving}
               className="w-full sm:w-auto px-6 py-2.5 rounded-md text-[14px] font-medium text-[#000000] bg-white cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={onRemove}
-              className="w-full sm:w-auto px-6 py-3 rounded-md text-[14px] font-medium text-white bg-[#FF0707] cursor-pointer"
+              disabled={isRemoving}
+              className="w-full sm:w-auto px-6 py-3 rounded-md text-[14px] font-medium text-white bg-[#FF0707] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Remove Operator
+              {isRemoving ? 'Removing...' : 'Remove Operator'}
             </button>
           </div>
         </div>

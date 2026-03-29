@@ -32,4 +32,12 @@ export const API = {
   UPDATE_PROFILE: '/v1/users',
   UPDATE_PASSWORD: '/v1/users/password',
   PRICING: '/v1/pricing',
+
+  OPERATOR_LOGIN: '/v1/operators/login',
+  OPERATOR_ME: '/v1/operators/me',
+  OPERATOR_PERMISSIONS: '/v1/operators/permissions',
+  OPERATORS: '/v1/operators',
+  OPERATOR_DETAILS: (id: string) => `/v1/operators/${id}`,
+  OPERATOR_UPDATE_PERMISSIONS: (id: string) => `/v1/operators/${id}/permissions`,
+  OPERATOR_UPDATE_STATUS: (id: string) => `/v1/operators/${id}/status`,
 } as const;

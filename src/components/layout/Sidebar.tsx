@@ -1,34 +1,84 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
+import { usePermissions } from '@/hooks/usePermissions';
 import { usePendingDriverCount } from '@/hooks/useVerificationDriver';
 import { routes } from '@/routes/routes';
+
+interface SubItem {
+  name: string;
+  path: string;
+  Icon: string;
+  permission?: string;
+}
+
+interface NavItem {
+  name: string;
+  path: string;
+  icon: string;
+  badge?: string;
+  hasDropdown?: boolean;
+  subItems?: SubItem[];
+  permission?: string;
+}
 
 export default function Sidebar() {
   const location = useLocation();
   const { count } = usePendingDriverCount();
+  const { hasPermission, hasAnyPermission } = usePermissions();
 
   const navigate = useNavigate();
 
-  const navItems = useMemo(
+  const allNavItems: NavItem[] = useMemo(
     () => [
-      { name: 'Dashboard', path: routes.DASHBOARD, icon: '/icons/sidebar/sidebarIcon1.svg' },
-      { name: 'Riders', path: routes.RIDER, icon: '/icons/sidebar/sidebarIcon2.svg' },
-      { name: 'Drivers', path: routes.DRIVER, icon: '/icons/sidebar/sidebarIcon3.svg' },
+      {
+        name: 'Dashboard',
+        path: routes.DASHBOARD,
+        icon: '/icons/sidebar/sidebarIcon1.svg',
+        permission: 'dashboard.view_analytics',
+      },
+      {
+        name: 'Riders',
+        path: routes.RIDER,
+        icon: '/icons/sidebar/sidebarIcon2.svg',
+        permission: 'riders.view',
+      },
+      {
+        name: 'Drivers',
+        path: routes.DRIVER,
+        icon: '/icons/sidebar/sidebarIcon3.svg',
+        permission: 'drivers.view',
+      },
       {
         name: 'Verification Request',
         path: routes.VERIFICATION,
         badge: count > 0 ? (count > 99 ? '99+' : count.toString()) : undefined,
         icon: '/icons/sidebar/sidebarIcon4.svg',
+        permission: 'verification.view',
       },
-      { name: 'Trips', path: routes.TRIPS, icon: '/icons/sidebar/sidebarIcon5.svg' },
+      {
+        name: 'Trips',
+        path: routes.TRIPS,
+        icon: '/icons/sidebar/sidebarIcon5.svg',
+        permission: 'trips.view',
+      },
       {
         name: 'Vehicle Inventory',
         path: routes.INVENTORY,
         icon: '/icons/sidebar/sidebarIcon6.svg',
+        permission: 'inventory.view',
       },
-      { name: 'Transactions', path: routes.TRANSACTIONS, icon: '/icons/sidebar/sidebarIcon7.svg' },
-      { name: 'Support Tickets', path: routes.SUPPORT, icon: '/icons/sidebar/sidebarIcon8.svg' },
+      {
+        name: 'Transactions',
+        path: routes.TRANSACTIONS,
+        icon: '/icons/sidebar/sidebarIcon7.svg',
+      },
+      {
+        name: 'Support Tickets',
+        path: routes.SUPPORT,
+        icon: '/icons/sidebar/sidebarIcon8.svg',
+        permission: 'support.view',
+      },
       {
         name: 'Settings',
         path: routes.SETTINGS,
@@ -39,18 +89,41 @@ export default function Sidebar() {
             name: 'Pricing Logics',
             path: routes.PRICING_LOGIC,
             Icon: '/icons/sidebar/sidebarIcon10.svg',
+            permission: 'pricing.view',
           },
           {
             name: 'Push Notifications',
             path: routes.PUSH_NOTIFICATIONS,
             Icon: '/icons/sidebar/sidebarIcon11.svg',
+            permission: 'notifications.send',
           },
-          { name: 'Operators', path: routes.OPERATORS, Icon: '/icons/sidebar/sidebarIcon12.svg' },
+          {
+            name: 'Operators',
+            path: routes.OPERATORS,
+            Icon: '/icons/sidebar/sidebarIcon12.svg',
+            permission: 'operators.view',
+          },
         ],
       },
     ],
     [count],
   );
+
+  const navItems = useMemo(() => {
+    return allNavItems
+      .map((item) => {
+        if (item.subItems) {
+          const visibleSubItems = item.subItems.filter(
+            (sub) => !sub.permission || hasPermission(sub.permission),
+          );
+          if (visibleSubItems.length === 0) return null;
+          return { ...item, subItems: visibleSubItems };
+        }
+        if (item.permission && !hasPermission(item.permission)) return null;
+        return item;
+      })
+      .filter(Boolean) as NavItem[];
+  }, [allNavItems, hasPermission, hasAnyPermission]);
 
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
 

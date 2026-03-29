@@ -10,10 +10,10 @@ import { routes } from '@/routes/routes';
 import type {
   ForgotPasswordPayload,
   LoginPayload,
-  LoginResponse,
   ResetPasswordPayload,
   VerifyOtpPayload,
 } from '@/types/auth.types';
+import type { OperatorLoginResponse } from '@/types/operator.types';
 
 interface ApiError {
   message: string;
@@ -28,8 +28,20 @@ export const useAuthData = () => {
   const login = async (payload: LoginPayload) => {
     setIsLoading(true);
     try {
-      const { data } = await apiClient.post<LoginResponse>(API.LOGIN, payload);
-      setAuth(data.data.user, data.data.tokens.access.token);
+      const { data } = await apiClient.post<OperatorLoginResponse>(API.OPERATOR_LOGIN, payload);
+      const operator = data.data.operator;
+      setAuth(
+        {
+          id: operator.id,
+          operatorId: operator.operatorId,
+          email: operator.email,
+          name: operator.name,
+          role: operator.role,
+          permissions: operator.permissions,
+          status: operator.status,
+        },
+        data.data.tokens.access.token,
+      );
       showToast('Login successful!', 'success');
       navigate(routes.DASHBOARD);
     } catch (err) {
