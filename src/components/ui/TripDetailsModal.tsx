@@ -1,7 +1,7 @@
 import { X, Copy, Star } from 'lucide-react';
 import { useState } from 'react';
 
-import { useCancelRide } from '@/hooks/useRider';
+import { useCancelRide } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 
 import CancelRideModal from './CancelRideModal';
@@ -22,7 +22,7 @@ const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = 
 
 const TripDetailsModal = ({ isOpen, onClose, trip, loading }: TripDetailsModalProps) => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const { cancelRide, isCancelling } = useCancelRide();
+  const { cancelTrip: cancelRide, isCancelling } = useCancelRide();
 
   if (!isOpen) return null;
 

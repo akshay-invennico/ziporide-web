@@ -173,7 +173,7 @@ const TransactionsPage: React.FC = () => {
               className="pl-10 pr-4 py-2 w-[300px] border border-[#DFE6E5] rounded-lg text-[14px] focus:outline-none focus:ring-1 focus:ring-[#1DAFA1] focus:border-[#1DAFA1]"
               value={params.search}
               onChange={(e) => {
-                setParams(prev => ({ ...prev, search: e.target.value, page: 1 }));
+                setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }));
               }}
             />
           </div>
@@ -183,12 +183,13 @@ const TransactionsPage: React.FC = () => {
                 <button
                   key={filter}
                   onClick={() => {
-                    setParams(prev => ({ ...prev, category: filter, page: 1 }));
+                    setParams((prev) => ({ ...prev, category: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.category === filter
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    params.category === filter
                       ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                       : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  }`}
                 >
                   {filter}
                 </button>

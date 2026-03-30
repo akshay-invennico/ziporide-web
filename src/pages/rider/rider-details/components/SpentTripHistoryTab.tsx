@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-import { useRiderTrips, useRideDetails } from '@/hooks/useRider';
+import { useRiderTrips, useRideDetails } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 import type { Rider } from '@/types/rider.types';
 
@@ -33,7 +33,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
     totalPages,
   } = useRiderTrips(rider.id, trendFilter, currentPage, itemsPerPage);
 
-  const { ride: detailedRide, loading: detailsLoading } = useRideDetails(
+  const { trip: detailedRide, loading: detailsLoading } = useRideDetails(
     selectedRideId || undefined,
   );
 
