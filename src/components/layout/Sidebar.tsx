@@ -25,7 +25,7 @@ interface NavItem {
 export default function Sidebar() {
   const location = useLocation();
   const { count } = usePendingDriverCount();
-  const { hasPermission, hasAnyPermission } = usePermissions();
+  const { hasPermission } = usePermissions();
 
   const navigate = useNavigate();
 
@@ -123,7 +123,7 @@ export default function Sidebar() {
         return item;
       })
       .filter(Boolean) as NavItem[];
-  }, [allNavItems, hasPermission, hasAnyPermission]);
+  }, [allNavItems, hasPermission]);
 
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
 
@@ -168,7 +168,12 @@ export default function Sidebar() {
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.path ||
-            (item.subItems && item.subItems.some((sub) => location.pathname === sub.path));
+            location.pathname.startsWith(item.path + '/') ||
+            (item.subItems &&
+              item.subItems.some(
+                (sub) =>
+                  location.pathname === sub.path || location.pathname.startsWith(sub.path + '/'),
+              ));
           const isOpen = openDropdowns[item.name];
 
           return (
@@ -210,7 +215,9 @@ export default function Sidebar() {
                   <div className="absolute left-[11px] top-[-8px] bottom-[28px] w-[2px] bg-white z-0 pointer-events-none"></div>
 
                   {item.subItems.map((subItem) => {
-                    const isSubActive = location.pathname === subItem.path;
+                    const isSubActive =
+                      location.pathname === subItem.path ||
+                      location.pathname.startsWith(subItem.path + '/');
                     const Icon = subItem.Icon;
                     return (
                       <Link

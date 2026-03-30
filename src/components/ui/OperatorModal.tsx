@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { X } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import * as Yup from 'yup';
 
 import { usePermissionConfig } from '@/hooks/useOperatorData';
@@ -166,7 +166,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
       }))
     : PERMISSION_CATEGORIES;
 
-  const roleDefaults = config?.roleDefaults || {};
+  const roleDefaults = useMemo(() => config?.roleDefaults || {}, [config?.roleDefaults]);
 
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full name is required'),
@@ -224,7 +224,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
     if (defaults && mode === 'add') {
       formik.setFieldValue('permissions', [...defaults]);
     }
-  }, [formik.values.role, mode]);
+  }, [formik, isView, roleDefaults, mode]);
 
   const togglePermission = (permId: string) => {
     if (isView) return;

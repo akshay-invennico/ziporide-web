@@ -1,26 +1,8 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-interface BillingRecord {
-  id: string;
-  plan: string;
-  amount: number;
-  date: string;
-  method: string;
-  cardLast4: string;
-  status: 'Paid' | 'Failed' | 'Pending';
-}
-
-// Generate mock billing history
-const billingHistory: BillingRecord[] = Array.from({ length: 99 }, (_, i) => ({
-  id: `TRN321651${321 + i}`,
-  plan: 'Zipo Subscription',
-  amount: 79.99,
-  date: `2023-10-${String((i % 28) + 1).padStart(2, '0')}`,
-  method: 'Visa',
-  cardLast4: '8956',
-  status: 'Paid',
-}));
+import { useDriverSubscriptions } from '@/hooks/useDriver';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -41,7 +23,26 @@ const billingTableColumns: BillingTableColumn[] = [
 ];
 
 export default function DriverSubscriptionTab() {
+  const { id } = useParams<{ id: string }>();
+  const { data, loading, error } = useDriverSubscriptions(id);
   const [currentPage, setCurrentPage] = useState(1);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <div className="text-[#1DAFA1]">Loading subscription details...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500 py-10 text-center">{error}</div>;
+  }
+
+  const billingHistory = data?.billingHistory || [];
+  const currentSubscription = data?.currentSubscription;
+  const paymentMethod = data?.paymentMethod;
+
   const totalPages = Math.ceil(billingHistory.length / ITEMS_PER_PAGE);
 
   const currentData = billingHistory.slice(
@@ -49,8 +50,18 @@ export default function DriverSubscriptionTab() {
     currentPage * ITEMS_PER_PAGE,
   );
 
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'numeric',
+      year: 'numeric',
+    });
+  };
+
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
+    if (totalPages <= 1) return [1];
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
@@ -115,37 +126,60 @@ export default function DriverSubscriptionTab() {
                 </div>
                 <div>
                   <p className="text-white font-bold text-[20px] m-0 leading-tight">
-                    Zipo Subscription
+                    {currentSubscription ? 'Zipo Subscription' : 'No Active Plan'}
                   </p>
                   <p className="text-white text-[12px] font-medium m-0 mt-0.5">
-                    Subscribe on : 2025-01-05
+                    Subscribe on : {formatDate(currentSubscription?.subscribedOn)}
                   </p>
                 </div>
               </div>
-              <span
-                className="text-white text-[12px] font-semibold px-3 py-1 rounded-full shrink-0"
-                style={{ background: '#F6921E', backdropFilter: 'blur(4px)' }}
-              >
-                Active
-              </span>
+              {currentSubscription && (
+                <span
+                  className="text-white text-[12px] font-semibold px-3 py-1 rounded-full shrink-0 uppercase"
+                  style={{ background: '#F6921E', backdropFilter: 'blur(4px)' }}
+                >
+                  {currentSubscription.status}
+                </span>
+              )}
             </div>
 
             {/* Price Row */}
             <div style={{ paddingTop: '12px' }}>
-              <span className="text-white font-bold text-[24px]">£79.99</span>
+              <span className="text-white font-bold text-[24px]">
+                {currentSubscription?.currency === 'GBP' ? '£' : '$'}
+                {currentSubscription?.amount || 0}
+              </span>
               <span className="text-white font-medium text-[12px]"> /month</span>
             </div>
           </div>
 
-          {/* Next Billing */}
-          <div className="flex items-start gap-3">
-            <div className="w-[36px] h-[36px] rounded-full bg-[#F9F9F9] flex items-center justify-center shrink-0">
-              <img src="/icons/rider/dates.svg" alt="" />
+          {/* Next Billing / Card Info */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-[36px] h-[36px] rounded-full bg-[#F9F9F9] flex items-center justify-center shrink-0">
+                <img src="/icons/rider/dates.svg" alt="" />
+              </div>
+              <div>
+                <p className="text-[12px] text-[#4E616A] font-medium">Next Billing</p>
+                <p className="text-[14px] font-medium text-[#101828]">
+                  {formatDate(currentSubscription?.currentPeriodEnd)}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-[12px] text-[#4E616A] font-medium">Next Billing</p>
-              <p className="text-[14px] font-medium text-[#101828]">2023-05-12</p>
-            </div>
+
+            {paymentMethod && (
+              <div className="flex items-start gap-3">
+                <div className="w-[36px] h-[36px] rounded-full bg-[#F9F9F9] flex items-center justify-center shrink-0">
+                  <img src="/icons/driver/visa.svg" alt="visa" className="w-[20px]" />
+                </div>
+                <div>
+                  <p className="text-[12px] text-[#4E616A] font-medium">Payment Method</p>
+                  <p className="text-[14px] font-medium text-[#101828] uppercase">
+                    {paymentMethod.brand} •••• {paymentMethod.last4}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -194,28 +228,36 @@ export default function DriverSubscriptionTab() {
                     {/* Transaction ID */}
                     <td className="px-4 py-3">
                       <span className="text-[14px] font-medium text-[#1DAFA1] hover:underline cursor-pointer">
-                        {row.id}
+                        {row.invoiceNumber}
                       </span>
                     </td>
 
                     {/* Plan */}
-                    <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">{row.plan}</td>
+                    <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">
+                      {row.description}
+                    </td>
 
                     {/* Amount */}
                     <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">
-                      £{row.amount.toFixed(2)}
+                      {row.currency === 'GBP' ? '£' : '$'}
+                      {row.amount.toFixed(2)}
                     </td>
 
                     {/* Date */}
-                    <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">{row.date}</td>
+                    <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">
+                      {formatDate(row.createdAt)}
+                    </td>
 
                     {/* Method */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        {/* Visa logo */}
-                        <img src="/icons/driver/visa.svg" alt="visa" />
-                        <span className="text-[14px] font-medium text-[#4E616A]">
-                          Visa •••• {row.cardLast4}
+                        <img
+                          src={`/icons/driver/${paymentMethod?.brand?.toLowerCase() === 'visa' ? 'visa' : 'card'}.svg`}
+                          alt="card"
+                          onError={(e) => (e.currentTarget.src = '/icons/driver/card.svg')}
+                        />
+                        <span className="text-[14px] font-medium text-[#4E616A] uppercase">
+                          {paymentMethod?.brand || 'Card'} •••• {paymentMethod?.last4 || '****'}
                         </span>
                       </div>
                     </td>
@@ -224,10 +266,10 @@ export default function DriverSubscriptionTab() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${row.status === 'Paid' ? 'bg-[#00A63E]' : row.status === 'Failed' ? 'bg-[#FF0707]' : 'bg-yellow-400'}`}
+                          className={`w-1.5 h-1.5 rounded-full ${row.status.toLowerCase() === 'paid' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
                         />
                         <span
-                          className={`text-[12px] font-semibold ${row.status === 'Paid' ? 'text-[#00A63E]' : row.status === 'Failed' ? 'text-[#FF0707]' : 'text-yellow-500'}`}
+                          className={`text-[12px] font-semibold capitalize ${row.status.toLowerCase() === 'paid' ? 'text-[#00A63E]' : 'text-[#FF0707]'}`}
                         >
                           {row.status}
                         </span>
@@ -236,13 +278,19 @@ export default function DriverSubscriptionTab() {
 
                     {/* Action — Download */}
                     <td className="px-4 py-3">
-                      <button className="cursor-pointer " title="Download Receipt">
+                      <a
+                        href={row.pdfUrl || row.invoiceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="cursor-pointer inline-block"
+                        title="Download Receipt"
+                      >
                         <img
                           src="/icons/driver/Download.svg"
                           alt="download"
                           className="w-[22px] h-[22px]"
                         />
-                      </button>
+                      </a>
                     </td>
                   </tr>
                 ))}
