@@ -5,44 +5,37 @@ import DataTable, { type Column } from '@/components/ui/DataTable';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
-import { supportTicketsData } from '../../data/SupportTicketsData';
-import type { SupportTicket } from '../../data/SupportTicketsData';
+import { useSupportTickets } from '../../hooks/useSupportTickets';
+import type { UseSupportTicketsParams } from '../../hooks/useSupportTickets';
+import type { SupportTicket } from '../../types/support.types';
 
 const SupportTicketsPage: React.FC = () => {
-  const [tickets, setTickets] = useState<SupportTicket[]>(supportTicketsData);
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Open' | 'Checking' | 'Resolved'>('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [params, setParams] = useState<UseSupportTicketsParams>({
+    page: 1,
+    limit: 10,
+    status: 'All',
+    search: '',
+  });
+
+  const { tickets, loading, error, pagination, updateTicketStatus } = useSupportTickets(params);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
-  const itemsPerPage = 12;
 
-  const filteredData = tickets.filter((ticket) => {
-    const matchesFilter = activeFilter === 'All' || ticket.status === activeFilter;
-    const matchesSearch =
-      ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.cause.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
-
-  const getStatusBadge = (status: SupportTicket['status']) => {
+  const getStatusBadge = (status: string) => {
     let dotColor = '';
     let textColor = '';
-    switch (status) {
-      case 'Open':
+    const s = status.toLowerCase();
+    switch (s) {
+      case 'open':
         dotColor = 'bg-[#4E616A]';
         textColor = 'text-[#4E616A]';
         break;
-      case 'Checking':
+      case 'checking':
         dotColor = 'bg-[#1DAFA1]';
         textColor = 'text-[#1DAFA1]';
         break;
-      case 'Resolved':
+      case 'resolved':
         dotColor = 'bg-[#00A63E]';
         textColor = 'text-[#00A63E]';
         break;
@@ -50,7 +43,7 @@ const SupportTicketsPage: React.FC = () => {
     return (
       <div className="flex items-center gap-1.5">
         <div className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
-        <span className={`text-[13px] font-semibold ${textColor}`}>{status}</span>
+        <span className={`text-[13px] font-semibold capitalize ${textColor}`}>{s}</span>
       </div>
     );
   };
@@ -151,10 +144,9 @@ const SupportTicketsPage: React.FC = () => {
               type="text"
               placeholder="Search here..."
               className="pl-10 pr-4 py-2 w-full border border-[#DFE6E5] rounded-lg text-[14px] focus:outline-none focus:ring-1 focus:ring-[#1DAFA1] focus:border-[#1DAFA1]"
-              value={searchQuery}
+              value={params.search}
               onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
+                setParams(prev => ({ ...prev, search: e.target.value, page: 1 }));
               }}
             />
           </div>
@@ -165,14 +157,12 @@ const SupportTicketsPage: React.FC = () => {
                 <button
                   key={filter}
                   onClick={() => {
-                    setActiveFilter(filter);
-                    setCurrentPage(1);
+                    setParams(prev => ({ ...prev, status: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                    activeFilter === filter
-                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                      : 'border-[#DFE6E5] text-[#4E616A]'
-                  }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.status === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A]'
+                    }`}
                 >
                   {filter}
                 </button>

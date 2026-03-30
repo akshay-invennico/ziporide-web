@@ -1,13 +1,13 @@
 import { X, Copy } from 'lucide-react';
 import React from 'react';
 
-import type { SupportTicket } from '../../data/SupportTicketsData';
+import type { SupportTicket } from '../../types/support.types';
 
 interface TicketDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   ticket: SupportTicket | null;
-  onStatusChange?: (id: string, newStatus: SupportTicket['status']) => void;
+  onStatusChange?: (id: string, newStatus: 'open' | 'checking' | 'resolved') => void;
 }
 
 const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
@@ -22,13 +22,13 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
     navigator.clipboard.writeText(text);
   };
 
-  const statusColors = {
-    Open: { dot: 'bg-[#4E616A]', text: 'text-[#4E616A]', bg: 'bg-[#F9F9F9]' },
-    Checking: { dot: 'bg-[#1DAFA1]', text: 'text-[#1DAFA1]', bg: 'bg-[#EEFFFD]' },
-    Resolved: { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]', bg: 'bg-[#DCFCE7]' },
+  const statusColors: Record<string, { dot: string; text: string; bg: string }> = {
+    open: { dot: 'bg-[#4E616A]', text: 'text-[#4E616A]', bg: 'bg-[#F9F9F9]' },
+    checking: { dot: 'bg-[#1DAFA1]', text: 'text-[#1DAFA1]', bg: 'bg-[#EEFFFD]' },
+    resolved: { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]', bg: 'bg-[#DCFCE7]' },
   };
 
-  const colors = statusColors[ticket.status];
+  const colors = statusColors[ticket.status.toLowerCase()] || statusColors.open;
 
   return (
     <div
@@ -54,9 +54,9 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-[14px] font-medium text-[#4E616A]">Ticket ID:</span>
-                <span className="text-[14px] font-semibold text-[#1DAFA1]">{ticket.id}</span>
+                <span className="text-[14px] font-semibold text-[#1DAFA1]">{ticket.ticketId}</span>
                 <button
-                  onClick={() => handleCopy(ticket.id)}
+                  onClick={() => handleCopy(ticket.ticketId)}
                   className="p-1 rounded cursor-pointer hover:bg-gray-50"
                 >
                   <Copy className="w-4 h-4 text-[#1DAFA1]" />
@@ -70,7 +70,7 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
 
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[500px] ${colors.bg}`}>
               <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
-              <span className={`text-[12px] font-semibold ${colors.text}`}>{ticket.status}</span>
+              <span className={`text-[12px] font-semibold capitalize ${colors.text}`}>{ticket.status}</span>
             </div>
           </div>
 
@@ -105,19 +105,19 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
         </div>
 
         {/* Footer */}
-        {ticket.status !== 'Resolved' && (
+        {ticket.status !== 'resolved' && (
           <div className="px-6 py-4 border-t border-[#DFE6E5] flex justify-end gap-3 bg-white">
-            {ticket.status === 'Open' && (
+            {ticket.status === 'open' && (
               <button
-                onClick={() => onStatusChange?.(ticket.id, 'Checking')}
-                className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md  cursor-pointer"
+                onClick={() => onStatusChange?.(ticket.ticketId, 'checking')}
+                className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer transition-colors hover:bg-[#EEFFFD]"
               >
                 Mark as Checking
               </button>
             )}
             <button
-              onClick={() => onStatusChange?.(ticket.id, 'Resolved')}
-              className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md  cursor-pointer"
+              onClick={() => onStatusChange?.(ticket.ticketId, 'resolved')}
+              className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer transition-colors hover:bg-[#EEFFFD]"
             >
               Mark as Resolved
             </button>

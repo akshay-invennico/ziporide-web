@@ -5,15 +5,21 @@ import DataTable, { type Column } from '@/components/ui/DataTable';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
-import { transactionsData } from '../../data/TransactionsData';
-import type { TransactionRecord } from '../../data/TransactionsData';
+import { useTransactions } from '../../hooks/useTransactions';
+import type { UseTransactionsParams } from '../../hooks/useTransactions';
+import type { Transaction } from '../../types/transaction.types';
 
 const TransactionsPage: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Pay-in' | 'Payout' | 'Refund'>('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [params, setParams] = useState<UseTransactionsParams>({
+    page: 1,
+    limit: 12,
+    category: 'All',
+    search: '',
+  });
+
+  const { transactions, loading, error, pagination } = useTransactions(params);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<TransactionRecord | null>(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const itemsPerPage = 12;
 
@@ -50,6 +56,7 @@ const TransactionsPage: React.FC = () => {
         'Driver Incentive',
       ].includes(type) && amount > 0;
     const sign = isPositive ? '+' : '-';
+    // Ensure amount is treated as positive for formatting, then add sign
     const absAmount = Math.abs(amount).toFixed(2);
     const color = isPositive ? 'text-[#1DAFA1]' : 'text-[#FF0707]';
     return (
@@ -164,27 +171,24 @@ const TransactionsPage: React.FC = () => {
               type="text"
               placeholder="Search here..."
               className="pl-10 pr-4 py-2 w-[300px] border border-[#DFE6E5] rounded-lg text-[14px] focus:outline-none focus:ring-1 focus:ring-[#1DAFA1] focus:border-[#1DAFA1]"
-              value={searchQuery}
+              value={params.search}
               onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
+                setParams(prev => ({ ...prev, search: e.target.value, page: 1 }));
               }}
             />
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              {['All', 'Pay-in', 'Payout', 'Refund'].map((filter) => (
+              {(['All', 'Pay-in', 'Payout', 'Refund'] as const).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => {
-                    setActiveFilter(filter as typeof activeFilter);
-                    setCurrentPage(1);
+                    setParams(prev => ({ ...prev, category: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                    activeFilter === filter
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.category === filter
                       ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                       : 'border-[#DFE6E5] text-[#4E616A]'
-                  }`}
+                    }`}
                 >
                   {filter}
                 </button>
