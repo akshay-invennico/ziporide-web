@@ -62,12 +62,12 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
                   <Copy className="w-4 h-4 text-[#1DAFA1]" />
                 </button>
               </div>
-              {ticket.ride && (
-                <div className="flex items-center gap-2 text-[14px] text-[#000000] font-medium">
-                  <span className="text-[#4E616A]">Ride:</span>
-                  <span className="text-[#1DAFA1]">{ticket.ride.rideNumber}</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2 text-[14px] text-[#000000] font-medium">
+                <img src="/icons/calender.svg" alt="date" />
+                <span className="text-[#000000]">
+                  {new Date(ticket.createdAt).toISOString().split('T')[0]}
+                </span>
+              </div>
             </div>
 
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[500px] ${colors.bg}`}>
@@ -88,7 +88,7 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
               <span className="text-[12px] font-medium text-[#747C84]">Against</span>
               {ticket.ride ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-[12px] font-medium text-[#4E616A]">Ride: </span>
+                  <span className="text-[14px] font-medium text-[#4E616A]">Trip ID: </span>
                   <span className="text-[14px] font-medium text-[#1DAFA1]">
                     {ticket.ride.rideNumber}
                   </span>
