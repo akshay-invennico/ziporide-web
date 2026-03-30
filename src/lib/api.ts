@@ -25,9 +25,16 @@ export const API = {
   UPDATE_CATEGORY: (id: string) => `/v1/inventory/categories/${id}`,
   REMOVE_CATEGORY: (id: string) => `/v1/inventory/categories/${id}`,
 
+  SUPPORT_TICKETS: '/v1/support/ticket',
+  UPDATE_TICKET_STATUS: (id: string) => `/v1/support/ticket/${id}`,
+
   UPLOAD_IMAGE: '/v1/image/upload',
   ADMIN_ME: '/v1/users/me',
   UPDATE_PROFILE: '/v1/users',
   UPDATE_PASSWORD: '/v1/users/password',
   PRICING: '/v1/pricing',
+
+
+  TRANSACTIONS: '/v1/transactions',
+  TRANSACTION_DETAILS: (id: string) => `/v1/transactions/${id}`,
 } as const;

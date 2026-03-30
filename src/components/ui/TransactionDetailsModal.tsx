@@ -1,27 +1,11 @@
 import { X, Copy } from 'lucide-react';
 import React from 'react';
-
-interface TransactionRecord {
-  id: string;
-  type: string;
-  amount: number;
-  date: string;
-  time: string;
-  status: string;
-  paymentMethod?: string;
-  externalId?: string;
-  tripId?: string;
-  driver?: {
-    name: string;
-    id: string;
-    avatar: string;
-  };
-}
+import type { Transaction } from '../../types/transaction.types';
 
 interface TransactionDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  transaction: TransactionRecord | null;
+  transaction: Transaction | null;
 }
 
 const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
@@ -92,11 +76,11 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-xl w-full max-w-[800px] flex flex-col overflow-hidden shadow-xl">
+      <div className="bg-white rounded-xl w-full max-w-[800px] flex flex-col overflow-hidden shadow-xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#DFE6E5]">
           <h2 className="text-[18px] font-semibold text-[#000000]">Transactions Details</h2>
-          <button onClick={onClose} className="p-1  rounded-full transition-colors cursor-pointer">
+          <button onClick={onClose} className="p-1  rounded-full transition-colors cursor-pointer hover:bg-gray-100">
             <X className="w-5 h-5 text-[#4E616A]" />
           </button>
         </div>
@@ -111,14 +95,14 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
                 <span className="text-[14px] font-semibold text-[#1DAFA1]">{transaction.id}</span>
                 <button
                   onClick={() => handleCopy(transaction.id)}
-                  className="p-1  rounded cursor-pointer"
+                  className="p-1  rounded cursor-pointer hover:bg-gray-50"
                 >
                   <Copy className="w-4 h-4 text-[#1DAFA1]" />
                 </button>
               </div>
               <div className="flex items-center gap-3 text-[14px] text-[#000000] font-medium">
                 <div className="flex items-center gap-2">
-                  <img src="/icons/rider/dates.svg" alt="calender" />
+                  <img src="/icons/rider/dates.svg" alt="calendar" />
                   <span>{transaction.date}</span>
                 </div>
                 <div className="w-px h-4 bg-[#DFE6E5]" />
@@ -183,7 +167,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
                   <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
                     <img
                       src={transaction.driver?.avatar || '/icons/driver/avatar1.png'}
-                      alt={transaction.driver?.name || 'Driver'}
+                      alt={transaction.driver?.name || 'User'}
                       className="w-full h-full object-cover"
                     />
                   </div>
