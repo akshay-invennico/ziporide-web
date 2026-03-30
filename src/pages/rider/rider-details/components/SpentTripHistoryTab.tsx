@@ -10,11 +10,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import { useRiderTrips, useRideDetails } from '@/hooks/useRider';
+import type { TripRecord } from '@/types/driver.types';
 import type { Rider } from '@/types/rider.types';
 
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 import { spendingData } from '../../../../data/RiderTripsData';
-import { tripHistoryData, type TripRecord } from '../../../../data/TripHistoryData';
 
 interface Props {
   rider: Rider;
@@ -23,13 +24,17 @@ interface Props {
 export default function SpentTripHistoryTab({ rider }: Props) {
   const [trendFilter, setTrendFilter] = useState('Year');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
+  const [selectedRideId, setSelectedRideId] = useState<string | null>(null);
   const itemsPerPage = 6;
 
-  const totalPages = Math.ceil(tripHistoryData.length / itemsPerPage);
-  const currentTrips = tripHistoryData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+  const {
+    trips: currentTrips,
+    loading: tripsLoading,
+    totalPages,
+  } = useRiderTrips(rider.id, trendFilter, currentPage, itemsPerPage);
+
+  const { ride: detailedRide, loading: detailsLoading } = useRideDetails(
+    selectedRideId || undefined,
   );
 
   // Pagination Handlers
@@ -210,88 +215,105 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {currentTrips.map((trip: TripRecord) => (
-                <tr
-                  key={trip.id}
-                  className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
-                >
-                  <td className="p-4 px-5 text-[#1DAFA1] font-medium text-[14px]">{trip.id}</td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden shrink-0">
-                        {/* Using a placeholder avatar box if image not present, mimicking image with a colored background */}
-                        <div className="w-full h-full bg-teal-100 flex items-center justify-center text-[#1DAFA1] font-bold text-[16px]">
-                          {trip.driver.name.charAt(0)}
-                        </div>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-[#1DAFA1] text-[14px] ">
-                          {trip.driver.name}
-                        </span>
-                        <span className="text-[12px] font-medium text-[#4E616A]">
-                          {trip.driver.phone}
-                        </span>
-                      </div>
+              {tripsLoading ? (
+                <tr>
+                  <td colSpan={8} className="p-10 text-center text-[#4E616A]">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-8 h-8 border-4 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
+                      <span>Loading trips...</span>
                     </div>
-                  </td>
-                  <td className="p-4 text-[#4E616A] font-medium text-[14px]">
-                    <div className="flex items-center gap-2">
-                      <span>{trip.route.from}</span>
-                      <ArrowRightIcon className="w-4 h-4" />
-                      <span>{trip.route.to}</span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-1.5">
-                      <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
-                      <span className="font-medium text-[#4E616A] text-[14px]">
-                        {trip.driver.rating.toFixed(1)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-4 font-medium text-[#4E616A] text-[14px]">
-                    £{trip.amount.toFixed(2)}
-                  </td>
-                  <td className="p-4 font-medium text-[#4E616A] text-[14px]">{trip.date}</td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          trip.status === 'Completed'
-                            ? 'bg-[#00A63E]'
-                            : trip.status === 'In Progress'
-                              ? 'bg-[#F6921E]'
-                              : trip.status === 'Assigned'
-                                ? 'bg-[#1DAFA1]'
-                                : 'bg-[#FF0707]'
-                        }`}
-                      ></div>
-                      <span
-                        className={`font-semibold text-[12px] ${
-                          trip.status === 'Completed'
-                            ? 'text-[#00A63E]'
-                            : trip.status === 'In Progress'
-                              ? 'text-[#F6921E]'
-                              : trip.status === 'Assigned'
-                                ? 'text-[#1DAFA1]'
-                                : 'text-[#FF0707]'
-                        }`}
-                      >
-                        {trip.status}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => setSelectedTrip(trip)}
-                      className="flex items-center gap-1 font-medium text-[14px] transition-colors text-[#1DAFA1] cursor-pointer"
-                    >
-                      <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
-                      View
-                    </button>
                   </td>
                 </tr>
-              ))}
+              ) : currentTrips.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="p-10 text-center text-[#4E616A]">
+                    No trips found for this period.
+                  </td>
+                </tr>
+              ) : (
+                currentTrips.map((trip: TripRecord) => (
+                  <tr
+                    key={trip.id}
+                    className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
+                  >
+                    <td className="p-4 px-5 text-[#1DAFA1] font-medium text-[14px]">{trip.id}</td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden shrink-0">
+                          {/* Using a placeholder avatar box if image not present, mimicking image with a colored background */}
+                          <div className="w-full h-full bg-teal-100 flex items-center justify-center text-[#1DAFA1] font-bold text-[16px]">
+                            {trip.driver.name.charAt(0)}
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-[#1DAFA1] text-[14px] ">
+                            {trip.driver.name}
+                          </span>
+                          <span className="text-[12px] font-medium text-[#4E616A]">
+                            {trip.driver.phone}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 text-[#4E616A] font-medium text-[14px]">
+                      <div className="flex items-center gap-2">
+                        <span>{trip.route.pickupLocation}</span>
+                        <ArrowRightIcon className="w-4 h-4" />
+                        <span>{trip.route.destination}</span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-1.5">
+                        <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
+                        <span className="font-medium text-[#4E616A] text-[14px]">
+                          {trip.driver.rating ? trip.driver.rating.toFixed(1) : '0.0'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-4 font-medium text-[#4E616A] text-[14px]">
+                      £{trip.amount ? trip.amount.toFixed(2) : '0.00'}
+                    </td>
+                    <td className="p-4 font-medium text-[#4E616A] text-[14px]">{trip.date}</td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            trip.status === 'Completed'
+                              ? 'bg-[#00A63E]'
+                              : trip.status === 'In Progress'
+                                ? 'bg-[#F6921E]'
+                                : trip.status === 'Assigned'
+                                  ? 'bg-[#1DAFA1]'
+                                  : 'bg-[#FF0707]'
+                          }`}
+                        ></div>
+                        <span
+                          className={`font-semibold text-[12px] ${
+                            trip.status === 'Completed'
+                              ? 'text-[#00A63E]'
+                              : trip.status === 'In Progress'
+                                ? 'text-[#F6921E]'
+                                : trip.status === 'Assigned'
+                                  ? 'text-[#1DAFA1]'
+                                  : 'text-[#FF0707]'
+                          }`}
+                        >
+                          {trip.status}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => setSelectedRideId(trip.rideId || trip.id)}
+                        className="flex items-center gap-1 font-medium text-[14px] transition-colors text-[#1DAFA1] cursor-pointer"
+                      >
+                        <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -354,9 +376,10 @@ export default function SpentTripHistoryTab({ rider }: Props) {
       </div>
 
       <TripDetailsModal
-        isOpen={!!selectedTrip}
-        onClose={() => setSelectedTrip(null)}
-        trip={selectedTrip}
+        isOpen={!!selectedRideId}
+        onClose={() => setSelectedRideId(null)}
+        trip={detailedRide}
+        loading={detailsLoading}
       />
     </div>
   );
