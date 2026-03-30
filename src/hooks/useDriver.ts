@@ -2,7 +2,17 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
-import type { Driver, DriverResponse } from '@/types/driver.types';
+import type {
+  Driver,
+  DriverResponse,
+  DriverSubscriptionsResponse,
+  DriverEarningsResponse,
+  RidesResponse,
+  TripRecord,
+  RawRideData,
+  FrontendEarningData,
+  BackendEarningReport,
+} from '@/types/driver.types';
 
 interface DriverFilters {
   minEarnings?: number;
@@ -201,4 +211,309 @@ export const useUpdateDriverStatus = () => {
   };
 
   return { updateStatus, isUpdating, error };
+};
+export const useDriverSubscriptions = (id: string | undefined) => {
+  const [data, setData] = useState<DriverSubscriptionsResponse['data'] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchSubscriptions = useCallback(async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const response = await apiClient.get<DriverSubscriptionsResponse>(
+        API.DRIVER_SUBSCRIPTIONS(id),
+      );
+      if (response.data?.success) {
+        setData(response.data.data);
+      } else {
+        setError(response.data?.message || 'Failed to fetch subscriptions');
+      }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to fetch subscriptions');
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchSubscriptions();
+  }, [fetchSubscriptions]);
+
+  return { data, loading, error, refetch: fetchSubscriptions };
+};
+
+export const useDriverEarnings = (id: string | undefined, range: string = 'year') => {
+  const [data, setData] = useState<FrontendEarningData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchEarnings = useCallback(async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const response = await apiClient.get<DriverEarningsResponse>(API.DRIVER_EARNINGS(id), {
+        params: { range },
+      });
+      if (response.data?.success && response.data.data) {
+        const backendData = response.data.data;
+        // Map backend structure to frontend expectation
+        const mappedData: FrontendEarningData = {
+          totalTrips: backendData.summary.totalTrips,
+          totalEarnings: backendData.summary.totalEarnings,
+          avgTripValue: backendData.summary.averageTripValue,
+          acceptanceRate: backendData.summary.acceptanceRate,
+          chartData: (backendData.report || []).map((item: BackendEarningReport) => ({
+            month: item.label,
+            earnings: item.amount,
+            rides: item.tripCount,
+          })),
+        };
+        setData(mappedData);
+      } else {
+        setError(response.data?.message || 'Failed to fetch earnings');
+      }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to fetch earnings');
+    } finally {
+      setLoading(false);
+    }
+  }, [id, range]);
+
+  useEffect(() => {
+    fetchEarnings();
+  }, [fetchEarnings]);
+
+  return { data, loading, error, refetch: fetchEarnings };
+};
+
+// ── Mapping Helper ────────────────────────────────────────────────────────────
+
+/**
+ * Maps the complex nested backend trip response to the simplified TripRecord structure
+ * used by the UI components (Modal, Tables, etc.)
+ */
+export const mapBackendTripToFrontend = (t: RawRideData): TripRecord => {
+  // Status mapping for legacy components and badges
+  let statusLabel = 'Assigned';
+  const s = (t.status || '').toLowerCase();
+  if (s === 'completed') statusLabel = 'Completed';
+  else if (s === 'cancelled') statusLabel = 'Cancelled';
+  else if (['driver_arrived', 'started', 'arrived', 'in_progress', 'on_the_way'].includes(s)) {
+    statusLabel = 'In Progress';
+  }
+
+  // Format Date and Time from rideTimestamps.bookedAt
+  const bookedAt = t.rideTimestamps?.bookedAt;
+  const dateStr = bookedAt
+    ? new Date(bookedAt).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    : 'N/A';
+  const timeStr = bookedAt
+    ? new Date(bookedAt).toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
+    : 'N/A';
+
+  return {
+    ...t,
+    id: t.rideNumber || t.id,
+    rideId: t.id,
+    status: statusLabel,
+    date: dateStr,
+    time: timeStr,
+    distance: t.distanceKm || 0,
+    estimatedTime: t.durationMinutes || 0,
+    totalFare: t.fare?.totalFare || 0,
+    baseFare: t.fare?.baseFare || 0,
+    distanceFare: t.fare?.distanceFare || 0,
+    waitingCharge: t.fare?.waitingCharge || 0,
+    amount: t.fare?.totalFare || 0,
+    route: {
+      pickupLocation: t.pickup?.address || 'N/A',
+      stop1Location: t.stops?.[0]?.address || '',
+      destination: t.destination?.address || 'N/A',
+    },
+    rider: t.rider
+      ? {
+          id: t.rider.id || 'N/A',
+          name: t.rider.name || 'Unknown Rider',
+          phone: t.rider.phone || 'N/A',
+          avatar: t.rider.avatar || '',
+          initials: t.rider.initials || (t.rider.name ? t.rider.name.charAt(0) : 'U'),
+          rating: typeof t.rider.rating === 'number' ? t.rider.rating : 5.0,
+        }
+      : {
+          id: 'N/A',
+          name: 'Unknown Rider',
+          phone: 'N/A',
+          avatar: '',
+          initials: 'U',
+          rating: 5.0,
+        },
+    driver: t.driver
+      ? {
+          id: t.driver.id || 'N/A',
+          name: t.driver.name?.trim() || 'Unknown Driver',
+          phone: t.driver.phone || 'N/A',
+          avatar: t.driver.profilePhotoUrl || t.driver.avatar || '',
+          initials: t.driver.name
+            ? t.driver.name
+                .split(' ')
+                .map((w: string) => w[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2)
+            : 'D',
+          rating:
+            typeof t.driver.avgRating === 'number'
+              ? t.driver.avgRating
+              : typeof t.driver.rating === 'number'
+                ? t.driver.rating
+                : 0.0,
+          vehicle: t.driver.vehicle
+            ? {
+                name:
+                  `${t.driver.vehicle.make || ''} ${t.driver.vehicle.model || ''}`.trim() ||
+                  'Standard',
+                color: 'N/A',
+                registrationNumber: t.driver.vehicle.registrationNumber || 'N/A',
+                photo: t.driver.vehicle.photo || '',
+              }
+            : {
+                name: 'Standard',
+                color: 'N/A',
+                registrationNumber: 'N/A',
+                photo: '',
+              },
+        }
+      : {
+          id: 'N/A',
+          name: 'No Driver Assigned',
+          phone: 'N/A',
+          avatar: '',
+          initials: 'ND',
+          rating: 0,
+          vehicle: { name: 'Standard', color: 'N/A', registrationNumber: 'N/A', photo: '' },
+        },
+    cancellationDetails: t.cancellation
+      ? {
+          cancelledBy: t.cancellation.cancelledBy || 'rider',
+          reason: t.cancellation.reason || 'N/A',
+          tripStage: 'N/A',
+          fee: t.fare?.cancellationFee || 0,
+          waitingCharge: t.fare?.waitingCharge || 0,
+        }
+      : undefined,
+    payment: {
+      method: t.paymentMethod?.card?.brand || 'Visa',
+      last4: t.paymentMethod?.card?.last4 || '4242',
+    },
+  };
+};
+
+// ── Hooks ─────────────────────────────────────────────────────────────────────
+
+export const useDriverTrips = (
+  driverId: string | undefined,
+  dateFilter?: string,
+  page: number = 1,
+  limit: number = 12,
+) => {
+  const [trips, setTrips] = useState<TripRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchTrips = useCallback(async () => {
+    if (!driverId) return;
+    setLoading(true);
+    try {
+      const params: Record<string, string | number> = {
+        driverId,
+        page,
+        limit,
+      };
+      if (dateFilter && dateFilter !== 'Year') {
+        params.dateFilter =
+          dateFilter === 'This Month'
+            ? 'currentMonth'
+            : dateFilter === 'This Week'
+              ? 'currentWeek'
+              : dateFilter;
+      }
+
+      const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
+      if (response.data?.success) {
+        // Transform real API data to the format expected by TripRecord/Components
+        const mappedTrips = (response.data.data.results || []).map(mapBackendTripToFrontend);
+
+        setTrips(mappedTrips);
+        setTotalPages(response.data.data.totalPages || 0);
+      } else {
+        setError(response.data?.message || 'Failed to fetch trips');
+      }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to fetch trips');
+    } finally {
+      setLoading(false);
+    }
+  }, [driverId, dateFilter, page, limit]);
+
+  useEffect(() => {
+    fetchTrips();
+  }, [fetchTrips]);
+
+  return { trips, loading, error, totalPages, refetch: fetchTrips };
+};
+
+export const useTripDetails = (tripId: string | undefined) => {
+  const [trip, setTrip] = useState<TripRecord | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchDetails = useCallback(
+    async (idOverride?: string) => {
+      const id = idOverride || tripId;
+      if (!id) return null;
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await apiClient.get<{
+          success: boolean;
+          data: { ride: RawRideData };
+          message?: string;
+        }>(API.ADMIN_TRIP_DETAILS(id));
+        if (response.data?.success) {
+          const mapped = mapBackendTripToFrontend(response.data.data.ride);
+          setTrip(mapped);
+          return mapped;
+        } else {
+          setError(response.data?.message || 'Failed to fetch trip details');
+          return null;
+        }
+      } catch (err: unknown) {
+        const error = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(error.response?.data?.message || error.message || 'Failed to fetch trip details');
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [tripId],
+  );
+
+  useEffect(() => {
+    if (tripId) fetchDetails();
+  }, [tripId, fetchDetails]);
+
+  return { trip, loading, error, fetchDetails };
 };

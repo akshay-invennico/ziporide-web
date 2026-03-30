@@ -1,73 +1,11 @@
 import { Star, ChevronLeft, ChevronRight, ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+
+import { useDriverTrips, useTripDetails } from '@/hooks/useDriver';
+import type { TripRecord } from '@/types/driver.types';
 
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
-import type { TripRecord } from '../../../../data/TripHistoryData';
-
-type TripStatus = 'Completed' | 'Cancelled' | 'In Progress' | 'Assigned';
-
-interface Trip {
-  id: string;
-  rider: { name: string; phone: string; initials: string; color: string };
-  from: string;
-  to: string;
-  amount: number;
-  date: string;
-  rating: number | null;
-  status: TripStatus;
-}
-
-const COLORS = ['#1DAFA1', '#E9A90A', '#F87171', '#60A5FA', '#A78BFA', '#34D399'];
-
-const RIDERS = [
-  { name: 'Mia Chen', phone: '+44 231 5623', initials: 'MC', color: COLORS[0] },
-  { name: 'Amir Suleiman', phone: '+44 231 5632', initials: 'AS', color: COLORS[1] },
-  { name: 'Ravi Kumar', phone: '+44 231 5641', initials: 'RK', color: COLORS[2] },
-  { name: 'Lara Brown', phone: '+44 231 5650', initials: 'LB', color: COLORS[3] },
-  { name: 'Tommy Nguyen', phone: '+44 231 5669', initials: 'TN', color: COLORS[4] },
-  { name: 'Nina Davis', phone: '+44 231 5678', initials: 'ND', color: COLORS[5] },
-  { name: 'Sophia Smith', phone: '+44 231 5687', initials: 'SS', color: COLORS[0] },
-  { name: 'David Patel', phone: '+44 231 5696', initials: 'DP', color: COLORS[1] },
-  { name: 'Clara Kim', phone: '+44 231 5705', initials: 'CK', color: COLORS[2] },
-];
-
-const routes = [
-  { from: 'Uptown', to: 'Station' },
-  { from: 'Midtown', to: 'Mall' },
-  { from: 'Seaside', to: 'Resort' },
-  { from: 'Lakeside', to: 'Park' },
-  { from: 'Hilltop', to: 'Observatory' },
-  { from: 'Riverside', to: 'Cafe' },
-  { from: 'Forestview', to: 'Lodge' },
-  { from: 'Suburban', to: 'Plaza' },
-  { from: 'Industrial', to: 'Complex' },
-];
-
-const STATUSES: TripStatus[] = [
-  'Completed',
-  'Completed',
-  'Completed',
-  'Cancelled',
-  'In Progress',
-  'Assigned',
-];
-
-const allTrips: Trip[] = Array.from({ length: 99 }, (_, i) => {
-  const rider = RIDERS[i % RIDERS.length];
-  const route = routes[i % routes.length];
-  const status = STATUSES[i % STATUSES.length];
-  const ratings = [4.0, null, 2.0, 5.0, null, 3.0, 2.0, 4.0, 3.0];
-  return {
-    id: `ZPT-284514${8 + i}`,
-    rider,
-    from: route.from,
-    to: route.to,
-    amount: parseFloat((12.5 + (i % 9) * 2).toFixed(2)),
-    date: `2023-${String(10 - Math.floor(i / 10)).padStart(2, '0')}-${String(28 - (i % 28)).padStart(2, '0')}`,
-    rating: status === 'Completed' ? (ratings[i % ratings.length] ?? null) : null,
-    status,
-  };
-});
 
 const ITEMS_PER_PAGE = 12;
 
@@ -88,14 +26,14 @@ const tripTableColumns: TripTableColumn[] = [
   { key: 'action', label: 'ACTION', sortable: false },
 ];
 
-function StatusBadge({ status }: { status: TripStatus }) {
-  const cfg: Record<TripStatus, { dot: string; text: string }> = {
+function StatusBadge({ status }: { status: string }) {
+  const cfg: Record<string, { dot: string; text: string }> = {
     Completed: { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' },
     Cancelled: { dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' },
     'In Progress': { dot: 'bg-[#F6921E]', text: 'text-[#F6921E]' },
     Assigned: { dot: 'bg-[#1DAFA1]', text: 'text-[#1DAFA1]' },
   };
-  const { dot, text } = cfg[status];
+  const { dot, text } = cfg[status] || cfg['Assigned'];
   return (
     <div className="flex items-center gap-1.5">
       <div className={`w-1.5 h-1.5 rounded-full ${dot}`} />
@@ -105,13 +43,21 @@ function StatusBadge({ status }: { status: TripStatus }) {
 }
 
 export default function DriverTripHistoryTab() {
+  const { id: driverId } = useParams<{ id: string }>();
   const [period, setPeriod] = useState<'Year' | 'This Month' | 'This Week'>('Year');
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
+  const [loadingTripId, setLoadingTripId] = useState<string | null>(null);
 
-  const totalPages = Math.ceil(allTrips.length / ITEMS_PER_PAGE);
-  const pageData = allTrips.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const { trips, loading, error, totalPages } = useDriverTrips(
+    driverId,
+    period,
+    currentPage,
+    ITEMS_PER_PAGE,
+  );
+
+  const { fetchDetails } = useTripDetails(undefined);
 
   const getPages = () => {
     const pages: (number | '...')[] = [];
@@ -132,47 +78,41 @@ export default function DriverTripHistoryTab() {
     return pages;
   };
 
-  const handleViewTrip = (trip: Trip) => {
-    const record: TripRecord = {
-      id: trip.id,
-      rider: {
-        id: 'RDR-' + trip.id,
-        name: trip.rider.name,
-        phone: trip.rider.phone,
-        avatar: trip.rider.initials,
-        rating: trip.rating ?? 4.5,
-      },
-      driver: {
-        id: 'DRV-001',
-        name: 'James Williams',
-        phone: '+44 231 5732',
-        avatar: '/icons/avatar1.png',
-        rating: 4.9,
-        vehicle: {
-          name: 'Standard',
-          photo: '/icons/vehicle/vehicle2.svg',
-          color: 'Pearl White',
-          registrationNumber: 'LK21 MNX',
-        },
-      },
-      route: {
-        pickupLocation: trip.from,
-        stop1Location: 'City Center',
-        destination: trip.to,
-        from: trip.from,
-        to: trip.to,
-      },
-      distance: 6.4,
-      estimatedTime: 18,
-      totalFare: trip.amount,
-      amount: trip.amount,
-      date: trip.date,
-      time: '09:41 AM',
-      status: trip.status,
-    };
-    setSelectedTrip(record);
-    setIsModalOpen(true);
+  const handleViewTrip = async (trip: TripRecord) => {
+    // Show loading for this specific trip
+    setLoadingTripId(trip.rideId || trip.id);
+    try {
+      // Use the custom hook to fetch single trip details
+      const fullTripData = await fetchDetails(trip.rideId || trip.id);
+      if (fullTripData) {
+        setSelectedTrip(fullTripData);
+        setIsModalOpen(true);
+      } else {
+        // Fallback to the trip data we already have if API fails
+        setSelectedTrip(trip);
+        setIsModalOpen(true);
+      }
+    } catch (err) {
+      console.error('Failed to fetch full trip details:', err);
+      // Fallback on error
+      setSelectedTrip(trip);
+      setIsModalOpen(true);
+    } finally {
+      setLoadingTripId(null);
+    }
   };
+
+  if (loading && trips.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-10 text-[#1DAFA1]">
+        Loading trip history...
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500 py-10 text-center">{error}</div>;
+  }
 
   return (
     <div className="p-1">
@@ -229,7 +169,7 @@ export default function DriverTripHistoryTab() {
               </tr>
             </thead>
             <tbody>
-              {pageData.map((trip) => (
+              {trips.map((trip) => (
                 <tr
                   key={trip.id}
                   className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
@@ -259,15 +199,15 @@ export default function DriverTripHistoryTab() {
                   {/* Route */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#4E616A]">
-                      <span className="whitespace-nowrap">{trip.from}</span>
+                      <span className="whitespace-nowrap">{trip.route.pickupLocation}</span>
                       <ArrowRightIcon className="w-4 h-4" />
-                      <span className="whitespace-nowrap">{trip.to}</span>
+                      <span className="whitespace-nowrap">{trip.route.destination}</span>
                     </div>
                   </td>
 
                   {/* Amount */}
                   <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">
-                    £{trip.amount.toFixed(2)}
+                    £{trip.totalFare.toFixed(2)}
                   </td>
 
                   {/* Date */}
@@ -277,11 +217,11 @@ export default function DriverTripHistoryTab() {
 
                   {/* Rating */}
                   <td className="px-4 py-3">
-                    {trip.rating !== null ? (
+                    {trip.rider.rating !== null ? (
                       <div className="flex items-center gap-1">
                         <Star className="w-[14px] h-[14px] fill-[#E9A90A] text-[#E9A90A]" />
                         <span className="text-[14px] font-medium text-[#4E616A]">
-                          {trip.rating.toFixed(1)}
+                          {trip.rider.rating.toFixed(1)}
                         </span>
                       </div>
                     ) : (
@@ -298,10 +238,17 @@ export default function DriverTripHistoryTab() {
                   <td className="px-4 py-3">
                     <button
                       onClick={() => handleViewTrip(trip)}
-                      className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1]  cursor-pointer"
+                      disabled={loadingTripId === (trip.rideId || trip.id)}
+                      className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1] cursor-pointer disabled:opacity-50"
                     >
-                      <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
-                      View
+                      {loadingTripId === (trip.rideId || trip.id) ? (
+                        <div className="w-5 h-5 border-2 border-[#1DAFA1] border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
+                          View
+                        </>
+                      )}
                     </button>
                   </td>
                 </tr>

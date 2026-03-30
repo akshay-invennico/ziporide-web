@@ -23,6 +23,7 @@ export interface TripRecord {
     name: string;
     phone: string;
     avatar: string;
+    initials: string;
     rating: number;
   };
   driver: {
@@ -30,6 +31,7 @@ export interface TripRecord {
     name: string;
     phone: string;
     avatar: string;
+    initials: string;
     rating: number;
     vehicle: VehicleInfo;
   };
@@ -45,6 +47,9 @@ export interface TripRecord {
   distance: number; // km
   estimatedTime: number; // minutes
   totalFare: number;
+  baseFare: number;
+  distanceFare: number;
+  waitingCharge: number;
   amount: number;
   date: string;
   time: string;
@@ -77,6 +82,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1001',
       name: 'Mia Chen',
+      initials: 'MC',
       phone: '+44 231 5623',
       avatar: 'MC',
       rating: 4.7,
@@ -84,6 +90,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2001',
       name: 'James Hartley',
+      initials: 'JH',
       phone: '+44 231 5623',
       avatar: '/icons/driver/avatar1.png',
       rating: 4.9,
@@ -104,6 +111,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 6.4,
     estimatedTime: 18,
     totalFare: 12.5,
+    baseFare: 2.5,
+    distanceFare: 10.0,
+    waitingCharge: 0.0,
     amount: 12.5,
     date: '2026-03-20',
     time: '02:59',
@@ -123,6 +133,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1002',
       name: 'Amir Suleiman',
+      initials: 'AS',
       phone: '+44 231 5632',
       avatar: 'AS',
       rating: 4.5,
@@ -130,6 +141,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2002',
       name: 'Priya Nair',
+      initials: 'PN',
       phone: '+44 231 5632',
       avatar: '/icons/driver/avatar2.png',
       rating: 4.8,
@@ -150,6 +162,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 9.1,
     estimatedTime: 24,
     totalFare: 22.0,
+    baseFare: 2.5,
+    distanceFare: 19.5,
+    waitingCharge: 0.0,
     amount: 22.0,
     date: '2026-03-20',
     time: '03:45',
@@ -169,6 +184,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1003',
       name: 'Lara Brown',
+      initials: 'LB',
       phone: '+44 231 5650',
       avatar: 'LB',
       rating: 4.8,
@@ -176,6 +192,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2003',
       name: 'Sophie Turner',
+      initials: 'ST',
       phone: '+44 231 5650',
       avatar: '/icons/driver/avatar4.png',
       rating: 5.0,
@@ -196,6 +213,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 12.3,
     estimatedTime: 31,
     totalFare: 30.0,
+    baseFare: 2.5,
+    distanceFare: 27.5,
+    waitingCharge: 0.0,
     amount: 30.0,
     date: '2026-03-21',
     time: '04:01',
@@ -221,6 +241,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1004',
       name: 'Tommy Nguyen',
+      initials: 'TN',
       phone: '+44 231 5669',
       avatar: 'TN',
       rating: 4.1,
@@ -228,6 +249,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2002',
       name: 'Priya Nair',
+      initials: 'PN',
       phone: '+44 231 5632',
       avatar: '/icons/driver/avatar2.png',
       rating: 4.8,
@@ -248,6 +270,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 7.2,
     estimatedTime: 20,
     totalFare: 21.5,
+    baseFare: 2.5,
+    distanceFare: 19.0,
+    waitingCharge: 0.0,
     amount: 21.5,
     date: '2026-03-22',
     time: '05:45',
@@ -273,6 +298,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1005',
       name: 'Nina Davis',
+      initials: 'ND',
       phone: '+44 231 5678',
       avatar: 'ND',
       rating: 4.6,
@@ -280,6 +306,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2003',
       name: 'Carlos Rivera',
+      initials: 'CR',
       phone: '+44 231 5841',
       avatar: '/icons/driver/avatar3.png',
       rating: 4.6,
@@ -300,6 +327,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 4.5,
     estimatedTime: 13,
     totalFare: 16.0,
+    baseFare: 2.5,
+    distanceFare: 13.5,
+    waitingCharge: 0.0,
     amount: 16.0,
     date: '2026-03-22',
     time: '06:30',
@@ -325,6 +355,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1006',
       name: 'Sophia Smith',
+      initials: 'SS',
       phone: '+44 231 5687',
       avatar: 'SS',
       rating: 4.9,
@@ -332,6 +363,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2004',
       name: 'Sophie Turner',
+      initials: 'ST',
       phone: '+44 231 5650',
       avatar: '/icons/driver/avatar4.png',
       rating: 5.0,
@@ -352,6 +384,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 11.0,
     estimatedTime: 28,
     totalFare: 28.5,
+    baseFare: 2.5,
+    distanceFare: 26.0,
+    waitingCharge: 0.0,
     amount: 28.5,
     date: '2026-03-23',
     time: '07:10',
@@ -377,6 +412,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1007',
       name: 'David Patel',
+      initials: 'DP',
       phone: '+44 231 5696',
       avatar: 'DP',
       rating: 4.4,
@@ -384,6 +420,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2005',
       name: 'Liam Okafor',
+      initials: 'LO',
       phone: '+44 231 5669',
       avatar: '/icons/driver/avatar5.png',
       rating: 4.7,
@@ -404,6 +441,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 8.7,
     estimatedTime: 22,
     totalFare: 24.0,
+    baseFare: 2.5,
+    distanceFare: 21.5,
+    waitingCharge: 0.0,
     amount: 24.0,
     date: '2026-03-24',
     time: '08:00',
@@ -429,6 +469,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1008',
       name: 'Ravi Kumar',
+      initials: 'RK',
       phone: '+44 231 5841',
       avatar: 'RK',
       rating: 4.3,
@@ -436,6 +477,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2006',
       name: 'Grace Mensah',
+      initials: 'GM',
       phone: '+44 231 5678',
       avatar: '/icons/driver/avatar6.png',
       rating: 4.5,
@@ -456,6 +498,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 6.9,
     estimatedTime: 19,
     totalFare: 19.0,
+    baseFare: 2.5,
+    distanceFare: 16.5,
+    waitingCharge: 0.0,
     amount: 19.0,
     date: '2026-03-25',
     time: '09:15',
@@ -475,6 +520,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1009',
       name: 'Clara Kim',
+      initials: 'CK',
       phone: '+44 231 5705',
       avatar: 'CK',
       rating: 4.2,
@@ -482,6 +528,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2007',
       name: 'Ethan Walsh',
+      initials: 'EW',
       phone: '+44 231 5687',
       avatar: '/icons/driver/avatar7.png',
       rating: 4.3,
@@ -502,6 +549,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 6.4,
     estimatedTime: 18,
     totalFare: 12.5,
+    baseFare: 2.5,
+    distanceFare: 10.0,
+    waitingCharge: 0.0,
     amount: 12.5,
     date: '2026-03-26',
     time: '10:20',
@@ -527,6 +577,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1001',
       name: 'Mia Chen',
+      initials: 'MC',
       phone: '+44 231 5623',
       avatar: 'MC',
       rating: 4.7,
@@ -534,6 +585,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2008',
       name: 'Noah Blackwood',
+      initials: 'NB',
       phone: '+44 231 5696',
       avatar: '/icons/driver/avatar8.png',
       rating: 4.6,
@@ -554,6 +606,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 9.1,
     estimatedTime: 24,
     totalFare: 22.0,
+    baseFare: 2.5,
+    distanceFare: 19.5,
+    waitingCharge: 0.0,
     amount: 22.0,
     date: '2026-03-27',
     time: '11:05',
@@ -579,6 +634,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1004',
       name: 'Tommy Nguyen',
+      initials: 'TN',
       phone: '+44 231 5669',
       avatar: 'TN',
       rating: 4.1,
@@ -586,6 +642,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2009',
       name: 'Isla Crawford',
+      initials: 'IC',
       phone: '+44 231 5705',
       avatar: '/icons/driver/avatar9.png',
       rating: 4.9,
@@ -606,6 +663,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 5.8,
     estimatedTime: 15,
     totalFare: 18.0,
+    baseFare: 2.5,
+    distanceFare: 15.5,
+    waitingCharge: 0.0,
     amount: 18.0,
     date: '2026-03-28',
     time: '12:00',
@@ -625,6 +685,7 @@ export const tripHistoryData: TripRecord[] = [
     rider: {
       id: 'RDR-1006',
       name: 'Sophia Smith',
+      initials: 'SS',
       phone: '+44 231 5687',
       avatar: 'SS',
       rating: 4.9,
@@ -632,6 +693,7 @@ export const tripHistoryData: TripRecord[] = [
     driver: {
       id: 'DRV-2005',
       name: 'Liam Okafor',
+      initials: 'LO',
       phone: '+44 231 5669',
       avatar: '/icons/driver/avatar5.png',
       rating: 4.7,
@@ -652,6 +714,9 @@ export const tripHistoryData: TripRecord[] = [
     distance: 5.8,
     estimatedTime: 15,
     totalFare: 18.0,
+    baseFare: 2.5,
+    distanceFare: 15.5,
+    waitingCharge: 0.0,
     amount: 18.0,
     date: '2026-03-29',
     time: '13:30',

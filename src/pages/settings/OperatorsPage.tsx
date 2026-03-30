@@ -90,8 +90,8 @@ const OperatorsPage = () => {
       }
       setIsModalOpen(false);
       refetch();
-    } catch {
-      console.log('error in creating operator');
+    } catch (error) {
+      console.error('error in creating operator', error);
     }
   };
 
@@ -102,8 +102,8 @@ const OperatorsPage = () => {
       setIsRemoveModalOpen(false);
       setSelectedOperator(null);
       refetch();
-    } catch {
-      console.log('error in remove operator');
+    } catch (error) {
+      console.error('error in remove operator', error);
     }
   };
 

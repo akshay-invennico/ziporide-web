@@ -1,7 +1,7 @@
 import { X, Copy, Star } from 'lucide-react';
 import { useState } from 'react';
 
-import type { TripRecord } from '../../data/TripHistoryData';
+import type { TripRecord } from '@/types/driver.types';
 
 import CancelRideModal from './CancelRideModal';
 
@@ -92,7 +92,7 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                 <div className="w-[5px] h-[5px] rounded-full bg-[#939999]" />
                 <div className="flex items-center gap-3">
                   <span>{trip.time}</span>
-                  {cancelledByRider && (
+                  {trip.totalFare > 0 && (
                     <>
                       <div className="w-[5px] h-[5px] rounded-full bg-[#939999]" />
                       <span className="font-semibold text-[#101828]">
@@ -148,7 +148,7 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                     <div className="flex flex-col">
                       <span className="text-[12px] font-medium text-[#747C84]">Total Fare</span>
                       <span className="text-[14px] font-semibold text-[#000000]">
-                        £{trip.totalFare}
+                        £{trip.totalFare.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -197,20 +197,22 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                       </span>
                     </div>
                   </div>
-                  <div className="flex gap-3 items-start">
-                    <div className="flex flex-col items-center">
-                      <div className="w-5 h-5 rounded-full bg-[#000000] shrink-0 mt-0.5 flex items-center justify-center">
-                        <span className="text-white text-[10px] font-bold">1</span>
+                  {trip.route.stop1Location && trip.route.stop1Location !== '' && (
+                    <div className="flex gap-3 items-start">
+                      <div className="flex flex-col items-center">
+                        <div className="w-5 h-5 rounded-full bg-[#000000] shrink-0 mt-0.5 flex items-center justify-center">
+                          <span className="text-white text-[10px] font-bold">1</span>
+                        </div>
+                        <div className="w-[4px] h-10 border-l-2 border-dashed border-[#1DAFA1]" />
                       </div>
-                      <div className="w-[4px] h-10 border-l-2 border-dashed border-[#1DAFA1]" />
+                      <div className="flex flex-col pb-4">
+                        <span className="text-[12px] font-medium text-[#4E616A]">Stop 1</span>
+                        <span className="text-[14px] font-medium text-[#000000]">
+                          {trip.route.stop1Location}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col pb-4">
-                      <span className="text-[12px] font-medium text-[#4E616A]">Stop 1</span>
-                      <span className="text-[14px] font-medium text-[#000000]">
-                        {trip.route.stop1Location}
-                      </span>
-                    </div>
-                  </div>
+                  )}
                   <div className="flex gap-3 items-start">
                     <div className="flex flex-col items-center">
                       <img
@@ -229,55 +231,55 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                 </div>
               </div>
 
-              {!cancelledByDriver && (
-                <div className="flex flex-col gap-3">
-                  <span className="text-[14px] font-medium text-[#4E616A]">Fare Breakdown</span>
-                  <div
-                    className={`border border-[#1DAFA1] ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} rounded-lg overflow-hidden`}
-                  >
-                    <div className="divide-y divide-[#DFE6E5]">
+              <div className="flex flex-col gap-3">
+                <span className="text-[14px] font-medium text-[#4E616A]">Fare Breakdown</span>
+                <div
+                  className={`border border-[#1DAFA1] ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} rounded-lg overflow-hidden`}
+                >
+                  <div className="divide-y divide-[#DFE6E5]">
+                    <div className="flex justify-between px-4 py-2.5 text-[14px] font-medium">
+                      <span className="text-[#4E616A]">
+                        {isCancelled ? 'Cancellation Fee' : 'Base Fare'}
+                      </span>
+                      <span className="font-semibold text-[12px] text-[#101828]">
+                        £
+                        {isCancelled
+                          ? (trip.cancellationDetails?.fee || 0).toFixed(2)
+                          : (trip.baseFare || 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between px-4 py-2.5 text-[14px] font-medium">
+                      <span className="text-[#4E616A]">
+                        {isCancelled ? 'Waiting Charge' : 'Distance Fare'}
+                      </span>
+                      <span className="font-semibold text-[12px] text-[#101828]">
+                        £
+                        {isCancelled
+                          ? (trip.cancellationDetails?.waitingCharge || 0).toFixed(2)
+                          : (trip.distanceFare || 0).toFixed(2)}
+                      </span>
+                    </div>
+                    {!isCancelled && (
                       <div className="flex justify-between px-4 py-2.5 text-[14px] font-medium">
                         <span className="text-[#4E616A]">
-                          {isCancelled ? 'Cancellation Fee' : 'Base Fare'}
+                          {isCompleted ? 'Waiting Charges' : 'Airport Parking Charges'}
                         </span>
                         <span className="font-semibold text-[12px] text-[#101828]">
-                          £
-                          {isCancelled
-                            ? (trip.cancellationDetails?.fee || 2.5).toFixed(2)
-                            : '12.50'}
+                          £{trip.waitingCharge.toFixed(2)}
                         </span>
                       </div>
-                      <div className="flex justify-between px-4 py-2.5 text-[14px] font-medium">
-                        <span className="text-[#4E616A]">
-                          {isCancelled ? 'Waiting Charge' : 'Distance Fare'}
-                        </span>
-                        <span className="font-semibold text-[12px] text-[#101828]">
-                          £
-                          {isCancelled
-                            ? (trip.cancellationDetails?.waitingCharge || 1.0).toFixed(2)
-                            : '3.00'}
-                        </span>
-                      </div>
-                      {!isCancelled && (
-                        <div className="flex justify-between px-4 py-2.5 text-[14px] font-medium">
-                          <span className="text-[#4E616A]">
-                            {isCompleted ? 'Waiting Charges' : 'Airport Parking Charges'}
-                          </span>
-                          <span className="font-semibold text-[12px] text-[#101828]">£3.00</span>
-                        </div>
-                      )}
-                      <div
-                        className={`flex justify-between px-4 py-2.5 ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} text-[14px] font-semibold`}
-                      >
-                        <span className="text-[#101828]">Total</span>
-                        <span className="font-semibold text-[16px] text-[#101828]">
-                          £{trip.totalFare.toFixed(2)}
-                        </span>
-                      </div>
+                    )}
+                    <div
+                      className={`flex justify-between px-4 py-2.5 ${isCompleted || isCancelled ? 'bg-[#DCFCE7]' : 'bg-[#DCFCE7]'} text-[14px] font-semibold`}
+                    >
+                      <span className="text-[#101828]">Total</span>
+                      <span className="font-semibold text-[16px] text-[#101828]">
+                        £{trip.totalFare.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Rider + Driver Section */}
@@ -286,7 +288,7 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                 <span className="text-[14px] font-medium text-[#4E616A]">Rider's Info</span>
                 <div className="flex items-center gap-3">
                   <div className="w-[42px] h-[42px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-[16px] font-bold shrink-0">
-                    {trip.rider.avatar}
+                    {trip.rider.avatar || trip.rider.initials}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[14px] font-semibold text-[#101828]">
@@ -308,78 +310,66 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
                 </div>
               </div>
 
-              {!cancelledByDriver && (
-                <div className="flex flex-col gap-2">
-                  <span className="text-[14px] font-medium text-[#4E616A]">Driver's Info</span>
-                  <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-2">
+                <span className="text-[14px] font-medium text-[#4E616A]">Driver's Info</span>
+                <div className="flex items-center gap-3">
+                  {trip.driver.avatar ? (
                     <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
                       <img
                         src={trip.driver.avatar}
                         alt={trip.driver.name}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const t = e.currentTarget as HTMLImageElement;
-                          t.style.display = 'none';
-                          const parent = t.parentElement;
-                          if (parent) {
-                            parent.style.backgroundColor = '#1DAFA1';
-                            parent.style.color = 'white';
-                            parent.style.fontSize = '16px';
-                            parent.style.fontWeight = '700';
-                            parent.innerText = trip.driver.name
-                              .split(' ')
-                              .map((w: string) => w[0])
-                              .join('')
-                              .slice(0, 2);
-                          }
-                        }}
                       />
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-[14px] font-semibold text-[#101828]">
-                        {trip.driver.name}
-                      </span>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[12px] text-[#1DAFA1] font-medium">
-                          {trip.driver.id}
-                        </span>
-                        <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
-                        <div className="flex items-center gap-1">
-                          <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
-                          <span className="text-[12px] text-[#4E616A] font-medium">
-                            {trip.driver.rating}
-                          </span>
-                        </div>
-                      </div>
+                  ) : (
+                    <div className="w-[42px] h-[42px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-[16px] font-bold shrink-0">
+                      {trip.driver.initials}
                     </div>
-                  </div>
-                  <div className=" rounded-lg p-3 flex items-center justify-between mt-1 bg-[#F7F7F7]">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[12px] font-medium text-[#4E616A]">Vehicle</span>
-                      <span className="text-[14px] font-semibold text-[#101828]">
-                        {trip.driver.vehicle.name}
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-[14px] font-semibold text-[#101828]">
+                      {trip.driver.name}
+                    </span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[12px] text-[#1DAFA1] font-medium">
+                        {trip.driver.id}
                       </span>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[12px] font-medium text-[#4E616A]">
-                          {trip.driver.vehicle.color}
-                        </span>
-                        <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
-                        <span className="text-[12px] font-medium text-[#4E616A]">
-                          {trip.driver.vehicle.registrationNumber}
+                      <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
+                      <div className="flex items-center gap-1">
+                        <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
+                        <span className="text-[12px] text-[#4E616A] font-medium">
+                          {trip.driver.rating}
                         </span>
                       </div>
                     </div>
-                    <img
-                      src="/icons/tripDetails/car.svg"
-                      alt="car"
-                      className="h-[68px] object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
                   </div>
                 </div>
-              )}
+                <div className=" rounded-lg p-3 flex items-center justify-between mt-1 bg-[#F7F7F7]">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[12px] font-medium text-[#4E616A]">Vehicle</span>
+                    <span className="text-[14px] font-semibold text-[#101828]">
+                      {trip.driver.vehicle.name}
+                    </span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[12px] font-medium text-[#4E616A]">
+                        {trip.driver.vehicle.color}
+                      </span>
+                      <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
+                      <span className="text-[12px] font-medium text-[#4E616A]">
+                        {trip.driver.vehicle.registrationNumber}
+                      </span>
+                    </div>
+                  </div>
+                  <img
+                    src="/icons/tripDetails/car.svg"
+                    alt="car"
+                    className="h-[68px] object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             {isCompleted && (

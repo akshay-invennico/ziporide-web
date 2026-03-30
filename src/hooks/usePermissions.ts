@@ -1,10 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useAuth } from '@/context/useAuth';
 
 export const usePermissions = () => {
   const { user } = useAuth();
-  const permissions = user?.permissions || [];
+  const permissions = useMemo(() => user?.permissions || [], [user?.permissions]);
 
   const hasPermission = useCallback(
     (permission: string) => {

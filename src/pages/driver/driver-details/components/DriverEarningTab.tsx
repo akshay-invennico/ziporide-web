@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   AreaChart,
   Area,
@@ -9,39 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// ── Data ─────────────────────────────────────────────────────────────────────
-
-const yearlyData = [
-  { month: 'Jan', earnings: 18000, rides: 12 },
-  { month: 'Feb', earnings: 22000, rides: 14 },
-  { month: 'Mar', earnings: 58000, rides: 38 },
-  { month: 'Apr', earnings: 52000, rides: 34 },
-  { month: 'May', earnings: 45000, rides: 30 },
-  { month: 'Jun', earnings: 40000, rides: 26 },
-  { month: 'Jul', earnings: 62000, rides: 41 },
-  { month: 'Aug', earnings: 55000, rides: 36 },
-  { month: 'Sep', earnings: 61000, rides: 40 },
-  { month: 'Oct', earnings: 48000, rides: 32 },
-  { month: 'Nov', earnings: 44000, rides: 29 },
-  { month: 'Dec', earnings: 28000, rides: 18 },
-];
-
-const monthlyData = [
-  { month: 'Wk 1', earnings: 820, rides: 5 },
-  { month: 'Wk 2', earnings: 550, rides: 20 },
-  { month: 'Wk 3', earnings: 940, rides: 6 },
-  { month: 'Wk 4', earnings: 710, rides: 4 },
-];
-
-const weeklyData = [
-  { month: 'Mon', earnings: 120, rides: 3 },
-  { month: 'Tue', earnings: 200, rides: 5 },
-  { month: 'Wed', earnings: 85, rides: 2 },
-  { month: 'Thu', earnings: 310, rides: 8 },
-  { month: 'Fri', earnings: 260, rides: 6 },
-  { month: 'Sat', earnings: 450, rides: 11 },
-  { month: 'Sun', earnings: 180, rides: 4 },
-];
+import { useDriverEarnings } from '@/hooks/useDriver';
 
 // ── Custom Tooltip ────────────────────────────────────────────────────────────
 
@@ -102,28 +71,56 @@ function StatCard({ label, value, icon }: StatCardProps) {
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
-
-type Period = 'Year' | 'Month' | 'Week';
+type Period = 'year' | 'month' | 'week';
 
 export default function DriverEarningTab() {
-  const [period, setPeriod] = useState<Period>('Year');
-
-  const chartData = period === 'Year' ? yearlyData : period === 'Month' ? monthlyData : weeklyData;
+  const { id } = useParams<{ id: string }>();
+  const [period, setPeriod] = useState<Period>('year');
+  const { data, loading, error } = useDriverEarnings(id, period);
 
   const formatY = (v: number) => {
     if (v >= 1000) return `£${(v / 1000).toFixed(0)}K`;
     return `£${v}`;
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-10 text-[#1DAFA1]">
+        Loading earning report...
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500 py-10 text-center">{error}</div>;
+  }
+
+  const chartData = data?.chartData || [];
+
   return (
     <div className="p-1 flex flex-col gap-5">
       {/* Stat Cards */}
       <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
-        <StatCard label="Total Trips" value="145" icon="/icons/driver/card1.svg" />
-        <StatCard label="Total Earnings" value="£121550.00" icon="/icons/driver/card2.svg" />
-        <StatCard label="Average Trip Value" value="£16.64" icon="/icons/driver/card3.svg" />
-        <StatCard label="Acceptance Rate" value="96.08%" icon="/icons/driver/card4.svg" />
+        <StatCard
+          label="Total Trips"
+          value={String(data?.totalTrips || 0)}
+          icon="/icons/driver/card1.svg"
+        />
+        <StatCard
+          label="Total Earnings"
+          value={`£${(data?.totalEarnings || 0).toFixed(2)}`}
+          icon="/icons/driver/card2.svg"
+        />
+        <StatCard
+          label="Average Trip Value"
+          value={`£${(data?.avgTripValue || 0).toFixed(2)}`}
+          icon="/icons/driver/card3.svg"
+        />
+        <StatCard
+          label="Acceptance Rate"
+          value={`${(data?.acceptanceRate || 0).toFixed(2)}%`}
+          icon="/icons/driver/card4.svg"
+        />
       </div>
 
       {/* Chart Section */}
@@ -139,11 +136,11 @@ export default function DriverEarningTab() {
 
           {/* Period Toggle */}
           <div className="flex items-center gap-3 rounded-lg overflow-hidden">
-            {(['Year', 'Month', 'Week'] as Period[]).map((p) => (
+            {(['year', 'month', 'week'] as Period[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors capitalize ${
                   period === p
                     ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                     : 'border-[#DFE6E5] text-[#4E616A] '
