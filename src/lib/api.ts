@@ -8,17 +8,23 @@ export const API = {
 
   RIDERS: '/v1/riders',
   RIDER_DETAILS: (id: string) => `/v1/riders/${id}`,
+  RIDER_BULK_STATUS: '/v1/riders/status',
 
   DRIVER: '/v1/driver',
   DRIVER_DETAILS: (id: string) => `/v1/driver/${id}`,
   DRIVER_STATUS: (id: string) => `/v1/driver/${id}/status`,
+  DRIVER_BULK_STATUS: '/v1/driver/status',
   VERIFY_DOCUMENT: (id: string, docType: string) => `/v1/driver/${id}/verify/${docType}`,
+  DRIVER_SUBSCRIPTIONS: (id: string) => `/v1/driver/${id}/subscriptions`,
+  DRIVER_EARNINGS: (id: string) => `/v1/driver/${id}/earnings`,
 
   VERIFICATIONS: '/v1/verifications',
   VERIFICATION_DETAILS: (id: string) => `/v1/verifications/${id}`,
 
   TRIPS: '/v1/trips',
   TRIP_DETAILS: (id: string) => `/v1/trips/${id}`,
+  ADMIN_TRIPS: '/v1/ride/admin/all',
+  ADMIN_TRIP_DETAILS: (id: string) => `/v1/ride/admin/${id}`,
 
   VEHICLE_CATEGORIES: '/v1/inventory/categories',
   CREATE_CATEGORY: '/v1/inventory/categories',
@@ -37,4 +43,12 @@ export const API = {
 
   TRANSACTIONS: '/v1/transactions',
   TRANSACTION_DETAILS: (id: string) => `/v1/transactions/${id}`,
+
+  OPERATOR_LOGIN: '/v1/operators/login',
+  OPERATOR_ME: '/v1/operators/me',
+  OPERATOR_PERMISSIONS: '/v1/operators/permissions',
+  OPERATORS: '/v1/operators',
+  OPERATOR_DETAILS: (id: string) => `/v1/operators/${id}`,
+  OPERATOR_UPDATE_PERMISSIONS: (id: string) => `/v1/operators/${id}/permissions`,
+  OPERATOR_UPDATE_STATUS: (id: string) => `/v1/operators/${id}/status`,
 } as const;

@@ -2,10 +2,10 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+import { useDriverDetails, useUpdateDriverStatus } from '@/hooks/useDriver';
 import { routes } from '@/routes/routes';
 
 import SuspendRiderModal from '../../../components/ui/SuspendRiderModal';
-import { driversData } from '../../../data/DriverData';
 
 import DriverAuditLogTab from './components/DriverAuditLogTab';
 import DriverEarningTab from './components/DriverEarningTab';
@@ -29,13 +29,22 @@ export default function DriverDetailsPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('info');
   const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
 
-  const driver = driversData.find((d) => d.id === id);
+  const { driver, loading, error, refetch } = useDriverDetails(id);
+  const { updateStatus, isUpdating } = useUpdateDriverStatus();
 
-  if (!driver) {
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-white p-6 flex items-center justify-center">
+        <div className="text-[#1DAFA1] font-medium">Loading driver details...</div>
+      </div>
+    );
+  }
+
+  if (error || !driver) {
     return (
       <div className="w-full min-h-screen bg-gray-50/50 p-6 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Driver Not Found</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">{error || 'Driver Not Found'}</h2>
           <button onClick={() => navigate(routes.DRIVER)} className="text-teal-600 hover:underline">
             Return to Drivers List
           </button>
@@ -43,6 +52,22 @@ export default function DriverDetailsPage() {
       </div>
     );
   }
+
+  const isSuspended = driver.status?.toLowerCase() === 'suspended';
+
+  const handleStatusUpdate = async (reason?: string) => {
+    if (!id) return;
+    const newStatus = isSuspended ? 'approved' : 'suspended';
+    try {
+      const success = await updateStatus([id], newStatus, reason);
+      if (success) {
+        setIsSuspendModalOpen(false);
+        refetch();
+      }
+    } catch (err) {
+      console.error('Failed to update status:', err);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen bg-white p-2">
@@ -81,15 +106,19 @@ export default function DriverDetailsPage() {
         {activeTab === 'audit-log' && <DriverAuditLogTab />}
       </div>
 
-      {/* Suspend Driver Button */}
+      {/* Status Update Button */}
       {activeTab === 'info' && (
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}
-            className="flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium text-[#FF0707]"
+            className={`flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium ${isSuspended ? 'text-[#00A63E]' : 'text-[#FF0707]'}`}
           >
-            <img src="/icons/rider/person.svg" alt="suspend" className="w-[20px] h-[20px]" />
-            Suspend Driver
+            <img
+              src={isSuspended ? '/icons/driver/greenUser.svg' : '/icons/driver/redUser.svg'}
+              alt="status"
+              className="w-[20px] h-[20px]"
+            />
+            {isSuspended ? 'Reactivate Driver' : 'Suspend Driver'}
           </button>
         </div>
       )}
@@ -97,8 +126,10 @@ export default function DriverDetailsPage() {
       <SuspendRiderModal
         isOpen={isSuspendModalOpen}
         onClose={() => setIsSuspendModalOpen(false)}
-        onConfirm={() => setIsSuspendModalOpen(false)}
+        onConfirm={handleStatusUpdate}
         userType="driver"
+        mode={isSuspended ? 'reactivate' : 'suspend'}
+        loading={isUpdating}
       />
     </div>
   );

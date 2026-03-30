@@ -1,9 +1,12 @@
+import { useState, useEffect } from 'react';
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (reason?: string) => void;
   userType?: 'rider' | 'driver';
   mode?: 'suspend' | 'reactivate';
+  loading?: boolean;
 }
 
 const RIDER_REASONS = [
@@ -32,12 +35,23 @@ export default function SuspendRiderModal({
   onConfirm,
   userType = 'rider',
   mode = 'suspend',
+  loading = false,
 }: Props) {
-  if (!isOpen) return null;
+  const [selectedReason, setSelectedReason] = useState<string>('');
+  const [note, setNote] = useState<string>('');
 
   const isRider = userType === 'rider';
   const isSuspend = mode === 'suspend';
   const reasons = isRider ? RIDER_REASONS : DRIVER_REASONS;
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedReason(reasons[0]);
+      setNote('');
+    }
+  }, [isOpen, mode, userType, reasons]); // Reset when opening or changing mode/type
+
+  if (!isOpen) return null;
 
   // Dynamic content
   const title = isSuspend
@@ -84,25 +98,31 @@ export default function SuspendRiderModal({
                   <input
                     type="radio"
                     name="suspensionReason"
+                    value={reason}
+                    checked={selectedReason === reason}
+                    onChange={(e) => setSelectedReason(e.target.value)}
                     className="w-[18px] h-[18px] border-[#4E616A] rounded-sm appearance-none checked:bg-[#20B2AA] checked:border-transparent relative checked:after:content-[''] checked:after:absolute checked:after:left-[6px] checked:after:top-[3px] checked:after:w-[5px] checked:after:h-[9px] checked:after:border-white checked:after:border-r-2 checked:after:border-b-2 checked:after:rotate-45 border cursor-pointer transition-all"
-                    defaultChecked={reason === 'Other'}
                   />
                   <span className="text-[14px] font-medium text-[#000000]">{reason}</span>
                 </label>
               ))}
             </div>
 
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2 mt-2">
-                <label className="text-[14px] font-medium text-[#4E616A]">{labelLeft}</label>
-                <span className="text-[12px] font-medium text-[#4E616A]">{labelRight}</span>
+            {selectedReason === 'Other' && (
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2 mt-2">
+                  <label className="text-[14px] font-medium text-[#4E616A]">{labelLeft}</label>
+                  <span className="text-[12px] font-medium text-[#4E616A]">{labelRight}</span>
+                </div>
+                <textarea
+                  placeholder={placeholder}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] focus:outline-none focus:ring-1 focus:ring-[#20B2AA] focus:border-[#20B2AA] resize-none h-[66px] text-[#000000] placeholder:text-[#939999]"
+                  maxLength={250}
+                ></textarea>
               </div>
-              <textarea
-                placeholder={placeholder}
-                className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] focus:outline-none focus:ring-1 focus:ring-[#20B2AA] focus:border-[#20B2AA] resize-none h-[66px] text-[#000000] placeholder:text-[#939999]"
-                maxLength={250}
-              ></textarea>
-            </div>
+            )}
           </>
         )}
 
@@ -114,10 +134,14 @@ export default function SuspendRiderModal({
             Cancel
           </button>
           <button
-            onClick={onConfirm}
-            className={`px-6 py-2.5 ${isSuspend ? 'bg-[#FF0707]' : 'bg-[#00A63E]'} cursor-pointer text-white rounded-sm text-[14px] font-medium `}
+            onClick={() => {
+              const reason = selectedReason === 'Other' ? note : selectedReason;
+              onConfirm(reason);
+            }}
+            disabled={loading}
+            className={`px-6 py-2.5 ${isSuspend ? 'bg-[#FF0707]' : 'bg-[#00A63E]'} cursor-pointer text-white rounded-sm text-[14px] font-medium disabled:opacity-50`}
           >
-            {confirmBtnText}
+            {loading ? 'Processing...' : confirmBtnText}
           </button>
         </div>
       </div>

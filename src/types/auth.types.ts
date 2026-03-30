@@ -5,9 +5,12 @@ export interface LoginPayload {
 
 export interface AuthUser {
   id: string;
+  operatorId?: string;
   email: string;
   name: string;
   role: string;
+  permissions?: string[];
+  status?: string;
 }
 
 export interface TokenDetails {

@@ -10,11 +10,17 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import type { Rider } from '@/types/rider.types';
+
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 import { spendingData } from '../../../../data/RiderTripsData';
 import { tripHistoryData, type TripRecord } from '../../../../data/TripHistoryData';
 
-export default function SpentTripHistoryTab() {
+interface Props {
+  rider: Rider;
+}
+
+export default function SpentTripHistoryTab({ rider }: Props) {
   const [trendFilter, setTrendFilter] = useState('Year');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
@@ -62,7 +68,7 @@ export default function SpentTripHistoryTab() {
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between ">
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Trips</p>
-            <h3 className="text-[24px] font-bold text-[#101828]">145</h3>
+            <h3 className="text-[24px] font-bold text-[#101828]">{rider.totalTrips || 0}</h3>
           </div>
           <img src="/icons/rider/card1.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
@@ -70,7 +76,9 @@ export default function SpentTripHistoryTab() {
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between ">
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Spent</p>
-            <h3 className="text-[24px] font-bold text-[#101828]">£5600.00</h3>
+            <h3 className="text-[24px] font-bold text-[#101828]">
+              £{Number(rider.totalSpent || 0).toFixed(2)}
+            </h3>
           </div>
           <img src="/icons/rider/card2.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>

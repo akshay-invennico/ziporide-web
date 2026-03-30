@@ -1,5 +1,7 @@
-import { Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import React, { useState } from 'react';
+import { Search } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+
+import DataTable, { type Column } from '@/components/ui/DataTable';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
@@ -19,18 +21,30 @@ const TransactionsPage: React.FC = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const itemsPerPage = 12;
 
-  const handlePrev = () => {
-    if (params.page > 1) {
-      setParams(prev => ({ ...prev, page: prev.page - 1 }));
+  const filteredData = transactionsData.filter((txn) => {
+    if (activeFilter === 'Pay-in' && !['Ride Payment', 'Subscription Payment'].includes(txn.type))
+      return false;
+    if (activeFilter === 'Payout' && !['Driver Payout', 'Driver Incentive'].includes(txn.type))
+      return false;
+    if (activeFilter === 'Refund' && txn.type !== 'Refund') return false;
+    if (searchQuery) {
+      if (
+        !txn.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !txn.type.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
     }
-  };
+    return true;
+  });
 
-  const handleNext = () => {
-    if (params.page < pagination.totalPages) {
-      setParams(prev => ({ ...prev, page: prev.page + 1 }));
-    }
-  };
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
 
   const formatAmount = (amount: number, type: string) => {
     const isPositive =
@@ -80,22 +94,69 @@ const TransactionsPage: React.FC = () => {
     );
   };
 
-  const getPages = () => {
-    const pages: (number | string)[] = [];
-    const { totalPages, currentPage } = pagination;
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      if (currentPage <= 4) {
-        pages.push(1, 2, 3, 4, 5, '...', totalPages);
-      } else if (currentPage >= totalPages - 3) {
-        pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-      } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-      }
-    }
-    return pages;
-  };
+  const columns = useMemo<Column<TransactionRecord>[]>(
+    () => [
+      {
+        key: 'id',
+        label: 'TRANSACTION ID',
+        sortable: true,
+        render: (txn) => (
+          <span className="font-medium text-[#1DAFA1] text-[14px] cursor-pointer hover:underline">
+            {txn.id}
+          </span>
+        ),
+      },
+      {
+        key: 'type',
+        label: 'TYPE',
+        render: (txn) => (
+          <span className="text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
+            {txn.type}
+          </span>
+        ),
+      },
+      {
+        key: 'amount',
+        label: 'AMOUNT',
+        sortable: true,
+        render: (txn) => (
+          <span className="whitespace-nowrap">{formatAmount(txn.amount, txn.type)}</span>
+        ),
+      },
+      {
+        key: 'date',
+        label: 'TIME & DATE',
+        sortable: true,
+        render: (txn) => (
+          <span className="text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
+            {txn.date} <span className="ml-2">{txn.time}</span>
+          </span>
+        ),
+      },
+      {
+        key: 'status',
+        label: 'STATUS',
+        sortable: true,
+        render: (txn) => getStatusBadge(txn.status),
+      },
+      {
+        key: 'action',
+        label: 'ACTION',
+        render: (txn) => (
+          <button
+            onClick={() => {
+              setSelectedTransaction(txn);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center justify-center cursor-pointer"
+          >
+            <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px]" />
+          </button>
+        ),
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="flex flex-col bg-white p-1 h-full">
@@ -124,11 +185,10 @@ const TransactionsPage: React.FC = () => {
                   onClick={() => {
                     setParams(prev => ({ ...prev, category: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                    params.category === filter
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.category === filter
                       ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                      : 'border-[#DFE6E5] text-[#4E616A] '
-                  }`}
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                    }`}
                 >
                   {filter}
                 </button>
@@ -147,154 +207,15 @@ const TransactionsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Table container */}
-        <div className="flex-1 flex flex-col min-h-[400px]">
-          {loading ? (
-            <div className="flex-1 flex items-center justify-center p-20">
-              <Loader2 className="w-8 h-8 text-[#1DAFA1] animate-spin" />
-            </div>
-          ) : error ? (
-            <div className="flex-1 flex items-center justify-center p-20 text-red-500 font-medium text-[14px]">
-              {error}
-            </div>
-          ) : (
-            <div className="overflow-x-auto scrollbar-hide">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[#F9F9F9] border-y border-[#DFE6E5] text-[14px] font-inter font-medium uppercase tracking-wider text-[#4E616A]">
-                    {[
-                      { label: 'TRANSACTION ID', sortable: true },
-                      { label: 'TYPE', sortable: false },
-                      { label: 'AMOUNT', sortable: true },
-                      { label: 'TIME & DATE', sortable: true },
-                      { label: 'STATUS', sortable: true },
-                      { label: 'ACTION', sortable: false },
-                    ].map((header) => (
-                      <th
-                        key={header.label}
-                        className={`px-5 py-3.5 ${header.sortable ? 'cursor-pointer group' : ''}`}
-                      >
-                        <div
-                          className={`flex items-center ${header.sortable ? 'justify-between' : 'justify-start'}`}
-                        >
-                          <span className="text-[#4E616A] font-medium text-[12px] whitespace-nowrap">
-                            {header.label}
-                          </span>
-                          {header.sortable && (
-                            <img
-                              src="/icons/rider/updown.svg"
-                              alt="sort"
-                              className="w-[14px] h-[14px]"
-                            />
-                          )}
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="text-[14px]">
-                  {transactions.length > 0 ? (
-                    transactions.map((txn) => (
-                      <tr
-                        key={txn.id}
-                        className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
-                      >
-                        <td className="px-5 py-4">
-                          <span 
-                            className="font-medium text-[#1DAFA1] text-[14px] cursor-pointer hover:underline"
-                            onClick={() => {
-                              setSelectedTransaction(txn);
-                              setIsModalOpen(true);
-                            }}
-                          >
-                            {txn.id}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4 text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
-                          {txn.type}
-                        </td>
-                        <td className="px-5 py-4 whitespace-nowrap">
-                          {formatAmount(txn.amount, txn.type)}
-                        </td>
-                        <td className="px-5 py-4 text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
-                          {txn.date} <span className="ml-2">{txn.time}</span>
-                        </td>
-                        <td className="px-5 py-4">
-                          <div className="flex items-start">
-                            {getStatusBadge(txn.status)}
-                          </div>
-                        </td>
-                        <td className="px-5 py-4">
-                          <button
-                            onClick={() => {
-                              setSelectedTransaction(txn);
-                              setIsModalOpen(true);
-                            }}
-                            className="flex items-center justify-center cursor-pointer "
-                          >
-                            <img
-                              src="/icons/rider/eye.svg"
-                              alt="view"
-                              className="w-[20px] h-[20px] text-[#1DAFA1]"
-                            />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={6} className="p-20 text-center text-[#4E616A] text-[14px] font-medium">
-                        No transactions found matching your criteria.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Pagination Section */}
-        {!loading && !error && transactions.length > 0 && (
-          <div className="p-4 border-t border-[#DFE6E5] flex items-center justify-end gap-2">
-            <button
-              onClick={handlePrev}
-              disabled={params.page === 1}
-              className="p-1.5 rounded-full border border-gray-200 text-[#4E616A] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="h-[20px] w-[20px]" />
-            </button>
-
-            <div className="flex items-center gap-1">
-              {getPages().map((page, index) => (
-                <React.Fragment key={index}>
-                  {page === '...' ? (
-                    <span className="px-3 py-1.5 text-[#4E616A] text-[14px] font-medium">...</span>
-                  ) : (
-                    <button
-                      onClick={() => setParams(prev => ({ ...prev, page: page as number }))}
-                      className={`min-w-[32px] h-8 flex items-center justify-center cursor-pointer rounded-lg text-[14px] transition-colors ${
-                        params.page === page
-                          ? 'border border-[#1DAFA1] text-[#1DAFA1] font-semibold bg-[#EEFFFD]'
-                          : 'text-[#4E616A] font-semibold hover:bg-gray-50 border border-transparent'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-
-            <button
-              onClick={handleNext}
-              disabled={params.page === pagination.totalPages || pagination.totalPages === 0}
-              className="p-1.5 rounded-full border border-gray-200 text-[#4E616A] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-            >
-              <ChevronRight className="h-[20px] w-[20px]" />
-            </button>
-          </div>
-        )}
+        <DataTable<TransactionRecord>
+          columns={columns}
+          data={currentData}
+          rowKey={(txn) => txn.id}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          emptyText="No transactions found matching your criteria."
+        />
       </div>
 
       <TransactionDetailsModal
