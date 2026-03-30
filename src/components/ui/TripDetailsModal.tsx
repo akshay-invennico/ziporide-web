@@ -1,6 +1,7 @@
 import { X, Copy, Star } from 'lucide-react';
 import { useState } from 'react';
 
+import { useCancelRide } from '@/hooks/useRider';
 import type { TripRecord } from '@/types/driver.types';
 
 import CancelRideModal from './CancelRideModal';
@@ -9,6 +10,7 @@ interface TripDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   trip: TripRecord | null;
+  loading?: boolean;
 }
 
 const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = {
@@ -18,10 +20,29 @@ const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = 
   Cancelled: { bg: 'bg-[#FFEEEE]', dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' },
 };
 
-const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
+const TripDetailsModal = ({ isOpen, onClose, trip, loading }: TripDetailsModalProps) => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { cancelRide, isCancelling } = useCancelRide();
 
-  if (!isOpen || !trip) return null;
+  if (!isOpen) return null;
+
+  if (loading) {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <div className="bg-white rounded-xl w-full max-w-[400px] flex flex-col items-center justify-center p-10 gap-4">
+          <div className="w-10 h-10 border-4 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-[#4E616A] font-medium text-[16px]">Fetching trip details...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trip) return null;
 
   const badge = STATUS_BADGE[trip.status] ?? STATUS_BADGE['Assigned'];
   const isAssigned = trip.status === 'Assigned';
@@ -482,13 +503,19 @@ const TripDetailsModal = ({ isOpen, onClose, trip }: TripDetailsModalProps) => {
         isOpen={isCancelModalOpen}
         mode={isInProgress ? 'force-end' : 'cancel'}
         onClose={() => setIsCancelModalOpen(false)}
-        onConfirm={(reason, details) => {
-          console.warn(`${isInProgress ? 'Force End' : 'Cancellation'} confirmed:`, {
-            reason,
-            details,
-          });
-          setIsCancelModalOpen(false);
-          // In a real app, you would handle the cancellation logic here (API call, etc.)
+        isLoading={isCancelling}
+        onConfirm={async (reason) => {
+          if (!trip) return;
+          try {
+            const success = await cancelRide(trip.rideId || trip.id, reason);
+            if (success) {
+              setIsCancelModalOpen(false);
+              onClose(); // Close the details modal as well or just refresh?
+              // The user might want to refresh the list, but for now we close.
+            }
+          } catch (err) {
+            console.error('Cancellation failed:', err);
+          }
         }}
       />
     </>

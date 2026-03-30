@@ -29,9 +29,16 @@ interface CancelRideModalProps {
   onClose: () => void;
   onConfirm?: (reason: string, details?: string) => void;
   mode?: 'cancel' | 'force-end';
+  isLoading?: boolean;
 }
 
-const CancelRideModal = ({ isOpen, onClose, onConfirm, mode = 'cancel' }: CancelRideModalProps) => {
+const CancelRideModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  mode = 'cancel',
+  isLoading = false,
+}: CancelRideModalProps) => {
   const [selectedReason, setSelectedReason] = useState<string>('');
   const [details, setDetails] = useState('');
 
@@ -48,7 +55,8 @@ const CancelRideModal = ({ isOpen, onClose, onConfirm, mode = 'cancel' }: Cancel
 
   const handleConfirm = () => {
     if (onConfirm) {
-      onConfirm(selectedReason, details);
+      const finalReason = selectedReason === 'Other' ? details : selectedReason;
+      onConfirm(finalReason, details);
     }
     handleClose();
   };
@@ -126,19 +134,21 @@ const CancelRideModal = ({ isOpen, onClose, onConfirm, mode = 'cancel' }: Cancel
           </div>
 
           {/* Details */}
-          <div className="flex flex-col gap-2 animate-in slide-in-from-top-2 duration-300">
-            <div className="flex justify-between items-center">
-              <span className="text-[14px] font-medium text-[#4E616A]">Specify</span>
-              <span className="text-[12px] font-medium text-[#4E616A]">(Optional)</span>
+          {selectedReason === 'Other' && (
+            <div className="flex flex-col gap-2 animate-in slide-in-from-top-2 duration-300">
+              <div className="flex justify-between items-center">
+                <span className="text-[14px] font-medium text-[#4E616A]">Specify</span>
+                <span className="text-[12px] font-medium text-[#4E616A]">(Required)</span>
+              </div>
+              <textarea
+                rows={3}
+                placeholder="Please provide additional details."
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] text-[#000000] placeholder-[#939999] resize-none focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all"
+              />
             </div>
-            <textarea
-              rows={3}
-              placeholder="Please provide additional details."
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] text-[#000000] placeholder-[#939999] resize-none focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all"
-            />
-          </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -151,12 +161,23 @@ const CancelRideModal = ({ isOpen, onClose, onConfirm, mode = 'cancel' }: Cancel
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!selectedReason}
-            className={`px-8 py-3 rounded-sm text-[14px] font-medium text-white ${
-              selectedReason ? 'bg-[#FF0707]  cursor-pointer' : 'bg-[#FF0707]/50 cursor-not-allowed'
+            disabled={
+              !selectedReason || (selectedReason === 'Other' && !details.trim()) || isLoading
+            }
+            className={`px-8 py-3 rounded-sm text-[14px] font-medium text-white flex items-center gap-2 ${
+              selectedReason && (selectedReason !== 'Other' || details.trim()) && !isLoading
+                ? 'bg-[#FF0707]  cursor-pointer'
+                : 'bg-[#FF0707]/50 cursor-not-allowed'
             }`}
           >
-            {confirmLabel}
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Please wait...</span>
+              </>
+            ) : (
+              confirmLabel
+            )}
           </button>
         </div>
       </div>

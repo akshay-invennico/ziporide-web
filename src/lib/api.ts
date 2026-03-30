@@ -25,6 +25,7 @@ export const API = {
   TRIP_DETAILS: (id: string) => `/v1/trips/${id}`,
   ADMIN_TRIPS: '/v1/ride/admin/all',
   ADMIN_TRIP_DETAILS: (id: string) => `/v1/ride/admin/${id}`,
+  CANCEL_RIDE: (id: string) => `/v1/ride/admin/${id}/cancel`,
 
   VEHICLE_CATEGORIES: '/v1/inventory/categories',
   CREATE_CATEGORY: '/v1/inventory/categories',
