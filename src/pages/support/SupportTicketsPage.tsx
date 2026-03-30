@@ -48,9 +48,9 @@ const SupportTicketsPage: React.FC = () => {
     );
   };
 
-  const handleStatusChange = (id: string, newStatus: SupportTicket['status']) => {
-    setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
-    if (selectedTicket?.id === id) {
+  const handleStatusChange = async (ticketId: string, newStatus: SupportTicket['status']) => {
+    await updateTicketStatus(ticketId, newStatus);
+    if (selectedTicket?.ticketId === ticketId) {
       setSelectedTicket((prev) => (prev ? { ...prev, status: newStatus } : null));
     }
   };
@@ -58,11 +58,13 @@ const SupportTicketsPage: React.FC = () => {
   const columns = useMemo<Column<SupportTicket>[]>(
     () => [
       {
-        key: 'id',
+        key: 'ticketId',
         label: 'TICKET ID',
         sortable: true,
         render: (ticket) => (
-          <span className="text-[14px] font-medium text-[#1DAFA1] cursor-pointer">{ticket.id}</span>
+          <span className="text-[14px] font-medium text-[#1DAFA1] cursor-pointer">
+            {ticket.ticketId}
+          </span>
         ),
       },
       {
@@ -77,31 +79,39 @@ const SupportTicketsPage: React.FC = () => {
         key: 'driver',
         label: 'DRIVER',
         sortable: true,
-        render: (ticket) => (
-          <div className="flex items-center gap-3">
-            <div
-              className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 overflow-hidden"
-              style={{ backgroundColor: ticket.driver.color }}
-            >
-              <img
-                src={ticket.driver.avatar}
-                alt={ticket.driver.name}
-                className="w-full h-full object-cover"
-              />
+        render: (ticket) =>
+          ticket.driver ? (
+            <div className="flex items-center gap-3">
+              <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 bg-[#1DAFA1]">
+                {ticket.driver.name
+                  .trim()
+                  .split(' ')
+                  .map((w) => w[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2)}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[14px] font-semibold text-[#1DAFA1]">
+                  {ticket.driver.name}
+                </span>
+                <span className="text-[12px] font-medium text-[#4E616A]">
+                  {ticket.driver.phone}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-semibold text-[#1DAFA1]">{ticket.driver.name}</span>
-              <span className="text-[12px] font-medium text-[#4E616A]">{ticket.driver.phone}</span>
-            </div>
-          </div>
-        ),
+          ) : (
+            <span className="text-[14px] font-medium text-[#4E616A]">—</span>
+          ),
       },
       {
-        key: 'raisedOn',
-        label: 'RAISED ON',
+        key: 'ride',
+        label: 'RIDE',
         sortable: true,
         render: (ticket) => (
-          <span className="text-[14px] font-medium text-[#4E616A]">{ticket.raisedOn}</span>
+          <span className="text-[14px] font-medium text-[#1DAFA1]">
+            {ticket.ride?.rideNumber || '—'}
+          </span>
         ),
       },
       {
@@ -146,7 +156,7 @@ const SupportTicketsPage: React.FC = () => {
               className="pl-10 pr-4 py-2 w-full border border-[#DFE6E5] rounded-lg text-[14px] focus:outline-none focus:ring-1 focus:ring-[#1DAFA1] focus:border-[#1DAFA1]"
               value={params.search}
               onChange={(e) => {
-                setParams(prev => ({ ...prev, search: e.target.value, page: 1 }));
+                setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }));
               }}
             />
           </div>
@@ -157,12 +167,13 @@ const SupportTicketsPage: React.FC = () => {
                 <button
                   key={filter}
                   onClick={() => {
-                    setParams(prev => ({ ...prev, status: filter, page: 1 }));
+                    setParams((prev) => ({ ...prev, status: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.status === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    params.status === filter
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                  }`}
                 >
                   {filter}
                 </button>
@@ -184,11 +195,12 @@ const SupportTicketsPage: React.FC = () => {
 
         <DataTable<SupportTicket>
           columns={columns}
-          data={currentData}
+          data={tickets}
           rowKey={(t) => t.id}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          loading={loading}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={(page) => setParams((prev) => ({ ...prev, page }))}
           emptyText="No tickets found."
         />
       </div>

@@ -21,30 +21,6 @@ const TransactionsPage: React.FC = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
-  const itemsPerPage = 12;
-
-  const filteredData = transactionsData.filter((txn) => {
-    if (activeFilter === 'Pay-in' && !['Ride Payment', 'Subscription Payment'].includes(txn.type))
-      return false;
-    if (activeFilter === 'Payout' && !['Driver Payout', 'Driver Incentive'].includes(txn.type))
-      return false;
-    if (activeFilter === 'Refund' && txn.type !== 'Refund') return false;
-    if (searchQuery) {
-      if (
-        !txn.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !txn.type.toLowerCase().includes(searchQuery.toLowerCase())
-      ) {
-        return false;
-      }
-    }
-    return true;
-  });
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const currentData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
 
   const formatAmount = (amount: number, type: string) => {
     const isPositive =
@@ -94,7 +70,7 @@ const TransactionsPage: React.FC = () => {
     );
   };
 
-  const columns = useMemo<Column<TransactionRecord>[]>(
+  const columns = useMemo<Column<Transaction>[]>(
     () => [
       {
         key: 'id',
@@ -173,7 +149,7 @@ const TransactionsPage: React.FC = () => {
               className="pl-10 pr-4 py-2 w-[300px] border border-[#DFE6E5] rounded-lg text-[14px] focus:outline-none focus:ring-1 focus:ring-[#1DAFA1] focus:border-[#1DAFA1]"
               value={params.search}
               onChange={(e) => {
-                setParams(prev => ({ ...prev, search: e.target.value, page: 1 }));
+                setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }));
               }}
             />
           </div>
@@ -183,12 +159,13 @@ const TransactionsPage: React.FC = () => {
                 <button
                   key={filter}
                   onClick={() => {
-                    setParams(prev => ({ ...prev, category: filter, page: 1 }));
+                    setParams((prev) => ({ ...prev, category: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.category === filter
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    params.category === filter
                       ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                       : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  }`}
                 >
                   {filter}
                 </button>
@@ -207,13 +184,14 @@ const TransactionsPage: React.FC = () => {
           </div>
         </div>
 
-        <DataTable<TransactionRecord>
+        <DataTable<Transaction>
           columns={columns}
-          data={currentData}
+          data={transactions}
           rowKey={(txn) => txn.id}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          loading={loading}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={(page) => setParams((prev) => ({ ...prev, page }))}
           emptyText="No transactions found matching your criteria."
         />
       </div>

@@ -62,15 +62,19 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
                   <Copy className="w-4 h-4 text-[#1DAFA1]" />
                 </button>
               </div>
-              <div className="flex items-center gap-2 text-[14px] text-[#000000] font-medium">
-                <img src="/icons/rider/dates.svg" alt="calendar" className="w-5 h-5" />
-                <span>{ticket.raisedOn}</span>
-              </div>
+              {ticket.ride && (
+                <div className="flex items-center gap-2 text-[14px] text-[#000000] font-medium">
+                  <span className="text-[#4E616A]">Ride:</span>
+                  <span className="text-[#1DAFA1]">{ticket.ride.rideNumber}</span>
+                </div>
+              )}
             </div>
 
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[500px] ${colors.bg}`}>
               <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
-              <span className={`text-[12px] font-semibold capitalize ${colors.text}`}>{ticket.status}</span>
+              <span className={`text-[12px] font-semibold capitalize ${colors.text}`}>
+                {ticket.status}
+              </span>
             </div>
           </div>
 
@@ -82,16 +86,22 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-[#747C84]">Against</span>
-              <div className="flex items-center gap-2">
-                <span className="text-[12px] font-medium text-[#4E616A]">Trip ID: </span>
-                <span className="text-[14px] font-medium text-[#1DAFA1]">{ticket.tripId}</span>
-                <button
-                  onClick={() => handleCopy(ticket.tripId)}
-                  className="p-1 rounded cursor-pointer hover:bg-gray-50"
-                >
-                  <Copy className="w-4 h-4 text-[#1DAFA1]" />
-                </button>
-              </div>
+              {ticket.ride ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] font-medium text-[#4E616A]">Ride: </span>
+                  <span className="text-[14px] font-medium text-[#1DAFA1]">
+                    {ticket.ride.rideNumber}
+                  </span>
+                  <button
+                    onClick={() => handleCopy(ticket.ride!.rideNumber)}
+                    className="p-1 rounded cursor-pointer hover:bg-gray-50"
+                  >
+                    <Copy className="w-4 h-4 text-[#1DAFA1]" />
+                  </button>
+                </div>
+              ) : (
+                <span className="text-[14px] font-medium text-[#4E616A]">—</span>
+              )}
             </div>
           </div>
 
