@@ -17,7 +17,7 @@ const TransactionsPage: React.FC = () => {
     search: '',
   });
 
-  const { transactions, loading, error, pagination } = useTransactions(params);
+  const { transactions, loading, pagination } = useTransactions(params);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);

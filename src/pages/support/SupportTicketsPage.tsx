@@ -17,7 +17,7 @@ const SupportTicketsPage: React.FC = () => {
     search: '',
   });
 
-  const { tickets, loading, error, pagination, updateTicketStatus } = useSupportTickets(params);
+  const { tickets, loading, pagination, updateTicketStatus } = useSupportTickets(params);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
