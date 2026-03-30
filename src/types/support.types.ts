@@ -15,6 +15,7 @@ export interface SupportTicket {
     name: string;
     phone: string;
   } | null;
+  createdAt: string;
 }
 
 export interface SupportTicketResponse {
