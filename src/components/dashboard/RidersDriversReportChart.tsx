@@ -66,7 +66,7 @@ export default function RidersDriversReportChart() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
-              margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
+              margin={{ top: 0, right: 0, left: -30, bottom: 0 }}
               barGap={6}
               barSize={10}
             >
@@ -82,7 +82,8 @@ export default function RidersDriversReportChart() {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
-                tickFormatter={(value) => `${value === 0 ? '0' : value / 1000}K`}
+                tickFormatter={(value) => (value >= 1000 ? `${value / 1000}K` : value)}
+                allowDecimals={false}
                 width={55}
               />
               <Tooltip

@@ -61,7 +61,7 @@ export default function TripsChart() {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -30, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorTrips" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1CC8B1" stopOpacity={0.05} />
@@ -80,7 +80,9 @@ export default function TripsChart() {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
-                tickFormatter={(value) => `${value / 1000}K`}
+                tickFormatter={(value) => (value >= 1000 ? `${value / 1000}K` : value)}
+                allowDecimals={false}
+                width={55}
               />
               <Tooltip
                 contentStyle={{

@@ -86,7 +86,7 @@ export default function RevenueAnalyticsChart() {
           </div>
         ) : (
           <ResponsiveContainer key={trendFilter} width="100%" height="100%">
-            <AreaChart data={activeData} margin={{ top: 10, right: 0, left: -10, bottom: 0 }}>
+            <AreaChart data={activeData} margin={{ top: 10, right: 0, left: -30, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1CC8B1" stopOpacity={0.12} />
