@@ -43,8 +43,8 @@ const RiderPage = () => {
 
   const [filters, setFilters] = useState<FilterType>({
     status: 'All',
-    minSpent: 0,
-    maxSpent: 1000,
+    minSpend: 0,
+    maxSpend: 1000,
     minTrips: 0,
     maxTrips: 500,
     rating: 'All',

@@ -52,22 +52,22 @@ export default function RiderDetailsPage() {
         Back
       </button>
 
-      <div className="flex items-center gap-8  mb-8 mt-4 overflow-x-auto ">
+      <div className="flex items-center gap-8 mb-8 mt-4 overflow-x-auto overflow-y-hidden scrollbar-hide">
         <button
           onClick={() => setActiveTab('info')}
-          className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${activeTab === 'info' ? 'border-[#1DAFA1] text-[#1DAFA1]' : 'border-transparent text-[#4E616A]'}`}
+          className={`pb-2 text-[14px] font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${activeTab === 'info' ? 'border-[#1DAFA1] text-[#1DAFA1]' : 'border-transparent text-[#4E616A]'}`}
         >
           Rider Details
         </button>
         <button
           onClick={() => setActiveTab('history')}
-          className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${activeTab === 'history' ? 'border-[#1DAFA1] text-[#1DAFA1]' : 'border-transparent text-[#4E616A]'}`}
+          className={`pb-2 text-[14px] font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${activeTab === 'history' ? 'border-[#1DAFA1] text-[#1DAFA1]' : 'border-transparent text-[#4E616A]'}`}
         >
           Spent & Trip History
         </button>
         <button
           onClick={() => setActiveTab('timeline')}
-          className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${activeTab === 'timeline' ? 'border-[#1DAFA1] text-[#1DAFA1]' : 'border-transparent text-[#4E616A]'}`}
+          className={`pb-2 text-[14px] font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${activeTab === 'timeline' ? 'border-[#1DAFA1] text-[#1DAFA1]' : 'border-transparent text-[#4E616A]'}`}
         >
           Activity Timeline
         </button>
@@ -85,8 +85,9 @@ export default function RiderDetailsPage() {
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}
-            className={`flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium ${rider.status?.toLowerCase() === 'suspended' ? 'text-[#00A63E]' : 'text-[#FF0707]'
-              }`}
+            className={`flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium ${
+              rider.status?.toLowerCase() === 'suspended' ? 'text-[#00A63E]' : 'text-[#FF0707]'
+            }`}
           >
             {rider.status?.toLowerCase() === 'suspended' ? (
               <img

@@ -14,8 +14,8 @@ import type {
 
 interface RiderFilters {
   status?: string;
-  minSpent?: number;
-  maxSpent?: number;
+  minSpend?: number;
+  maxSpend?: number;
   minTrips?: number;
   maxTrips?: number;
   rating?: string;
@@ -40,8 +40,8 @@ export const useRiders = (
       // Check if any filters are actually applied (not default)
       const hasAppliedFilters =
         (initialFilters.status && initialFilters.status !== 'All') ||
-        (initialFilters.minSpent !== undefined && initialFilters.minSpent > 0) ||
-        (initialFilters.maxSpent !== undefined && initialFilters.maxSpent < 1000) ||
+        (initialFilters.minSpend !== undefined && initialFilters.minSpend > 0) ||
+        (initialFilters.maxSpend !== undefined && initialFilters.maxSpend < 1000) ||
         (initialFilters.minTrips !== undefined && initialFilters.minTrips > 0) ||
         (initialFilters.maxTrips !== undefined && initialFilters.maxTrips < 500) ||
         (initialFilters.rating && initialFilters.rating !== 'All');
@@ -56,11 +56,11 @@ export const useRiders = (
           params.status = initialFilters.status.toLowerCase();
         }
 
-        if (initialFilters.minSpent !== undefined && initialFilters.minSpent > 0) {
-          params.minSpent = initialFilters.minSpent;
+        if (initialFilters.minSpend !== undefined && initialFilters.minSpend > 0) {
+          params.minSpend = initialFilters.minSpend;
         }
-        if (initialFilters.maxSpent !== undefined && initialFilters.maxSpent < 1000) {
-          params.maxSpent = initialFilters.maxSpent;
+        if (initialFilters.maxSpend !== undefined && initialFilters.maxSpend < 1000) {
+          params.maxSpend = initialFilters.maxSpend;
         }
         if (initialFilters.minTrips !== undefined && initialFilters.minTrips > 0) {
           params.minTrips = initialFilters.minTrips;
@@ -96,8 +96,8 @@ export const useRiders = (
     page,
     limit,
     initialFilters.status,
-    initialFilters.minSpent,
-    initialFilters.maxSpent,
+    initialFilters.minSpend,
+    initialFilters.maxSpend,
     initialFilters.minTrips,
     initialFilters.maxTrips,
     initialFilters.rating,

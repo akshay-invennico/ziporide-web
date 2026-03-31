@@ -169,131 +169,155 @@ export default function DriverTripHistoryTab() {
               </tr>
             </thead>
             <tbody>
-              {trips.map((trip) => (
-                <tr
-                  key={trip.id}
-                  className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
-                >
-                  {/* Trip ID */}
-                  <td className="px-4 py-3">
-                    <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap cursor-pointer">
-                      {trip.id}
-                    </span>
-                  </td>
-
-                  {/* Rider */}
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-[36px] h-[36px] rounded-full flex bg-[#1DAFA1] items-center justify-center text-white font-bold text-[14px] shrink-0">
-                        {trip.rider.initials}
-                      </div>
-                      <div>
-                        <p className="text-[14px] font-medium text-[#1DAFA1] leading-tight text-nowrap">
-                          {trip.rider.name}
+              {trips.length === 0 ? (
+                <tr>
+                  <td colSpan={tripTableColumns.length} className="px-4 py-20 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[#000000] font-semibold text-[16px]">No trips found</p>
+                        <p className="text-[#4E616A] text-[14px]">
+                          There are no trip records for the selected {period.toLowerCase()}.
                         </p>
-                        <p className="text-[12px] text-[#4E616A] font-medium">{trip.rider.phone}</p>
                       </div>
                     </div>
-                  </td>
-
-                  {/* Route */}
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#4E616A]">
-                      <span className="whitespace-nowrap">{trip.route.pickupLocation}</span>
-                      <ArrowRightIcon className="w-4 h-4" />
-                      <span className="whitespace-nowrap">{trip.route.destination}</span>
-                    </div>
-                  </td>
-
-                  {/* Amount */}
-                  <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">
-                    £{trip.totalFare.toFixed(2)}
-                  </td>
-
-                  {/* Date */}
-                  <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A] whitespace-nowrap">
-                    {trip.date}
-                  </td>
-
-                  {/* Rating */}
-                  <td className="px-4 py-3">
-                    {trip.rider.rating !== null ? (
-                      <div className="flex items-center gap-1">
-                        <Star className="w-[14px] h-[14px] fill-[#E9A90A] text-[#E9A90A]" />
-                        <span className="text-[14px] font-medium text-[#4E616A]">
-                          {trip.rider.rating.toFixed(1)}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-[14px] text-[#4E616A]">-</span>
-                    )}
-                  </td>
-
-                  {/* Status */}
-                  <td className="px-4 py-3">
-                    <StatusBadge status={trip.status} />
-                  </td>
-
-                  {/* Action */}
-                  <td className="px-4 py-3">
-                    <button
-                      onClick={() => handleViewTrip(trip)}
-                      disabled={loadingTripId === (trip.rideId || trip.id)}
-                      className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1] cursor-pointer disabled:opacity-50"
-                    >
-                      {loadingTripId === (trip.rideId || trip.id) ? (
-                        <LoadingSpinner size={20} />
-                      ) : (
-                        <>
-                          <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
-                          View
-                        </>
-                      )}
-                    </button>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                trips.map((trip) => (
+                  <tr
+                    key={trip.id}
+                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                  >
+                    {/* Trip ID */}
+                    <td className="px-4 py-3">
+                      <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap cursor-pointer">
+                        {trip.id}
+                      </span>
+                    </td>
+
+                    {/* Rider */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-[36px] h-[36px] rounded-full flex bg-[#1DAFA1] items-center justify-center text-white font-bold text-[14px] shrink-0">
+                          {trip.rider.initials}
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-medium text-[#1DAFA1] leading-tight text-nowrap">
+                            {trip.rider.name}
+                          </p>
+                          <p className="text-[12px] text-[#4E616A] font-medium">
+                            {trip.rider.phone}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Route */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#4E616A]">
+                        <span className="whitespace-nowrap">{trip.route.pickupLocation}</span>
+                        <ArrowRightIcon className="w-4 h-4" />
+                        <span className="whitespace-nowrap">{trip.route.destination}</span>
+                      </div>
+                    </td>
+
+                    {/* Amount */}
+                    <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A]">
+                      £{trip.totalFare.toFixed(2)}
+                    </td>
+
+                    {/* Date */}
+                    <td className="px-4 py-3 text-[14px] font-medium text-[#4E616A] whitespace-nowrap">
+                      {trip.date}
+                    </td>
+
+                    {/* Rating */}
+                    <td className="px-4 py-3">
+                      {trip.rider.rating !== null ? (
+                        <div className="flex items-center gap-1">
+                          <Star className="w-[14px] h-[14px] fill-[#E9A90A] text-[#E9A90A]" />
+                          <span className="text-[14px] font-medium text-[#4E616A]">
+                            {trip.rider.rating.toFixed(1)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-[14px] text-[#4E616A]">-</span>
+                      )}
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-4 py-3">
+                      <StatusBadge status={trip.status} />
+                    </td>
+
+                    {/* Action */}
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => handleViewTrip(trip)}
+                        disabled={loadingTripId === (trip.rideId || trip.id)}
+                        className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1] cursor-pointer disabled:opacity-50"
+                      >
+                        {loadingTripId === (trip.rideId || trip.id) ? (
+                          <LoadingSpinner size={20} />
+                        ) : (
+                          <>
+                            <img
+                              src="/icons/rider/eye.svg"
+                              alt="eye"
+                              className="w-[22px] h-[22px]"
+                            />
+                            View
+                          </>
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div className="px-4 py-3 border-t border-[#DFE6E5] flex items-center justify-end gap-1.5">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="w-[20px] h-[20px]" />
-          </button>
+        {trips.length > 0 && totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-[#DFE6E5] flex items-center justify-end gap-1.5">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="w-[20px] h-[20px]" />
+            </button>
 
-          {getPages().map((page, idx) =>
-            page === '...' ? (
-              <span key={`dots-${idx}`} className="px-1 text-[#4E616A] text-[13px]">
-                ...
-              </span>
-            ) : (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page as number)}
-                className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
-                  ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                  : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+            {getPages().map((page, idx) =>
+              page === '...' ? (
+                <span key={`dots-${idx}`} className="px-1 text-[#4E616A] text-[13px]">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page as number)}
+                  className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
+                    currentPage === page
+                      ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                      : 'text-[#4E616A] border-transparent hover:bg-gray-50'
                   }`}
-              >
-                {page}
-              </button>
-            ),
-          )}
+                >
+                  {page}
+                </button>
+              ),
+            )}
 
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronRight className="w-[20px] h-[20px]" />
-          </button>
-        </div>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="w-[20px] h-[20px]" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Trip Details Modal */}

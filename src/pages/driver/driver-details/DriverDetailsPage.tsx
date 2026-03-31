@@ -82,12 +82,12 @@ export default function DriverDetailsPage() {
       </button>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-8 mb-4 overflow-x-auto ">
+      <div className="flex items-center gap-8 mb-3 overflow-x-auto overflow-y-hidden scrollbar-hide">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`pb-3 text-[14px] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer ${
+            className={`pb-2 text-[14px] font-medium whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
               activeTab === tab.key
                 ? 'border-[#1DAFA1] text-[#1DAFA1]'
                 : 'border-transparent text-[#4E616A] hover:text-[#1DAFA1]'
