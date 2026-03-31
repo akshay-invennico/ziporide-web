@@ -39,6 +39,7 @@ export const useAuthData = () => {
           role: operator.role,
           permissions: operator.permissions,
           status: operator.status,
+          profile: operator.profile,
         },
         data.data.tokens.access.token,
       );

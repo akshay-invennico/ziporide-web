@@ -8,6 +8,7 @@ export interface Operator {
   status: 'active' | 'inactive' | 'suspended';
   createdAt: string;
   updatedAt: string;
+  profile?: string | null;
 }
 
 export interface OperatorListResponse {
