@@ -144,14 +144,13 @@ export default function Header() {
             className="flex items-center gap-3 cursor-pointer border border-[#DFE6E5] p-1.5 rounded-full pr-3 transition-colors hover:bg-gray-50"
           >
             <img
-              src={user?.profile || 'https://i.pravatar.cc/150?img=11'}
+              src={user?.profile || '/icons/noProfileImage.jpg'}
               alt="Profile"
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-12 h-12 rounded-full object-cover"
             />
             <ChevronDown
-              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${
-                isDropdownOpen ? 'rotate-180' : ''
-              }`}
+              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
+                }`}
             />
           </div>
 
