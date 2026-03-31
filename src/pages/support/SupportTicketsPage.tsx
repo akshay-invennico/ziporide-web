@@ -17,7 +17,7 @@ const SupportTicketsPage: React.FC = () => {
     search: '',
   });
 
-  const { tickets, loading, error, pagination, updateTicketStatus } = useSupportTickets(params);
+  const { tickets, loading, pagination, updateTicketStatus } = useSupportTickets(params);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -48,9 +48,9 @@ const SupportTicketsPage: React.FC = () => {
     );
   };
 
-  const handleStatusChange = (id: string, newStatus: SupportTicket['status']) => {
-    setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
-    if (selectedTicket?.id === id) {
+  const handleStatusChange = async (ticketId: string, newStatus: SupportTicket['status']) => {
+    await updateTicketStatus(ticketId, newStatus);
+    if (selectedTicket?.ticketId === ticketId) {
       setSelectedTicket((prev) => (prev ? { ...prev, status: newStatus } : null));
     }
   };
@@ -58,11 +58,13 @@ const SupportTicketsPage: React.FC = () => {
   const columns = useMemo<Column<SupportTicket>[]>(
     () => [
       {
-        key: 'id',
+        key: 'ticketId',
         label: 'TICKET ID',
         sortable: true,
         render: (ticket) => (
-          <span className="text-[14px] font-medium text-[#1DAFA1] cursor-pointer">{ticket.id}</span>
+          <span className="text-[14px] font-medium text-[#1DAFA1] cursor-pointer">
+            {ticket.ticketId}
+          </span>
         ),
       },
       {
@@ -77,31 +79,39 @@ const SupportTicketsPage: React.FC = () => {
         key: 'driver',
         label: 'DRIVER',
         sortable: true,
-        render: (ticket) => (
-          <div className="flex items-center gap-3">
-            <div
-              className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 overflow-hidden"
-              style={{ backgroundColor: ticket.driver.color }}
-            >
-              <img
-                src={ticket.driver.avatar}
-                alt={ticket.driver.name}
-                className="w-full h-full object-cover"
-              />
+        render: (ticket) =>
+          ticket.driver ? (
+            <div className="flex items-center gap-3">
+              <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 bg-[#1DAFA1]">
+                {ticket.driver.name
+                  .trim()
+                  .split(' ')
+                  .map((w) => w[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2)}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[14px] font-semibold text-[#1DAFA1]">
+                  {ticket.driver.name}
+                </span>
+                <span className="text-[12px] font-medium text-[#4E616A]">
+                  {ticket.driver.phone}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-semibold text-[#1DAFA1]">{ticket.driver.name}</span>
-              <span className="text-[12px] font-medium text-[#4E616A]">{ticket.driver.phone}</span>
-            </div>
-          </div>
-        ),
+          ) : (
+            <span className="text-[14px] font-medium text-[#4E616A]">—</span>
+          ),
       },
       {
-        key: 'raisedOn',
+        key: 'createdAt',
         label: 'RAISED ON',
         sortable: true,
         render: (ticket) => (
-          <span className="text-[14px] font-medium text-[#4E616A]">{ticket.raisedOn}</span>
+          <span className="text-[14px] font-medium text-[#4E616A]">
+            {new Date(ticket.createdAt).toISOString().split('T')[0]}
+          </span>
         ),
       },
       {
@@ -185,11 +195,12 @@ const SupportTicketsPage: React.FC = () => {
 
         <DataTable<SupportTicket>
           columns={columns}
-          data={currentData}
+          data={tickets}
           rowKey={(t) => t.id}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          loading={loading}
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={(page) => setParams((prev) => ({ ...prev, page }))}
           emptyText="No tickets found."
         />
       </div>

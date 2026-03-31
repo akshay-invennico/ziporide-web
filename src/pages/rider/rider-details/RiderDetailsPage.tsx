@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+import { usePermissions } from '@/hooks/usePermissions';
 import { useRiderDetails, useUpdateRiderStatus } from '@/hooks/useRider';
 import { routes } from '@/routes/routes';
 
@@ -19,6 +20,8 @@ export default function RiderDetailsPage() {
 
   const { rider, loading, error, refetch } = useRiderDetails(id);
   const { updateStatus, isUpdating } = useUpdateRiderStatus();
+  const { hasPermission } = usePermissions();
+  const canManageRiders = hasPermission('riders.manage');
 
   if (loading) {
     return (
@@ -80,7 +83,7 @@ export default function RiderDetailsPage() {
         {activeTab === 'timeline' && <ActivityTimelineTab />}
       </div>
 
-      {activeTab === 'info' && (
+      {activeTab === 'info' && canManageRiders && (
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}

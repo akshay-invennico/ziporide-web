@@ -1,5 +1,6 @@
 import { X, Copy } from 'lucide-react';
 import React from 'react';
+
 import type { Transaction } from '../../types/transaction.types';
 
 interface TransactionDetailsModalProps {
@@ -76,11 +77,17 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-xl w-full max-w-[800px] flex flex-col overflow-hidden shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="bg-white rounded-xl w-full max-w-[800px] flex flex-col overflow-hidden shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#DFE6E5]">
           <h2 className="text-[18px] font-semibold text-[#000000]">Transactions Details</h2>
-          <button onClick={onClose} className="p-1  rounded-full transition-colors cursor-pointer hover:bg-gray-100">
+          <button
+            onClick={onClose}
+            className="p-1  rounded-full transition-colors cursor-pointer hover:bg-gray-100"
+          >
             <X className="w-5 h-5 text-[#4E616A]" />
           </button>
         </div>

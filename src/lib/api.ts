@@ -41,7 +41,6 @@ export const API = {
   UPDATE_PASSWORD: '/v1/users/password',
   PRICING: '/v1/pricing',
 
-
   TRANSACTIONS: '/v1/transactions',
   TRANSACTION_DETAILS: (id: string) => `/v1/transactions/${id}`,
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
 import { useDrivers, useUpdateDriverStatus } from '@/hooks/useDriver';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { Driver } from '@/types/driver.types';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
@@ -41,6 +42,8 @@ const DriverPage = () => {
   const [suspendedDriverId, setSuspendedDriverId] = useState<string | null>(null);
 
   const { updateStatus, isUpdating } = useUpdateDriverStatus();
+  const { hasPermission } = usePermissions();
+  const canManageDrivers = hasPermission('drivers.manage');
 
   const getDriverId = (driver: Driver) => (driver.id || driver._id || '') as string;
 
@@ -149,29 +152,33 @@ const DriverPage = () => {
               <Link to={`/driver/details/${id}`} className="cursor-pointer" title="View Driver">
                 <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px]" />
               </Link>
-              <button
-                onClick={() => setSuspendedDriverId(id)}
-                className="cursor-pointer"
-                title={
-                  driver.status?.toLowerCase() === 'approved' ? 'Suspend Driver' : 'Activate Driver'
-                }
-              >
-                {driver.status?.toLowerCase() === 'suspended' ? (
-                  <img src="icons/driver/greenUser.svg" alt="suspend" />
-                ) : (
-                  <img
-                    src="/icons/driver/redUser.svg"
-                    alt="suspend"
-                    className="w-[24px] h-[24px]"
-                  />
-                )}
-              </button>
+              {canManageDrivers && (
+                <button
+                  onClick={() => setSuspendedDriverId(id)}
+                  className="cursor-pointer"
+                  title={
+                    driver.status?.toLowerCase() === 'approved'
+                      ? 'Suspend Driver'
+                      : 'Activate Driver'
+                  }
+                >
+                  {driver.status?.toLowerCase() === 'suspended' ? (
+                    <img src="icons/driver/greenUser.svg" alt="suspend" />
+                  ) : (
+                    <img
+                      src="/icons/driver/redUser.svg"
+                      alt="suspend"
+                      className="w-[24px] h-[24px]"
+                    />
+                  )}
+                </button>
+              )}
             </div>
           );
         },
       },
     ],
-    [],
+    [canManageDrivers],
   );
 
   return (

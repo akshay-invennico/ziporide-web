@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useRiders, useUpdateRiderStatus } from '@/hooks/useRider';
 import type { Rider } from '@/types/rider.types';
 
@@ -41,6 +42,8 @@ const RiderPage = () => {
   const [suspendedRiderId, setSuspendedRiderId] = useState<string | null>(null);
 
   const { updateStatus, isUpdating } = useUpdateRiderStatus();
+  const { hasPermission } = usePermissions();
+  const canManageRiders = hasPermission('riders.manage');
 
   const columns = useMemo<Column<Rider>[]>(
     () => [
@@ -134,28 +137,34 @@ const RiderPage = () => {
             <Link to={`/rider/details/${rider.id}`} className="cursor-pointer" title="View Rider">
               <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px]" />
             </Link>
-            <button
-              onClick={() => setSuspendedRiderId(rider.id)}
-              className="cursor-pointer"
-              title={
-                rider.status?.toLowerCase() === 'suspended' ? 'Reactivate Rider' : 'Suspend Rider'
-              }
-            >
-              {rider.status?.toLowerCase() === 'suspended' ? (
-                <img
-                  src="/icons/driver/greenUser.svg"
-                  alt="reactivate"
-                  className="w-[22px] h-[22px]"
-                />
-              ) : (
-                <img src="/icons/driver/redUser.svg" alt="suspend" className="w-[22px] h-[22px]" />
-              )}
-            </button>
+            {canManageRiders && (
+              <button
+                onClick={() => setSuspendedRiderId(rider.id)}
+                className="cursor-pointer"
+                title={
+                  rider.status?.toLowerCase() === 'suspended' ? 'Reactivate Rider' : 'Suspend Rider'
+                }
+              >
+                {rider.status?.toLowerCase() === 'suspended' ? (
+                  <img
+                    src="/icons/driver/greenUser.svg"
+                    alt="reactivate"
+                    className="w-[22px] h-[22px]"
+                  />
+                ) : (
+                  <img
+                    src="/icons/driver/redUser.svg"
+                    alt="suspend"
+                    className="w-[22px] h-[22px]"
+                  />
+                )}
+              </button>
+            )}
           </div>
         ),
       },
     ],
-    [],
+    [canManageRiders],
   );
 
   return (
