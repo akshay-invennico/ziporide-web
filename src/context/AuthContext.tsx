@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 
 import type { AuthState, AuthUser } from '@/types/auth.types';
 
@@ -22,20 +22,29 @@ const getInitialState = (): AuthState => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authState, setAuthState] = useState<AuthState>(getInitialState);
 
-  const setAuth = (user: AuthUser, token: string) => {
+  const setAuth = useCallback((user: AuthUser, token: string) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     setAuthState({ user, token, isAuthenticated: true });
-  };
+  }, []);
 
-  const logout = () => {
+  const updateAuth = useCallback((userData: Partial<AuthUser>) => {
+    setAuthState((prev) => {
+      if (!prev.user) return prev;
+      const updatedUser = { ...prev.user, ...userData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return { ...prev, user: updatedUser };
+    });
+  }, []);
+
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setAuthState({ user: null, token: null, isAuthenticated: false });
-  };
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ ...authState, setAuth, logout }}>
+    <AuthContext.Provider value={{ ...authState, setAuth, updateAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );

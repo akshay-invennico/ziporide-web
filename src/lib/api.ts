@@ -4,7 +4,10 @@ export const API = {
   VERIFY_OTP: '/v1/auth/verify/otp/email',
   RESET_PASSWORD: '/v1/auth/reset/password',
 
-  DASHBOARD_STATS: '/v1/dashboard/stats',
+  DASHBOARD_SUMMARY: '/v1/dashboard/summary',
+  REVENUE_ANALYTICS: '/v1/dashboard/revenue-analytics',
+  RIDER_DRIVER_REPORT: '/v1/dashboard/rider-driver-report',
+  TRIPS_OVER_TIME: '/v1/dashboard/trips-over-time',
 
   RIDERS: '/v1/riders',
   RIDER_DETAILS: (id: string) => `/v1/riders/${id}`,

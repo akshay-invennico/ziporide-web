@@ -167,7 +167,8 @@ export default function RecentTripsTable() {
 
                   {/* Time */}
                   <td className="px-4 py-3.5 font-medium text-[#4A5565] text-[14px]">
-                    {trip.date} | {trip.time}
+                    {/* {trip.date} */}
+                    {trip.time}
                   </td>
 
                   {/* Action */}

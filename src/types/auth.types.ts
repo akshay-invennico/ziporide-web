@@ -11,6 +11,7 @@ export interface AuthUser {
   role: string;
   permissions?: string[];
   status?: string;
+  profile?: string | null;
 }
 
 export interface TokenDetails {

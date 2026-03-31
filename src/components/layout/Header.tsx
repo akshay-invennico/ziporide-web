@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/context/useAuth';
+import { useAdminProfile } from '@/hooks/useAdminProfile';
 import { routes } from '@/routes/routes';
 
 import NotificationDropdown from './NotificationDropdown';
@@ -60,7 +61,8 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
 
 export default function Header() {
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const { getProfile } = useAdminProfile();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -79,6 +81,10 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    getProfile();
+  }, [getProfile]);
 
   const getPageTitle = () => {
     const match = Object.entries(PAGE_TITLES).find(([path]) => location.pathname.startsWith(path));
@@ -116,9 +122,9 @@ export default function Header() {
             className="flex items-center gap-3 cursor-pointer border border-[#DFE6E5] p-1.5 rounded-full pr-3 transition-colors hover:bg-gray-50"
           >
             <img
-              src="https://i.pravatar.cc/150?img=11"
+              src={user?.profile || 'https://i.pravatar.cc/150?img=11'}
               alt="Profile"
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full object-cover"
             />
             <ChevronDown
               className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${

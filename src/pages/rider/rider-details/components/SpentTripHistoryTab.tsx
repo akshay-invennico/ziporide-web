@@ -153,7 +153,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
               <XAxis
-                dataKey="name"
+                dataKey={(item) => item.month || item.day || 'N/A'}
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 500 }}
