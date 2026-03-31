@@ -146,11 +146,10 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  trendFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
               >
                 {filter}
               </button>
@@ -172,13 +171,13 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                 dataKey={(item) => item.month || item.day || 'N/A'}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
                 dy={10}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
                 tickFormatter={(value: number) =>
                   value >= 1000 ? `£${value / 1000}K` : `£${value}`
                 }
@@ -213,11 +212,10 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                   setTripsFilter(filter);
                   setCurrentPage(1); // Reset to page 1 on filter change
                 }}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  tripsFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${tripsFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
               >
                 {filter}
               </button>
@@ -311,26 +309,24 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            trip.status === 'Completed'
-                              ? 'bg-[#00A63E]'
-                              : trip.status === 'In Progress'
-                                ? 'bg-[#F6921E]'
-                                : trip.status === 'Assigned'
-                                  ? 'bg-[#1DAFA1]'
-                                  : 'bg-[#FF0707]'
-                          }`}
+                          className={`w-1.5 h-1.5 rounded-full ${trip.status === 'Completed'
+                            ? 'bg-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'bg-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'bg-[#1DAFA1]'
+                                : 'bg-[#FF0707]'
+                            }`}
                         ></div>
                         <span
-                          className={`font-semibold text-[12px] ${
-                            trip.status === 'Completed'
-                              ? 'text-[#00A63E]'
-                              : trip.status === 'In Progress'
-                                ? 'text-[#F6921E]'
-                                : trip.status === 'Assigned'
-                                  ? 'text-[#1DAFA1]'
-                                  : 'text-[#FF0707]'
-                          }`}
+                          className={`font-semibold text-[12px] text-nowrap ${trip.status === 'Completed'
+                            ? 'text-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'text-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'text-[#1DAFA1]'
+                                : 'text-[#FF0707]'
+                            }`}
                         >
                           {trip.status}
                         </span>
@@ -378,11 +374,10 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${
-                        currentPage === pageNum
-                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                      }`}
+                      className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
+                        ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                        : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                        }`}
                     >
                       {pageNum}
                     </button>

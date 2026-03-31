@@ -41,7 +41,7 @@ export default function RevenueAnalyticsChart() {
   const { data: activeData, loading, error } = useRevenueAnalytics(trendFilter);
 
   return (
-    <div className="bg-white h-[418px]  p-5 lg:p-6 rounded-lg border border-[#DFE6E5] s col-span-1 lg:col-span-2 xl:col-span-4 transition-all overflow-hidden">
+    <div className="bg-white h-[418px]  p-5 rounded-lg border border-[#DFE6E5] s col-span-1 lg:col-span-2 xl:col-span-4 transition-all overflow-hidden">
       {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
         <div>
@@ -58,11 +58,10 @@ export default function RevenueAnalyticsChart() {
               key={filter}
               onClick={() => setTrendFilter(filter)}
               disabled={loading}
-              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                trendFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
+                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                : 'border-[#DFE6E5] text-[#4E616A] '
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {filter}
             </button>
@@ -87,7 +86,7 @@ export default function RevenueAnalyticsChart() {
           </div>
         ) : (
           <ResponsiveContainer key={trendFilter} width="100%" height="100%">
-            <AreaChart data={activeData} margin={{ top: 10, right: 0, left: -30, bottom: 0 }}>
+            <AreaChart data={activeData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1CC8B1" stopOpacity={0.12} />
@@ -101,14 +100,14 @@ export default function RevenueAnalyticsChart() {
                 dataKey={(item) => item.month || item.day || 'N/A'}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
                 dy={10}
               />
 
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
                 tickFormatter={yTickFormatter}
                 width={55}
               />
