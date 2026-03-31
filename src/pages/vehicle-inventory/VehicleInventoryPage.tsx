@@ -171,9 +171,8 @@ const VehicleInventoryPage: React.FC = () => {
       <div className="flex gap-8  mb-6">
         <button
           onClick={() => setActiveTab('category')}
-          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${
-            activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-          }`}
+          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+            }`}
         >
           Vehicle Category
           {activeTab === 'category' && (
@@ -182,9 +181,8 @@ const VehicleInventoryPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('database')}
-          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${
-            activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-          }`}
+          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+            }`}
         >
           Vehicle Database
           {activeTab === 'database' && (
@@ -216,18 +214,18 @@ const VehicleInventoryPage: React.FC = () => {
           ) : error ? (
             <div>Error: {error}</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
               {vehicleCategories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-[390px] h-[160px]"
+                  className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-full min-h-[160px]"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
+                    <div className="shrink-0 flex items-center justify-center">
                       <img
                         src={cat.categoryIcon}
                         alt={cat.name}
-                        className="w-[130px] h-[130px] object-contain mb-4"
+                        className="w-[120px] h-[120px] object-contain"
                         onError={(e) => {
                           e.currentTarget.src =
                             'https://img.freepik.com/free-vector/white-sedan-car-isolated-white-background_1308-100223.jpg';

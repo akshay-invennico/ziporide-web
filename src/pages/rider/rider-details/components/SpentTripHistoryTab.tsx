@@ -130,11 +130,10 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  trendFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
               >
                 {filter}
               </button>
@@ -197,11 +196,10 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                   setTripsFilter(filter);
                   setCurrentPage(1); // Reset to page 1 on filter change
                 }}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  tripsFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${tripsFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+                  }`}
               >
                 {filter}
               </button>
@@ -251,7 +249,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     key={trip.id}
                     className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
                   >
-                    <td className="p-4 px-5 text-[#1DAFA1] font-medium text-[14px]">{trip.id}</td>
+                    <td className="p-4 px-5 text-[#1DAFA1] font-medium text-[14px] text-nowrap">{trip.id}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden shrink-0">
@@ -261,7 +259,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                           </div>
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-medium text-[#1DAFA1] text-[14px] ">
+                          <span className="font-medium text-[#1DAFA1] text-[14px] text-nowrap ">
                             {trip.driver.name}
                           </span>
                           <span className="text-[12px] font-medium text-[#4E616A]">
@@ -288,30 +286,28 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     <td className="p-4 font-medium text-[#4E616A] text-[14px]">
                       £{trip.amount ? trip.amount.toFixed(2) : '0.00'}
                     </td>
-                    <td className="p-4 font-medium text-[#4E616A] text-[14px]">{trip.date}</td>
+                    <td className="p-4 font-medium text-[#4E616A] text-[14px] text-nowrap">{trip.date}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            trip.status === 'Completed'
-                              ? 'bg-[#00A63E]'
-                              : trip.status === 'In Progress'
-                                ? 'bg-[#F6921E]'
-                                : trip.status === 'Assigned'
-                                  ? 'bg-[#1DAFA1]'
-                                  : 'bg-[#FF0707]'
-                          }`}
+                          className={`w-1.5 h-1.5 rounded-full ${trip.status === 'Completed'
+                            ? 'bg-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'bg-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'bg-[#1DAFA1]'
+                                : 'bg-[#FF0707]'
+                            }`}
                         ></div>
                         <span
-                          className={`font-semibold text-[12px] ${
-                            trip.status === 'Completed'
-                              ? 'text-[#00A63E]'
-                              : trip.status === 'In Progress'
-                                ? 'text-[#F6921E]'
-                                : trip.status === 'Assigned'
-                                  ? 'text-[#1DAFA1]'
-                                  : 'text-[#FF0707]'
-                          }`}
+                          className={`font-semibold text-[12px] ${trip.status === 'Completed'
+                            ? 'text-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'text-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'text-[#1DAFA1]'
+                                : 'text-[#FF0707]'
+                            }`}
                         >
                           {trip.status}
                         </span>
@@ -341,7 +337,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
             <button
               onClick={handlePrev}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-full border border-gray-200 text-black hover:bg-gray-50 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="h-[24px] w-[24px] cursor-pointer" />
             </button>
@@ -359,11 +355,10 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${
-                        currentPage === pageNum
-                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                      }`}
+                      className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
+                        ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                        : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                        }`}
                     >
                       {pageNum}
                     </button>
@@ -382,7 +377,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
             <button
               onClick={handleNext}
               disabled={currentPage === totalPages || totalPages === 0}
-              className="p-1.5 rounded-full border border-gray-200 text-black hover:bg-gray-50 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="h-[24px] w-[24px] cursor-pointer" />
             </button>
@@ -394,6 +389,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
         isOpen={!!selectedRideId}
         onClose={() => setSelectedRideId(null)}
         trip={detailedRide}
+        viewMode="rider"
       />
     </div>
   );

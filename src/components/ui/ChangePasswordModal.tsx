@@ -60,7 +60,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-110 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-xl shadow-lg border border-[#DFE6E5] w-[648px] h-[520px] overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg border border-[#DFE6E5] w-[648px] max-h-[520px] overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-[#DFE6E5] flex items-start gap-4">
           <div className="w-[52px] h-[52px] bg-[#F9F9F9] rounded-full flex items-center justify-center shrink-0">
@@ -95,11 +95,10 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <input
                 type={showCurrent ? 'text' : 'password'}
                 name="currentPassword"
-                className={`w-full pl-10 pr-10 py-3 border rounded-md text-[14px] font-medium focus:outline-none transition-colors hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] ${
-                  formik.touched.currentPassword && formik.errors.currentPassword
-                    ? 'border-red-500'
-                    : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
-                }`}
+                className={`w-full pl-10 pr-10 py-3 border rounded-md text-[14px] font-medium focus:outline-none transition-colors hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] ${formik.touched.currentPassword && formik.errors.currentPassword
+                  ? 'border-red-500'
+                  : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
+                  }`}
                 placeholder="••••••••"
                 value={formik.values.currentPassword}
                 onChange={formik.handleChange}
@@ -130,11 +129,10 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <input
                 type={showNew ? 'text' : 'password'}
                 name="newPassword"
-                className={`w-full pl-10 pr-10 py-3 border rounded-md text-[14px] font-medium focus:outline-none transition-colors hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] ${
-                  formik.touched.newPassword && formik.errors.newPassword
-                    ? 'border-red-500'
-                    : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
-                }`}
+                className={`w-full pl-10 pr-10 py-3 border rounded-md text-[14px] font-medium focus:outline-none transition-colors hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] ${formik.touched.newPassword && formik.errors.newPassword
+                  ? 'border-red-500'
+                  : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
+                  }`}
                 placeholder="••••••••"
                 value={formik.values.newPassword}
                 onChange={formik.handleChange}
@@ -165,11 +163,10 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <input
                 type={showConfirm ? 'text' : 'password'}
                 name="confirmPassword"
-                className={`w-full pl-10 pr-10 py-3 border rounded-md text-[14px] font-medium focus:outline-none transition-colors hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] ${
-                  formik.touched.confirmPassword && formik.errors.confirmPassword
-                    ? 'border-red-500'
-                    : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
-                }`}
+                className={`w-full pl-10 pr-10 py-3 border rounded-md text-[14px] font-medium focus:outline-none transition-colors hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] ${formik.touched.confirmPassword && formik.errors.confirmPassword
+                  ? 'border-red-500'
+                  : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
+                  }`}
                 placeholder="••••••••"
                 value={formik.values.confirmPassword}
                 onChange={formik.handleChange}

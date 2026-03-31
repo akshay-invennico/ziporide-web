@@ -16,13 +16,25 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
     title: 'Riders',
     subtitle: 'View and manage rider accounts',
   },
+  [routes.RIDER_DETAILS]: {
+    title: 'Rider Details',
+    subtitle: 'Here\'s your hub for managing rider information and activity.',
+  },
   [routes.DRIVER]: {
     title: 'Drivers',
     subtitle: 'View and manage driver accounts',
   },
+  [routes.DRIVER_DETAILS]: {
+    title: 'Driver Details',
+    subtitle: 'Here\s your hub for managing Driver information and activity.',
+  },
   [routes.VERIFICATION]: {
     title: 'Verification Requests',
     subtitle: 'Review and take action on driver applications',
+  },
+  [routes.VERIFICATION_DETAILS]: {
+    title: 'Application Details',
+    subtitle: 'Review applications and manage driver profile.',
   },
   [routes.TRIPS]: {
     title: 'Trip History',
@@ -81,7 +93,15 @@ export default function Header() {
   }, []);
 
   const getPageTitle = () => {
-    const match = Object.entries(PAGE_TITLES).find(([path]) => location.pathname.startsWith(path));
+    // Sort keys by length descending to match more specific routes (like /details) before base routes
+    const sortedTitles = Object.entries(PAGE_TITLES).sort((a, b) => b[0].length - a[0].length);
+
+    const match = sortedTitles.find(([path]) => {
+      // If the path contains parameters (e.g., :id), match up to the parameter
+      const matchPath = path.includes('/:') ? path.split('/:')[0] : path;
+      return location.pathname.startsWith(matchPath);
+    });
+
     return match ? match[1] : { title: 'Admin Panel', subtitle: 'Manage your platform here.' };
   };
 

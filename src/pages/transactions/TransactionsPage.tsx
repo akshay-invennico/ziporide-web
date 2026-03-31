@@ -1,6 +1,6 @@
 import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
 
@@ -27,6 +27,23 @@ const TransactionsPage: React.FC = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setIsExportOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleOpenDetails = (txn: Transaction) => {
+    setSelectedTransaction(txn);
+    setIsModalOpen(true);
+  };
 
   const { exportCSV } = useExportTransactionsCSV();
   const { fetchAllTransactions, setIsExporting: setIsExportingPDF } = useExportTransactionsPDF();
@@ -112,7 +129,10 @@ const TransactionsPage: React.FC = () => {
         label: 'TRANSACTION ID',
         sortable: true,
         render: (txn) => (
-          <span className="font-medium text-[#1DAFA1] text-[14px] cursor-pointer hover:underline">
+          <span
+            onClick={() => handleOpenDetails(txn)}
+            className="font-medium text-[#1DAFA1] text-[14px] cursor-pointer hover:underline"
+          >
             {txn.id}
           </span>
         ),
@@ -139,8 +159,10 @@ const TransactionsPage: React.FC = () => {
         label: 'TIME & DATE',
         sortable: true,
         render: (txn) => (
-          <span className="text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
-            {txn.date} <span className="ml-2">{txn.time}</span>
+          <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap flex items-center gap-2">
+            {txn.date}
+            <span className="border-r border-[#DFE6E5] w-[3px] h-[20px] inline-block" />
+            <span>{txn.time}</span>
           </span>
         ),
       },
@@ -155,10 +177,7 @@ const TransactionsPage: React.FC = () => {
         label: 'ACTION',
         render: (txn) => (
           <button
-            onClick={() => {
-              setSelectedTransaction(txn);
-              setIsModalOpen(true);
-            }}
+            onClick={() => handleOpenDetails(txn)}
             className="flex items-center justify-center cursor-pointer"
           >
             <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px]" />
@@ -197,17 +216,17 @@ const TransactionsPage: React.FC = () => {
                     setParams((prev) => ({ ...prev, category: filter, page: 1 }));
                   }}
                   className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.category === filter
-                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                      : 'border-[#DFE6E5] text-[#4E616A]'
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A]'
                     }`}
                 >
                   {filter}
                 </button>
               ))}
             </div>
-            <div className="relative">
+            <div className="relative" ref={exportRef}>
               <button
-                onClick={() => setIsExportOpen(!isExportOpen)}
+                onClick={() => setIsExportOpen((prev) => !prev)}
                 className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A]"
               >
                 <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />

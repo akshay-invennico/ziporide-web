@@ -1,6 +1,6 @@
 import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
 
@@ -27,6 +27,18 @@ const SupportTicketsPage: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setIsExportOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const { exportCSV } = useExportSupportCSV();
   const { fetchAllTickets, setIsExporting: setIsExportingPDF } = useExportSupportPDF();
@@ -215,9 +227,9 @@ const SupportTicketsPage: React.FC = () => {
               ))}
             </div>
 
-            <div className="relative">
+            <div className="relative" ref={exportRef}>
               <button
-                onClick={() => setIsExportOpen(!isExportOpen)}
+                onClick={() => setIsExportOpen((prev) => !prev)}
                 className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A]"
               >
                 <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />

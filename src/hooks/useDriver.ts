@@ -308,11 +308,7 @@ export const mapBackendTripToFrontend = (t: RawRideData): TripRecord => {
   // Format Date and Time from rideTimestamps.bookedAt
   const bookedAt = t.rideTimestamps?.bookedAt;
   const dateStr = bookedAt
-    ? new Date(bookedAt).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
+    ? new Date(bookedAt).toISOString().split('T')[0]
     : 'N/A';
   const timeStr = bookedAt
     ? new Date(bookedAt).toLocaleTimeString('en-GB', {

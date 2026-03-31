@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useToast } from '@/context/useToast';
 
-import DocumentViewModal from '../../components/ui/DocumentViewModal';
+import DocumentViewerModal from '../../components/ui/DocumentViewerModal';
 import RejectDocumentModal from '../../components/ui/RejectDocumentModal';
 import RejectVerificationModal from '../../components/ui/RejectVerificationModal';
 import { useDriverDetails, useVerifyDriverDocument } from '../../hooks/useVerificationDriver';
@@ -238,7 +238,7 @@ const ApplicationDetailsPage = () => {
               <span className="text-[12px] text-[#4E616A] font-medium">Date of Birth</span>
               <span className="text-[14px] font-medium text-[#101828]">
                 {request.dateOfBirth
-                  ? new Date(request.dateOfBirth as string).toLocaleDateString()
+                  ? new Date(request.dateOfBirth as string).toISOString().split('T')[0]
                   : '-'}
               </span>
             </div>
@@ -253,7 +253,7 @@ const ApplicationDetailsPage = () => {
                 {request.consents?.acceptedAt || request.createdAt
                   ? new Date(
                       (request.consents?.acceptedAt || request.createdAt) as string,
-                    ).toLocaleDateString()
+                    ).toISOString().split('T')[0]
                   : '-'}
               </span>
             </div>
@@ -305,7 +305,7 @@ const ApplicationDetailsPage = () => {
               <span className="text-[14px] font-medium text-[#4E616A]">Expiry Date</span>
               <span className="text-[14px] font-medium text-[#000000]">
                 {request.licence?.expiryDate
-                  ? new Date(request.licence.expiryDate as string).toLocaleDateString()
+                  ? new Date(request.licence.expiryDate as string).toISOString().split('T')[0]
                   : '-'}
               </span>
             </div>
@@ -687,11 +687,11 @@ const ApplicationDetailsPage = () => {
         </div>
       </div>
 
-      <DocumentViewModal
+      <DocumentViewerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        documentTitle={currentDocumentName}
-        documentUrl={currentDocumentUrl}
+        documentName={currentDocumentName}
+        documentSrc={currentDocumentUrl}
       />
 
       <RejectDocumentModal

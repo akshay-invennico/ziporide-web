@@ -100,7 +100,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   };
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-[460px] h-[550px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 flex flex-col items-start overflow-hidden">
+    <div className="absolute right-0 top-full mt-2 w-[460px] h-[530px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 flex flex-col items-start overflow-hidden">
       <div className="p-5 w-full border-b border-[#DFE6E5]">
         <h3 className="font-semibold text-[#000000] text-[18px]">Filters</h3>
       </div>
@@ -249,18 +249,16 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
               <button
                 key={r.value}
                 onClick={() => handleRatingChange(r.value)}
-                className={`flex items-center cursor-pointer gap-1.5 px-3 py-2 border rounded-md text-[12px] font-medium transition-colors ${
-                  localFilters.rating === r.value
-                    ? 'bg-[#1DAFA1] text-white border-[#1DAFA1]'
-                    : 'bg-white text-[#000000] border-[#DFE6E5]'
-                }`}
+                className={`flex items-center cursor-pointer gap-1.5 px-3 py-2 border rounded-md text-[12px] font-medium transition-colors ${localFilters.rating === r.value
+                  ? 'bg-[#1DAFA1] text-white border-[#1DAFA1]'
+                  : 'bg-white text-[#000000] border-[#DFE6E5]'
+                  }`}
               >
                 <Star
-                  className={`w-4 h-4 ${
-                    localFilters.rating === r.value
-                      ? 'fill-white text-white'
-                      : 'fill-[#E9A90A] text-[#E9A90A]'
-                  }`}
+                  className={`w-4 h-4 ${localFilters.rating === r.value
+                    ? 'fill-white text-white'
+                    : 'fill-[#E9A90A] text-[#E9A90A]'
+                    }`}
                 />
                 {r.label}
               </button>
@@ -270,7 +268,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="p-5 cursor-pointer w-full border-t border-[#DFE6E5] flex items-center justify-between">
+      <div className="p-5  cursor-pointer w-[90%] mx-auto border-t border-[#DFE6E5] flex items-center justify-between">
         <button onClick={clearAll} className="text-[14px] font-medium text-[#000000]">
           Clear all
         </button>

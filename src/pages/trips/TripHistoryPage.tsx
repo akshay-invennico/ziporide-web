@@ -1,6 +1,6 @@
 import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
 import { useTrips, useCancelTrip, useExportTripsCSV, useExportTripsPDF } from '@/hooks/useTrips';
@@ -40,6 +40,18 @@ export default function TripHistoryPage() {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
   const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
+
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setIsExportDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const { trips, loading, totalPages, refetch } = useTrips(activeTab, currentPage, 10);
   const { cancelTrip, isCancelling } = useCancelTrip();
@@ -278,9 +290,9 @@ export default function TripHistoryPage() {
                 </button>
               ))}
             </div>
-            <div className="relative">
+            <div className="relative" ref={exportRef}>
               <button
-                onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
+                onClick={() => setIsExportDropdownOpen((prev) => !prev)}
                 className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center hover:bg-gray-50 transition-colors"
               >
                 <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />

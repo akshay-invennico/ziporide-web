@@ -134,11 +134,10 @@ export default function DriverTripHistoryTab() {
                             setPeriod(p);
                             setCurrentPage(1);
                           }}
-                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                            period === p
-                              ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                              : 'border-[#DFE6E5] text-[#4E616A]'
-                          }`}
+                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
+                            ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                            : 'border-[#DFE6E5] text-[#4E616A]'
+                            }`}
                         >
                           {p}
                         </button>
@@ -176,7 +175,7 @@ export default function DriverTripHistoryTab() {
                 >
                   {/* Trip ID */}
                   <td className="px-4 py-3">
-                    <span className="text-[14px] font-medium text-[#1DAFA1] hover:underline cursor-pointer">
+                    <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap cursor-pointer">
                       {trip.id}
                     </span>
                   </td>
@@ -188,7 +187,7 @@ export default function DriverTripHistoryTab() {
                         {trip.rider.initials}
                       </div>
                       <div>
-                        <p className="text-[14px] font-medium text-[#1DAFA1] leading-tight">
+                        <p className="text-[14px] font-medium text-[#1DAFA1] leading-tight text-nowrap">
                           {trip.rider.name}
                         </p>
                         <p className="text-[12px] text-[#4E616A] font-medium">{trip.rider.phone}</p>
@@ -262,7 +261,7 @@ export default function DriverTripHistoryTab() {
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="p-1.5 rounded-full border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft className="w-[20px] h-[20px]" />
           </button>
@@ -276,11 +275,10 @@ export default function DriverTripHistoryTab() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page as number)}
-                className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
-                  currentPage === page
-                    ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                    : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                }`}
+                className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
+                  ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                  : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+                  }`}
               >
                 {page}
               </button>
@@ -290,7 +288,7 @@ export default function DriverTripHistoryTab() {
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="p-1.5 rounded-full border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronRight className="w-[20px] h-[20px]" />
           </button>
@@ -302,6 +300,7 @@ export default function DriverTripHistoryTab() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         trip={selectedTrip}
+        viewMode="driver"
       />
     </div>
   );

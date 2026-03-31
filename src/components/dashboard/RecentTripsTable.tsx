@@ -73,7 +73,7 @@ export default function RecentTripsTable() {
                   className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
                 >
                   {/* Trip ID */}
-                  <td className="px-4 py-3.5 text-[#14B8A6] font-medium text-[14px]">{trip.id}</td>
+                  <td className="px-4 py-3.5 text-[#14B8A6] font-medium text-[14px] text-nowrap">{trip.id}</td>
 
                   {/* Rider */}
                   <td className="px-4 py-3.5">
@@ -82,7 +82,7 @@ export default function RecentTripsTable() {
                         {trip.rider.initials}
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-medium text-[#1DAFA1] text-[14px]">
+                        <span className="font-medium text-[#1DAFA1] text-[14px] text-nowrap">
                           {trip.rider.name}
                         </span>
                         <span className="text-[12px] font-medium text-[#4E616A]">
@@ -135,30 +135,28 @@ export default function RecentTripsTable() {
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2">
                       <div
-                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                          trip.status === 'Completed'
-                            ? 'bg-[#00A63E]'
-                            : trip.status === 'In Progress'
-                              ? 'bg-[#F6921E]'
-                              : trip.status === 'Assigned'
-                                ? 'bg-[#1DAFA1]'
-                                : trip.status === 'Cancelled'
-                                  ? 'bg-[#FF0707]'
-                                  : 'bg-[#6B7280]'
-                        }`}
+                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${trip.status === 'Completed'
+                          ? 'bg-[#00A63E]'
+                          : trip.status === 'In Progress'
+                            ? 'bg-[#F6921E]'
+                            : trip.status === 'Assigned'
+                              ? 'bg-[#1DAFA1]'
+                              : trip.status === 'Cancelled'
+                                ? 'bg-[#FF0707]'
+                                : 'bg-[#6B7280]'
+                          }`}
                       />
                       <span
-                        className={`font-semibold text-[12px] ${
-                          trip.status === 'Completed'
-                            ? 'text-[#00A63E]'
-                            : trip.status === 'In Progress'
-                              ? 'text-[#F6921E]'
-                              : trip.status === 'Assigned'
-                                ? 'text-[#1DAFA1]'
-                                : trip.status === 'Cancelled'
-                                  ? 'text-[#FF0707]'
-                                  : 'text-[#6B7280]'
-                        }`}
+                        className={`font-semibold text-[12px] ${trip.status === 'Completed'
+                          ? 'text-[#00A63E]'
+                          : trip.status === 'In Progress'
+                            ? 'text-[#F6921E]'
+                            : trip.status === 'Assigned'
+                              ? 'text-[#1DAFA1]'
+                              : trip.status === 'Cancelled'
+                                ? 'text-[#FF0707]'
+                                : 'text-[#6B7280]'
+                          }`}
                       >
                         {trip.status}
                       </span>
@@ -180,7 +178,7 @@ export default function RecentTripsTable() {
                         <img
                           src="/icons/dashboard/view.svg"
                           alt="view"
-                          className="w-[20px] h-[20px]"
+                          className="w-[22px] h-[22px]"
                         />
                       </button>
                       {trip.status !== 'Completed' && trip.status !== 'Cancelled' && (
@@ -188,7 +186,7 @@ export default function RecentTripsTable() {
                           <img
                             src="/icons/dashboard/cancel.svg"
                             alt="cancel"
-                            className="w-[20px] h-[20px]"
+                            className="w-[22px] h-[22px]"
                           />
                         </button>
                       )}

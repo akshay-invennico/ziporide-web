@@ -68,116 +68,60 @@ const CancelRideModal = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 animate-in fade-in duration-200"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) handleClose();
-      }}
-    >
-      <div className="bg-white rounded-xl w-[640px] h-[700px] overflow-hidden ">
-        {/* Body */}
-        <div className="p-6 flex flex-col gap-4">
-          {/* Title & Description */}
-          <div className="flex flex-col gap-3">
-            <h2 className="text-[18px] font-semibold text-[#000000]">{title}</h2>
-            <div className="flex flex-col gap-2">
-              <p className="text-[14px] font-medium text-[#4E616A] leading-relaxed">
-                {description}
-              </p>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 overflow-y-auto px-4">
+      <div
+        className="bg-white rounded-xl shadow-xl w-[640px] h-auto p-6 lg:p-8 relative my-8 animate-in fade-in zoom-in duration-200"
+      >
+        <h2 className="text-[18px] font-semibold text-[#000000] mb-2">{title}</h2>
+        <p className="text-[14px] text-[#4E616A] font-medium mb-3 leading-relaxed">{description}</p>
 
-          {/* Reasons Section */}
-          <div className="flex flex-col gap-3">
-            <span className="text-[16px] font-semibold text-[#000000]">{reasonLabel}</span>
-            <div className="flex flex-col gap-3.5">
-              {reasons.map((reason) => {
-                const isSelected = selectedReason === reason;
-                return (
-                  <label key={reason} className="flex items-center gap-3 cursor-pointer group">
-                    <div
-                      onClick={() => setSelectedReason(reason)}
-                      className={`w-[20px] h-[20px] rounded-md border-[1.5px] flex items-center justify-center shrink-0 transition-all ${
-                        isSelected
-                          ? 'bg-[#1DAFA1] border-[#1DAFA1]'
-                          : 'border-[#98A2B3] group-hover:border-[#1DAFA1]'
-                      }`}
-                    >
-                      {isSelected && (
-                        <svg
-                          width="12"
-                          height="10"
-                          viewBox="0 0 12 10"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1 5L4.5 8.5L11 1.5"
-                            stroke="white"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                    <span
-                      className={`text-[14px] select-none font-medium text-[#000000]`}
-                      onClick={() => setSelectedReason(reason)}
-                    >
-                      {reason}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+        <h3 className="text-[16px] font-semibold text-[#000000] mb-3">{reasonLabel}</h3>
 
-          {/* Details */}
-          {selectedReason === 'Other' && (
-            <div className="flex flex-col gap-2 animate-in slide-in-from-top-2 duration-300">
-              <div className="flex justify-between items-center">
-                <span className="text-[14px] font-medium text-[#4E616A]">Specify</span>
-                <span className="text-[12px] font-medium text-[#4E616A]">(Required)</span>
-              </div>
-              <textarea
-                rows={3}
-                placeholder="Please provide additional details."
-                value={details}
-                onChange={(e) => setDetails(e.target.value)}
-                className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] text-[#000000] placeholder-[#939999] resize-none focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all"
+        <div className="flex flex-col gap-3.5 mb-6">
+          {reasons.map((reason) => (
+            <label key={reason} className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="radio"
+                name="cancellationReason"
+                value={reason}
+                checked={selectedReason === reason}
+                onChange={(e) => setSelectedReason(e.target.value)}
+                className="w-[18px] h-[18px] border-[#4E616A] rounded-sm appearance-none checked:bg-[#20B2AA] checked:border-transparent relative checked:after:content-[''] checked:after:absolute checked:after:left-[6px] checked:after:top-[3px] checked:after:w-[5px] checked:after:h-[9px] checked:after:border-white checked:after:border-r-2 checked:after:border-b-2 checked:after:rotate-45 border cursor-pointer transition-all"
               />
-            </div>
-          )}
+              <span className="text-[14px] font-medium text-[#000000]">{reason}</span>
+            </label>
+          ))}
         </div>
 
-        {/* Footer */}
-        <div className="px-8 pb-2  flex items-center justify-end gap-6">
+        {selectedReason === 'Other' && (
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2 mt-2">
+              <label className="text-[14px] font-medium text-[#4E616A]">Specify</label>
+              <span className="text-[12px] font-medium text-[#4E616A]">(250 character limit)</span>
+            </div>
+            <textarea
+              placeholder="Please provide additional details."
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              className="w-full border border-[#DFE6E5] rounded-sm p-3 text-[14px] focus:outline-none focus:ring-1 focus:ring-[#20B2AA] focus:border-[#20B2AA] resize-none h-[66px] text-[#000000] placeholder:text-[#939999]"
+              maxLength={250}
+            ></textarea>
+          </div>
+        )}
+
+        <div className="flex items-center justify-end gap-6 mt-4">
           <button
             onClick={handleClose}
-            className="text-[14px] font-medium text-[#000000]  cursor-pointer"
+            className="text-[14px] font-medium cursor-pointer text-[#000000]"
           >
-            Go Back
+            Cancel
           </button>
           <button
             onClick={handleConfirm}
-            disabled={
-              !selectedReason || (selectedReason === 'Other' && !details.trim()) || isLoading
-            }
-            className={`px-8 py-3 rounded-sm text-[14px] font-medium text-white flex items-center gap-2 ${
-              selectedReason && (selectedReason !== 'Other' || details.trim()) && !isLoading
-                ? 'bg-[#FF0707]  cursor-pointer'
-                : 'bg-[#FF0707]/50 cursor-not-allowed'
-            }`}
+            disabled={!selectedReason || (selectedReason === 'Other' && !details.trim()) || isLoading}
+            className="px-6 py-2.5 bg-[#FF0707] cursor-pointer text-white rounded-sm text-[14px] font-medium "
           >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Please wait...</span>
-              </>
-            ) : (
-              confirmLabel
-            )}
+            {isLoading ? 'Processing...' : confirmLabel}
           </button>
         </div>
       </div>

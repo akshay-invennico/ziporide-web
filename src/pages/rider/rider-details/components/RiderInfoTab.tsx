@@ -81,7 +81,7 @@ export default function RiderInfoTab({ rider }: Props) {
               <p className="text-[12px] text-[#4E616A] font-medium mb-1">Joined on</p>
               <p className="text-[14px] font-medium text-[#101828]">
                 {rider.joinedOn || rider.createdAt
-                  ? new Date(rider.joinedOn || rider.createdAt || '').toLocaleDateString()
+                  ? new Date(rider.joinedOn || rider.createdAt || '').toLocaleDateString('en-CA')
                   : '-'}
               </p>
             </div>
