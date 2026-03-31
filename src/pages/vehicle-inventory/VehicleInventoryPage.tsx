@@ -2,21 +2,25 @@ import { Search } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/context/useToast';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useVehicleCategories } from '@/hooks/useVehicleCategories';
+import { useVehicles } from '@/hooks/useVehicles';
 import type { VehicleCategory } from '@/types/vehicle.types';
 
 import AddCategoryModal from '../../components/ui/AddCategoryModal';
 import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
-import { vehicleDatabaseData } from '../../data/VehicleDatabaseData';
 import type { VehicleDatabaseRow } from '../../data/VehicleDatabaseData';
 
 const VehicleInventoryPage: React.FC = () => {
   const {
     categories: vehicleCategories,
-    loading,
-    error,
+    loading: categoriesLoading,
+    isCreating,
+    isUpdating,
+    isRemoving,
+    error: categoriesError,
     updateCategory,
     createCategory,
     removeCategory,
@@ -34,19 +38,12 @@ const VehicleInventoryPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-  const filteredData = vehicleDatabaseData.filter((vehicle) => {
-    return (
-      vehicle.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vehicle.licencePlate.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vehicle.driver.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const currentData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
+  const {
+    vehicles: currentData,
+    loading: databaseLoading,
+    error: databaseError,
+    totalPages,
+  } = useVehicles(currentPage, itemsPerPage, searchQuery, activeTab === 'database');
 
   const getCategoryTheme = (category: string) => {
     switch (category) {
@@ -211,10 +208,12 @@ const VehicleInventoryPage: React.FC = () => {
           </div>
 
           {/* Grid of Cards */}
-          {loading ? (
-            <div className="flex justify-center items-center h-40">Loading...</div>
-          ) : error ? (
-            <div>Error: {error}</div>
+          {categoriesLoading ? (
+            <div className="flex justify-center items-center h-40">
+              <LoadingSpinner />
+            </div>
+          ) : categoriesError ? (
+            <div>Error: {categoriesError}</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vehicleCategories.map((cat) => (
@@ -228,10 +227,6 @@ const VehicleInventoryPage: React.FC = () => {
                         src={cat.categoryIcon}
                         alt={cat.name}
                         className="w-[130px] h-[130px] object-contain mb-4"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            'https://img.freepik.com/free-vector/white-sedan-car-isolated-white-background_1308-100223.jpg';
-                        }}
                       />
                     </div>
                     <div className="flex flex-col gap-1 ml-1 pt-1">
@@ -325,21 +320,30 @@ const VehicleInventoryPage: React.FC = () => {
             </div>
           </div>
 
-          <DataTable<VehicleDatabaseRow>
-            columns={vehicleColumns}
-            data={currentData}
-            rowKey={(v) => v.id}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            emptyText="No vehicles found matching your search."
-          />
+          {databaseLoading ? (
+            <div className="flex justify-center items-center h-40 border-t border-[#DFE6E5]">
+              <LoadingSpinner />
+            </div>
+          ) : databaseError ? (
+            <div className="p-4 text-red-500 border-t border-[#DFE6E5]">Error: {databaseError}</div>
+          ) : (
+            <DataTable<VehicleDatabaseRow>
+              columns={vehicleColumns}
+              data={currentData}
+              rowKey={(v) => v.id}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              emptyText="No vehicles found matching your search."
+            />
+          )}
         </div>
       )}
       <RemoveCategoryModal
         isOpen={isRemoveModalOpen}
         onClose={() => setIsRemoveModalOpen(false)}
         onConfirm={handleConfirmRemove}
+        isLoading={isRemoving}
       />
       <AddCategoryModal
         isOpen={isAddModalOpen}
@@ -348,6 +352,7 @@ const VehicleInventoryPage: React.FC = () => {
           setCategoryToEdit(null);
         }}
         initialData={categoryToEdit}
+        isLoading={categoryToEdit ? isUpdating : isCreating}
         onConfirm={async (values) => {
           let iconString = values.categoryIcon;
 

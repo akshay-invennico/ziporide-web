@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import LoadingSpinner from './LoadingSpinner';
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -139,9 +141,9 @@ export default function SuspendRiderModal({
               onConfirm(reason);
             }}
             disabled={loading}
-            className={`px-6 py-2.5 ${isSuspend ? 'bg-[#FF0707]' : 'bg-[#00A63E]'} cursor-pointer text-white rounded-sm text-[14px] font-medium disabled:opacity-50`}
+            className={`px-6 py-2.5 ${isSuspend ? 'bg-[#FF0707]' : 'bg-[#00A63E]'} cursor-pointer text-white rounded-sm text-[14px] font-medium disabled:opacity-50 flex items-center justify-center min-w-[150px]`}
           >
-            {loading ? 'Processing...' : confirmBtnText}
+            {loading ? <LoadingSpinner size={20} className="text-white" /> : confirmBtnText}
           </button>
         </div>
       </div>

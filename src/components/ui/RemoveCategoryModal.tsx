@@ -1,15 +1,19 @@
 import React from 'react';
 
+import LoadingSpinner from './LoadingSpinner';
+
 interface RemoveCategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  isLoading?: boolean;
 }
 
 const RemoveCategoryModal: React.FC<RemoveCategoryModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  isLoading = false,
 }) => {
   if (!isOpen) return null;
 
@@ -46,9 +50,10 @@ const RemoveCategoryModal: React.FC<RemoveCategoryModalProps> = ({
             </button>
             <button
               onClick={onConfirm}
-              className="px-6 py-2.5 rounded-sm text-[14px] font-medium text-white bg-[#FF0707]  cursor-pointer"
+              disabled={isLoading}
+              className="px-6 py-2.5 rounded-sm text-[14px] font-medium text-white bg-[#FF0707] cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[150px]"
             >
-              Remove Category
+              {isLoading ? <LoadingSpinner size={20} className="text-white" /> : 'Remove Category'}
             </button>
           </div>
         </div>

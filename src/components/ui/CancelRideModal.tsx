@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import LoadingSpinner from './LoadingSpinner';
+
 const CANCELLATION_REASONS = [
   'Rider requested cancellation via support',
   'Driver requested cancellation via support',
@@ -164,20 +166,13 @@ const CancelRideModal = ({
             disabled={
               !selectedReason || (selectedReason === 'Other' && !details.trim()) || isLoading
             }
-            className={`px-8 py-3 rounded-sm text-[14px] font-medium text-white flex items-center gap-2 ${
+            className={`px-8 py-3 rounded-sm text-[14px] font-medium text-white flex items-center justify-center min-w-[180px] ${
               selectedReason && (selectedReason !== 'Other' || details.trim()) && !isLoading
-                ? 'bg-[#FF0707]  cursor-pointer'
+                ? 'bg-[#FF0707] cursor-pointer'
                 : 'bg-[#FF0707]/50 cursor-not-allowed'
             }`}
           >
-            {isLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Please wait...</span>
-              </>
-            ) : (
-              confirmLabel
-            )}
+            {isLoading ? <LoadingSpinner size={20} className="text-white" /> : confirmLabel}
           </button>
         </div>
       </div>

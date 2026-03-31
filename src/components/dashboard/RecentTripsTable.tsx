@@ -5,6 +5,7 @@ import { useTrips, useCancelTrip } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 
 import CancelRideModal from '../ui/CancelRideModal';
+import LoadingSpinner from '../ui/LoadingSpinner';
 import TripDetailsModal from '../ui/TripDetailsModal';
 
 export default function RecentTripsTable() {
@@ -54,9 +55,8 @@ export default function RecentTripsTable() {
             {loading ? (
               <tr>
                 <td colSpan={8} className="px-4 py-10 text-center text-[#4E616A]">
-                  <div className="flex justify-center items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
-                    <span>Loading trips...</span>
+                  <div className="flex justify-center items-center">
+                    <LoadingSpinner />
                   </div>
                 </td>
               </tr>

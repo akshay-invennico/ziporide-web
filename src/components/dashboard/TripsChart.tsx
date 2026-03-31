@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useTripsOverTime } from '@/hooks/useDashboard';
 
 type FilterKey = 'Month' | 'Daily';
@@ -47,7 +48,7 @@ export default function TripsChart() {
       <div className="h-[280px] w-full mt-4 relative">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">
-            <div className="w-8 h-8 border-4 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
+            <LoadingSpinner />
           </div>
         )}
 

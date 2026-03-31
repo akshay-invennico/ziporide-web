@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useDriverEarnings } from '@/hooks/useDriver';
 
 // ── Custom Tooltip ────────────────────────────────────────────────────────────
@@ -85,8 +86,8 @@ export default function DriverEarningTab() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-10 text-[#1DAFA1]">
-        Loading earning report...
+      <div className="flex items-center justify-center py-10">
+        <LoadingSpinner />
       </div>
     );
   }

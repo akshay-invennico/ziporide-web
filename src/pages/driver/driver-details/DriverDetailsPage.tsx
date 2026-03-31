@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useDriverDetails, useUpdateDriverStatus } from '@/hooks/useDriver';
 import { usePermissions } from '@/hooks/usePermissions';
 import { routes } from '@/routes/routes';
@@ -38,7 +39,7 @@ export default function DriverDetailsPage() {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-white p-6 flex items-center justify-center">
-        <div className="text-[#1DAFA1] font-medium">Loading driver details...</div>
+        <LoadingSpinner />
       </div>
     );
   }
