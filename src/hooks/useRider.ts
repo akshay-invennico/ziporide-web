@@ -2,7 +2,15 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
-import type { Rider, RiderResponse, RiderDetailsResponse } from '@/types/rider.types';
+import type {
+  Rider,
+  RiderResponse,
+  RiderDetailsResponse,
+  RiderSummary,
+  RiderSummaryResponse,
+  SpendingTrendItem,
+  RiderSpendingTrendResponse,
+} from '@/types/rider.types';
 
 interface RiderFilters {
   status?: string;
@@ -189,6 +197,191 @@ export const useUpdateRiderStatus = () => {
   };
 
   return { updateStatus, isUpdating, error };
+};
+
+export const useRiderSummary = (riderId: string | undefined) => {
+  const [summary, setSummary] = useState<RiderSummary | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchSummary = useCallback(async () => {
+    if (!riderId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.get<RiderSummaryResponse>(API.RIDER_SUMMARY, {
+        params: { riderId },
+      });
+      if (response.data?.success) {
+        setSummary(response.data.data);
+      } else {
+        setError(response.data?.message || 'Failed to fetch summary');
+      }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to fetch summary');
+    } finally {
+      setLoading(false);
+    }
+  }, [riderId]);
+
+  useEffect(() => {
+    fetchSummary();
+  }, [fetchSummary]);
+
+  return { summary, loading, error, refetch: fetchSummary };
+};
+
+export const useRiderSpendingTrend = (riderId: string | undefined, type: string) => {
+  const [trend, setTrend] = useState<SpendingTrendItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTrend = useCallback(async () => {
+    if (!riderId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.get<RiderSpendingTrendResponse>(API.RIDER_SPENDING_TREND, {
+        params: { riderId, type },
+      });
+      if (response.data?.success) {
+        setTrend(response.data.data);
+      } else {
+        setError(response.data?.message || 'Failed to fetch trend');
+      }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to fetch trend');
+    } finally {
+      setLoading(false);
+    }
+  }, [riderId, type]);
+
+  useEffect(() => {
+    fetchTrend();
+  }, [fetchTrend]);
+
+  return { trend, loading, error, refetch: fetchTrend };
+};
+
+export const useExportRidersCSV = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportCSV = useCallback(async (filters: RiderFilters = {}) => {
+    setIsExporting(true);
+    try {
+      let allRiders: Rider[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number | undefined> = {
+          page: currentPage,
+          limit: 20,
+        };
+
+        if (filters.status && filters.status !== 'All') {
+          params.status = filters.status.toLowerCase();
+        }
+
+        const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
+        if (response.data && response.data.success) {
+          const results = response.data.data.results || [];
+          allRiders = [...allRiders, ...results];
+          totalPages = response.data.data.totalPages || 1;
+          currentPage++;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      if (allRiders.length > 0) {
+        const headers = [
+          'Rider ID',
+          'Name',
+          'Email',
+          'Phone',
+          'Total Trips',
+          'Total Spent (£)',
+          'Rating',
+          'Status',
+        ];
+        const rows = allRiders.map((rider) => [
+          rider.id,
+          rider.name,
+          rider.email || '',
+          rider.phone,
+          rider.totalTrips || 0,
+          (rider.totalSpent || 0).toFixed(2),
+          (rider.rating || 0).toFixed(1),
+          rider.status,
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute(
+          'download',
+          `Riders_Export_${new Date().toISOString().split('T')[0]}.csv`,
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      console.error('CSV Export failed:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
+  return { exportCSV, isExporting };
+};
+
+export const useExportRidersPDF = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const fetchAllRiders = useCallback(async (filters: RiderFilters = {}) => {
+    setIsExporting(true);
+    try {
+      let allRiders: Rider[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number | undefined> = {
+          page: currentPage,
+          limit: 20,
+        };
+
+        if (filters.status && filters.status !== 'All') {
+          params.status = filters.status.toLowerCase();
+        }
+
+        const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
+        if (response.data && response.data.success) {
+          const results = response.data.data.results || [];
+          allRiders = [...allRiders, ...results];
+          totalPages = response.data.data.totalPages || 1;
+          currentPage++;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      return allRiders;
+    } catch (err) {
+      console.error('Failed to fetch riders for PDF:', err);
+      return [];
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
+  return { fetchAllRiders, isExporting, setIsExporting };
 };
 
 // ── Use useTrips.ts for ride-related hooks ─────────────────────────

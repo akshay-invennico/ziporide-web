@@ -517,3 +517,184 @@ export const useTripDetails = (tripId: string | undefined) => {
 
   return { trip, loading, error, fetchDetails };
 };
+
+export const useExportDriversCSV = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportCSV = useCallback(async (filters: DriverFilters = {}) => {
+    setIsExporting(true);
+    try {
+      let allDrivers: Driver[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number | undefined> = {
+          page: currentPage,
+          limit: 20,
+        };
+
+        const hasAppliedFilters =
+          !!filters.status ||
+          (filters.minEarnings !== undefined && filters.minEarnings > 0) ||
+          (filters.maxEarnings !== undefined && filters.maxEarnings < 1000) ||
+          (filters.minTrips !== undefined && filters.minTrips > 0) ||
+          (filters.maxTrips !== undefined && filters.maxTrips < 500) ||
+          (filters.rating && filters.rating !== 'All');
+
+        if (hasAppliedFilters) {
+          if (filters.status) {
+            const s = filters.status.toLowerCase();
+            if (s === 'all') params.status = 'approvedDrivers';
+            else if (s === 'active' || s === 'approved') params.status = 'approved';
+            else if (s === 'suspended') params.status = 'suspended';
+          }
+          if (filters.minEarnings !== undefined && filters.minEarnings > 0)
+            params.minEarnings = filters.minEarnings;
+          if (filters.maxEarnings !== undefined && filters.maxEarnings < 1000)
+            params.maxEarnings = filters.maxEarnings;
+          if (filters.minTrips !== undefined && filters.minTrips > 0)
+            params.minTrips = filters.minTrips;
+          if (filters.maxTrips !== undefined && filters.maxTrips < 500)
+            params.maxTrips = filters.maxTrips;
+          if (filters.rating && filters.rating !== 'All') {
+            params.rating = String(filters.rating)
+              .toLowerCase()
+              .replace(/ & /g, '_')
+              .replace(/ /g, '_');
+          }
+        } else {
+          params.page = currentPage;
+          params.limit = 20;
+        }
+
+        const response = await apiClient.get<DriverResponse>(API.DRIVER, { params });
+        if (response.data && response.data.success) {
+          const results = response.data.data.results || [];
+          allDrivers = [...allDrivers, ...results];
+          totalPages = response.data.data.totalPages || 1;
+          currentPage++;
+          if (hasAppliedFilters) break;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      if (allDrivers.length > 0) {
+        const headers = [
+          'Driver ID',
+          'Name',
+          'Email',
+          'Phone',
+          'Total Trips',
+          'Total Earnings (£)',
+          'Rating',
+          'Status',
+        ];
+        const rows = allDrivers.map((driver) => [
+          driver.id || driver._id,
+          driver.name || driver.driverName,
+          driver.email || '',
+          driver.phone,
+          driver.totalTrips || 0,
+          (driver.totalEarnings || driver.totalEarned || 0).toFixed(2),
+          (driver.avgRating || driver.rating || 0).toFixed(1),
+          driver.status,
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute(
+          'download',
+          `Drivers_Export_${new Date().toISOString().split('T')[0]}.csv`,
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      console.error('CSV Export failed:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
+  return { exportCSV, isExporting };
+};
+
+export const useExportDriversPDF = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const fetchAllDrivers = useCallback(async (filters: DriverFilters = {}) => {
+    setIsExporting(true);
+    try {
+      let allDrivers: Driver[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number | undefined> = {
+          page: currentPage,
+          limit: 20,
+        };
+
+        const hasAppliedFilters =
+          !!filters.status ||
+          (filters.minEarnings !== undefined && filters.minEarnings > 0) ||
+          (filters.maxEarnings !== undefined && filters.maxEarnings < 1000) ||
+          (filters.minTrips !== undefined && filters.minTrips > 0) ||
+          (filters.maxTrips !== undefined && filters.maxTrips < 500) ||
+          (filters.rating && filters.rating !== 'All');
+
+        if (hasAppliedFilters) {
+          if (filters.status) {
+            const s = filters.status.toLowerCase();
+            if (s === 'all') params.status = 'approvedDrivers';
+            else if (s === 'active' || s === 'approved') params.status = 'approved';
+            else if (s === 'suspended') params.status = 'suspended';
+          }
+          if (filters.minEarnings !== undefined && filters.minEarnings > 0)
+            params.minEarnings = filters.minEarnings;
+          if (filters.maxEarnings !== undefined && filters.maxEarnings < 1000)
+            params.maxEarnings = filters.maxEarnings;
+          if (filters.minTrips !== undefined && filters.minTrips > 0)
+            params.minTrips = filters.minTrips;
+          if (filters.maxTrips !== undefined && filters.maxTrips < 500)
+            params.maxTrips = filters.maxTrips;
+          if (filters.rating && filters.rating !== 'All') {
+            params.rating = String(filters.rating)
+              .toLowerCase()
+              .replace(/ & /g, '_')
+              .replace(/ /g, '_');
+          }
+        } else {
+          params.page = currentPage;
+          params.limit = 20;
+        }
+
+        const response = await apiClient.get<DriverResponse>(API.DRIVER, { params });
+        if (response.data && response.data.success) {
+          const results = response.data.data.results || [];
+          allDrivers = [...allDrivers, ...results];
+          totalPages = response.data.data.totalPages || 1;
+          currentPage++;
+          if (hasAppliedFilters) break;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      return allDrivers;
+    } catch (err) {
+      console.error('Failed to fetch drivers for PDF:', err);
+      return [];
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
+  return { fetchAllDrivers, isExporting, setIsExporting };
+};

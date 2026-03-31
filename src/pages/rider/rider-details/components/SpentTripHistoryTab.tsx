@@ -10,12 +10,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import { useRiderSummary, useRiderSpendingTrend } from '@/hooks/useRider';
 import { useRiderTrips, useRideDetails } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 import type { Rider } from '@/types/rider.types';
 
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
-import { spendingData } from '../../../../data/RiderTripsData';
 
 interface Props {
   rider: Rider;
@@ -23,6 +23,7 @@ interface Props {
 
 export default function SpentTripHistoryTab({ rider }: Props) {
   const [trendFilter, setTrendFilter] = useState('Year');
+  const [tripsFilter, setTripsFilter] = useState('Year');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRideId, setSelectedRideId] = useState<string | null>(null);
   const itemsPerPage = 6;
@@ -31,11 +32,14 @@ export default function SpentTripHistoryTab({ rider }: Props) {
     trips: currentTrips,
     loading: tripsLoading,
     totalPages,
-  } = useRiderTrips(rider.id, trendFilter, currentPage, itemsPerPage);
+  } = useRiderTrips(rider.id, tripsFilter, currentPage, itemsPerPage);
 
-  const { trip: detailedRide, loading: detailsLoading } = useRideDetails(
-    selectedRideId || undefined,
-  );
+  const { trip: detailedRide } = useRideDetails(selectedRideId || undefined);
+
+  // New hooks for summary and trend
+  const { summary, loading: summaryLoading } = useRiderSummary(rider.id);
+  const apiType = trendFilter === 'Year' ? 'month' : 'daily';
+  const { trend: spendingTrend } = useRiderSpendingTrend(rider.id, apiType);
 
   // Pagination Handlers
   const handlePrev = () => {
@@ -73,7 +77,9 @@ export default function SpentTripHistoryTab({ rider }: Props) {
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between ">
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Trips</p>
-            <h3 className="text-[24px] font-bold text-[#101828]">{rider.totalTrips || 0}</h3>
+            <h3 className="text-[24px] font-bold text-[#101828]">
+              {summaryLoading ? '...' : summary?.totalTrips || 0}
+            </h3>
           </div>
           <img src="/icons/rider/card1.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
@@ -82,7 +88,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Spent</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              £{Number(rider.totalSpent || 0).toFixed(2)}
+              £{summaryLoading ? '...' : Number(summary?.totalSpent || 0).toFixed(2)}
             </h3>
           </div>
           <img src="/icons/rider/card2.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -91,7 +97,9 @@ export default function SpentTripHistoryTab({ rider }: Props) {
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between ">
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Average Trip Value</p>
-            <h3 className="text-[24px] font-bold text-[#101828]">£16.64</h3>
+            <h3 className="text-[24px] font-bold text-[#101828]">
+              £{summaryLoading ? '...' : Number(summary?.averageTripValue || 0).toFixed(2)}
+            </h3>
           </div>
           <img src="/icons/rider/card3.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
@@ -99,7 +107,9 @@ export default function SpentTripHistoryTab({ rider }: Props) {
         <div className="bg-white border border-[#DFE6E5] rounded-lg p-5 flex items-center justify-between">
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Cancellation Rate</p>
-            <h3 className="text-[24px] font-bold text-[#101828]">2.1%</h3>
+            <h3 className="text-[24px] font-bold text-[#101828]">
+              {summaryLoading ? '...' : (summary?.cancellationRate || 0).toFixed(1)}%
+            </h3>
           </div>
           <img src="/icons/rider/card4.svg" alt="card1" className="w-[58px] h-[58px]" />
         </div>
@@ -134,7 +144,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
 
         <div className="h-[300px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={spendingData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={spendingTrend} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSpent" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#20B2AA" stopOpacity={0.2} />
@@ -153,7 +163,9 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 500 }}
-                tickFormatter={(value: number) => (value > 0 ? `£${value / 1000}K` : '£0')}
+                tickFormatter={(value: number) =>
+                  value >= 1000 ? `£${value / 1000}K` : `£${value}`
+                }
               />
               <Tooltip
                 content={<CustomTooltip />}
@@ -181,9 +193,12 @@ export default function SpentTripHistoryTab({ rider }: Props) {
             {['Year', 'This Month', 'This Week'].map((filter) => (
               <button
                 key={filter}
-                onClick={() => setTrendFilter(filter)}
+                onClick={() => {
+                  setTripsFilter(filter);
+                  setCurrentPage(1); // Reset to page 1 on filter change
+                }}
                 className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                  trendFilter === filter
+                  tripsFilter === filter
                     ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                     : 'border-[#DFE6E5] text-[#4E616A] '
                 }`}
@@ -379,7 +394,6 @@ export default function SpentTripHistoryTab({ rider }: Props) {
         isOpen={!!selectedRideId}
         onClose={() => setSelectedRideId(null)}
         trip={detailedRide}
-        loading={detailsLoading}
       />
     </div>
   );

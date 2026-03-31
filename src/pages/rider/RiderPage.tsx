@@ -1,12 +1,19 @@
+import { pdf } from '@react-pdf/renderer';
 import { Search, Star } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useRiders, useUpdateRiderStatus } from '@/hooks/useRider';
+import {
+  useRiders,
+  useUpdateRiderStatus,
+  useExportRidersCSV,
+  useExportRidersPDF,
+} from '@/hooks/useRider';
 import type { Rider } from '@/types/rider.types';
 
+import RiderPDFDocument from '../../components/rider/RiderPDFDocument';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
@@ -44,6 +51,35 @@ const RiderPage = () => {
   const { updateStatus, isUpdating } = useUpdateRiderStatus();
   const { hasPermission } = usePermissions();
   const canManageRiders = hasPermission('riders.manage');
+
+  const { exportCSV } = useExportRidersCSV();
+  const { fetchAllRiders, setIsExporting: setIsExportingPDF } = useExportRidersPDF();
+
+  const handleExportCSV = async () => {
+    await exportCSV(filters);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const allRiders = await fetchAllRiders(filters);
+      if (allRiders && allRiders.length > 0) {
+        const blob = await pdf(<RiderPDFDocument riders={allRiders} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Riders_Export_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF Export failed:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
 
   const columns = useMemo<Column<Rider>[]>(
     () => [
@@ -211,7 +247,12 @@ const RiderPage = () => {
                 <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />
                 Export
               </button>
-              <ExportDropdown isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+              <ExportDropdown
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                onExportCSV={handleExportCSV}
+                onExportPDF={handleExportPDF}
+              />
             </div>
           </div>
         </div>

@@ -46,3 +46,28 @@ export interface RiderDetailsResponse {
     user: Rider;
   };
 }
+
+export interface RiderSummary {
+  totalTrips: number;
+  totalSpent: number;
+  averageTripValue: number;
+  cancellationRate: number;
+}
+
+export interface RiderSummaryResponse {
+  success: boolean;
+  message: string;
+  data: RiderSummary;
+}
+
+export interface SpendingTrendItem {
+  name: string;
+  spent: number;
+  rides: number;
+}
+
+export interface RiderSpendingTrendResponse {
+  success: boolean;
+  message: string;
+  data: SpendingTrendItem[];
+}

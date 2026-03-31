@@ -1,11 +1,14 @@
+import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
 import { useState, useMemo } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
-import { useTrips, useCancelTrip } from '@/hooks/useTrips';
+import { useTrips, useCancelTrip, useExportTripsCSV, useExportTripsPDF } from '@/hooks/useTrips';
 import { type TripStatus, type TripRecord } from '@/types/driver.types';
 
+import TripPDFDocument from '../../components/trips/TripPDFDocument';
 import CancelRideModal from '../../components/ui/CancelRideModal';
+import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TripDetailsModal from '../../components/ui/TripDetailsModal';
 
 type FilterTab = 'All' | TripStatus;
@@ -35,10 +38,39 @@ export default function TripHistoryPage() {
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
   const [isTripModalOpen, setIsTripModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
   const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
 
   const { trips, loading, totalPages, refetch } = useTrips(activeTab, currentPage, 10);
   const { cancelTrip, isCancelling } = useCancelTrip();
+  const { exportCSV } = useExportTripsCSV();
+  const { fetchAllTrips, setIsExporting: setIsExportingPDF } = useExportTripsPDF();
+
+  const handleExportCSV = async () => {
+    await exportCSV(activeTab);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const allTrips = await fetchAllTrips(activeTab);
+      if (allTrips && allTrips.length > 0) {
+        const blob = await pdf(<TripPDFDocument trips={allTrips} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Trips_Export_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF Export failed:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!search) return trips;
@@ -205,7 +237,7 @@ export default function TripHistoryPage() {
         },
       },
     ],
-    [STATUS_STYLES],
+    [],
   );
 
   return (
@@ -246,10 +278,21 @@ export default function TripHistoryPage() {
                 </button>
               ))}
             </div>
-            <button className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center">
-              <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />
-              Export
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
+                className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center hover:bg-gray-50 transition-colors"
+              >
+                <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />
+                Export
+              </button>
+              <ExportDropdown
+                isOpen={isExportDropdownOpen}
+                onClose={() => setIsExportDropdownOpen(false)}
+                onExportCSV={handleExportCSV}
+                onExportPDF={handleExportPDF}
+              />
+            </div>
           </div>
         </div>
 

@@ -14,7 +14,8 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
   const s = (t.status || '').toLowerCase();
   if (s === 'completed') statusLabel = 'Completed';
   else if (s === 'cancelled') statusLabel = 'Cancelled';
-  else if (['driver_arrived', 'started', 'arrived', 'in_progress', 'on_the_way'].includes(s)) {
+  else if (s === 'driver_allocated') statusLabel = 'Assigned';
+  else if (['driver_arrived', 'started', 'in_progress', 'on_the_way'].includes(s)) {
     statusLabel = 'In Progress';
   }
 
@@ -149,7 +150,8 @@ export const useTrips = (status?: string, page: number = 1, limit: number = 10) 
       };
 
       if (status && status !== 'All') {
-        params.status = status.toLowerCase().replace(/ /g, '_');
+        params.status =
+          status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
       }
 
       const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
@@ -331,3 +333,132 @@ export const useCancelTrip = () => {
 };
 
 export const useCancelRide = useCancelTrip;
+
+export const useExportTripsCSV = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportCSV = async (status?: string) => {
+    setIsExporting(true);
+    try {
+      let allMappedTrips: TripRecord[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number> = {
+          page: currentPage,
+          limit: 20,
+        };
+
+        if (status && status !== 'All') {
+          params.status =
+            status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
+        }
+
+        const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
+        if (response.data?.success) {
+          const results = response.data.data.results || [];
+          const mapped = results.map(mapBackendRideToTripRecord);
+          allMappedTrips = [...allMappedTrips, ...mapped];
+          totalPages = response.data.data.totalPages || 0;
+          currentPage++;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      if (allMappedTrips.length > 0) {
+        // Define CSV Headers
+        const headers = [
+          'Trip ID',
+          'Rider Name',
+          'Rider Phone',
+          'Driver Name',
+          'Driver Phone',
+          'Pickup Location',
+          'Destination',
+          'Amount (£)',
+          'Date',
+          'Time',
+          'Status',
+        ];
+
+        // Map data to rows
+        const rows = allMappedTrips.map((trip) => [
+          trip.id,
+          trip.rider.name,
+          trip.rider.phone,
+          trip.driver.name,
+          trip.driver.phone,
+          `"${trip.route.pickupLocation.replace(/"/g, '""')}"`,
+          `"${trip.route.destination.replace(/"/g, '""')}"`,
+          trip.amount.toFixed(2),
+          trip.date,
+          trip.time,
+          trip.status,
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Trips_Export_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return true;
+      }
+    } catch (err) {
+      console.error('CSV Export failed:', err);
+    } finally {
+      setIsExporting(false);
+    }
+    return false;
+  };
+
+  return { exportCSV, isExporting };
+};
+
+export const useExportTripsPDF = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const fetchAllTrips = async (status?: string) => {
+    try {
+      let allMappedTrips: TripRecord[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number> = {
+          page: currentPage,
+          limit: 20,
+        };
+
+        if (status && status !== 'All') {
+          params.status =
+            status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
+        }
+
+        const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
+        if (response.data?.success) {
+          const results = response.data.data.results || [];
+          const mapped = results.map(mapBackendRideToTripRecord);
+          allMappedTrips = [...allMappedTrips, ...mapped];
+          totalPages = response.data.data.totalPages || 0;
+          currentPage++;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      return allMappedTrips;
+    } catch (err) {
+      console.error('Failed to fetch trips for PDF:', err);
+    }
+    return [];
+  };
+
+  return { fetchAllTrips, isExporting, setIsExporting };
+};

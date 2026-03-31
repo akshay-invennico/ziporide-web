@@ -1,7 +1,7 @@
 import { X, Copy, Star } from 'lucide-react';
 import { useState } from 'react';
 
-import { useCancelRide } from '@/hooks/useTrips';
+import { useCancelRide, useTripDetails } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 
 import CancelRideModal from './CancelRideModal';
@@ -10,7 +10,6 @@ interface TripDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   trip: TripRecord | null;
-  loading?: boolean;
 }
 
 const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = {
@@ -20,13 +19,18 @@ const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = 
   Cancelled: { bg: 'bg-[#FFEEEE]', dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' },
 };
 
-const TripDetailsModal = ({ isOpen, onClose, trip, loading }: TripDetailsModalProps) => {
+const TripDetailsModal = ({ isOpen, onClose, trip: initialTrip }: TripDetailsModalProps) => {
+  const { trip: detailedTrip, loading: isFetchingDetails } = useTripDetails(
+    isOpen ? initialTrip?.rideId || initialTrip?.id : undefined,
+  );
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { cancelTrip: cancelRide, isCancelling } = useCancelRide();
 
+  const trip = detailedTrip || initialTrip;
+
   if (!isOpen) return null;
 
-  if (loading) {
+  if (isFetchingDetails) {
     return (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"

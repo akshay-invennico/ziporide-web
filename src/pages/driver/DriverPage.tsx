@@ -1,12 +1,19 @@
+import { pdf } from '@react-pdf/renderer';
 import { Search, Star } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
-import { useDrivers, useUpdateDriverStatus } from '@/hooks/useDriver';
+import {
+  useDrivers,
+  useUpdateDriverStatus,
+  useExportDriversCSV,
+  useExportDriversPDF,
+} from '@/hooks/useDriver';
 import { usePermissions } from '@/hooks/usePermissions';
 import type { Driver } from '@/types/driver.types';
 
+import DriverPDFDocument from '../../components/driver/DriverPDFDocument';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
@@ -44,6 +51,35 @@ const DriverPage = () => {
   const { updateStatus, isUpdating } = useUpdateDriverStatus();
   const { hasPermission } = usePermissions();
   const canManageDrivers = hasPermission('drivers.manage');
+
+  const { exportCSV } = useExportDriversCSV();
+  const { fetchAllDrivers, setIsExporting: setIsExportingPDF } = useExportDriversPDF();
+
+  const handleExportCSV = async () => {
+    await exportCSV(filters);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const allDrivers = await fetchAllDrivers(filters);
+      if (allDrivers && allDrivers.length > 0) {
+        const blob = await pdf(<DriverPDFDocument drivers={allDrivers} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Drivers_Export_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF Export failed:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
 
   const getDriverId = (driver: Driver) => (driver.id || driver._id || '') as string;
 
@@ -226,7 +262,12 @@ const DriverPage = () => {
                 <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />
                 Export
               </button>
-              <ExportDropdown isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+              <ExportDropdown
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                onExportCSV={handleExportCSV}
+                onExportPDF={handleExportPDF}
+              />
             </div>
           </div>
         </div>
