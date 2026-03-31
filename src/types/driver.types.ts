@@ -241,6 +241,8 @@ export interface DriverSubscriptionsResponse {
   };
 }
 
+export type TripStatus = 'Assigned' | 'In Progress' | 'Completed' | 'Cancelled';
+
 export interface RawRideData {
   id: string;
   rideNumber?: string;

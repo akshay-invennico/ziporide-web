@@ -1,11 +1,17 @@
+import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
 
+import TransactionPDFDocument from '../../components/transactions/TransactionPDFDocument';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
-import { useTransactions } from '../../hooks/useTransactions';
+import {
+  useTransactions,
+  useExportTransactionsCSV,
+  useExportTransactionsPDF,
+} from '../../hooks/useTransactions';
 import type { UseTransactionsParams } from '../../hooks/useTransactions';
 import type { Transaction } from '../../types/transaction.types';
 
@@ -21,6 +27,35 @@ const TransactionsPage: React.FC = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const { exportCSV } = useExportTransactionsCSV();
+  const { fetchAllTransactions, setIsExporting: setIsExportingPDF } = useExportTransactionsPDF();
+
+  const handleExportCSV = async () => {
+    await exportCSV(params);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const allTransactions = await fetchAllTransactions(params);
+      if (allTransactions && allTransactions.length > 0) {
+        const blob = await pdf(<TransactionPDFDocument transactions={allTransactions} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Transactions_Export_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF Export failed:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
 
   const formatAmount = (amount: number, type: string) => {
     const isPositive =
@@ -179,7 +214,12 @@ const TransactionsPage: React.FC = () => {
                 <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />
                 Export
               </button>
-              <ExportDropdown isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+              <ExportDropdown
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                onExportCSV={handleExportCSV}
+                onExportPDF={handleExportPDF}
+              />
             </div>
           </div>
         </div>

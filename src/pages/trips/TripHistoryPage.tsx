@@ -1,15 +1,15 @@
+import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
 import { useState, useMemo } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
+import { useTrips, useCancelTrip, useExportTripsCSV, useExportTripsPDF } from '@/hooks/useTrips';
+import { type TripStatus, type TripRecord } from '@/types/driver.types';
 
+import TripPDFDocument from '../../components/trips/TripPDFDocument';
+import CancelRideModal from '../../components/ui/CancelRideModal';
+import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TripDetailsModal from '../../components/ui/TripDetailsModal';
-import {
-  tripHistoryData,
-  TRIP_ITEMS_PER_PAGE,
-  type TripStatus,
-  type TripRecord,
-} from '../../data/TripHistoryData';
 
 type FilterTab = 'All' | TripStatus;
 
@@ -24,7 +24,7 @@ const STATUS_STYLES: Record<TripStatus, { dot: string; text: string }> = {
 
 const AvatarCell = ({ initials, bg = '#1DAFA1' }: { initials: string; bg?: string }) => (
   <div
-    className="w-[40px] h-[40px] rounded-full flex items-center justify-center text-white text-[18px] font-bold shrink-0"
+    className="w-[40px] h-[40px] rounded-full flex items-center justify-center text-white text-[16px] font-bold shrink-0"
     style={{ backgroundColor: bg }}
   >
     {initials}
@@ -37,27 +37,54 @@ export default function TripHistoryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
   const [isTripModalOpen, setIsTripModalOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
+  const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
+
+  const { trips, loading, totalPages, refetch } = useTrips(activeTab, currentPage, 10);
+  const { cancelTrip, isCancelling } = useCancelTrip();
+  const { exportCSV } = useExportTripsCSV();
+  const { fetchAllTrips, setIsExporting: setIsExportingPDF } = useExportTripsPDF();
+
+  const handleExportCSV = async () => {
+    await exportCSV(activeTab);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const allTrips = await fetchAllTrips(activeTab);
+      if (allTrips && allTrips.length > 0) {
+        const blob = await pdf(<TripPDFDocument trips={allTrips} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Trips_Export_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF Export failed:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
 
   const filtered = useMemo(() => {
-    return tripHistoryData.filter((trip) => {
-      const matchesTab = activeTab === 'All' || trip.status === activeTab;
-      const q = search.toLowerCase();
-      const matchesSearch =
-        !q ||
+    if (!search) return trips;
+    const q = search.toLowerCase();
+    return trips.filter((trip) => {
+      return (
         trip.id.toLowerCase().includes(q) ||
         trip.rider.name.toLowerCase().includes(q) ||
         trip.driver.name.toLowerCase().includes(q) ||
-        trip.route.from.toLowerCase().includes(q) ||
-        trip.route.to.toLowerCase().includes(q);
-      return matchesTab && matchesSearch;
+        trip.route.pickupLocation.toLowerCase().includes(q) ||
+        trip.route.destination.toLowerCase().includes(q)
+      );
     });
-  }, [activeTab, search]);
-
-  const totalPages = Math.ceil(filtered.length / TRIP_ITEMS_PER_PAGE);
-  const paginated = filtered.slice(
-    (currentPage - 1) * TRIP_ITEMS_PER_PAGE,
-    currentPage * TRIP_ITEMS_PER_PAGE,
-  );
+  }, [trips, search]);
 
   const handleTabChange = (tab: FilterTab) => {
     setActiveTab(tab);
@@ -87,7 +114,7 @@ export default function TripHistoryPage() {
         sortable: true,
         render: (trip) => (
           <div className="flex items-center gap-2.5">
-            <AvatarCell initials={trip.rider.avatar} />
+            <AvatarCell initials={trip.rider.initials} />
             <div className="flex flex-col">
               <span className="text-[14px] font-medium text-[#1DAFA1] whitespace-nowrap">
                 {trip.rider.name}
@@ -104,27 +131,17 @@ export default function TripHistoryPage() {
         render: (trip) => (
           <div className="flex items-center gap-2.5">
             <div className="w-[40px] h-[40px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
-              <img
-                src={trip.driver.avatar}
-                alt={trip.driver.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const t = e.currentTarget as HTMLImageElement;
-                  t.style.display = 'none';
-                  const parent = t.parentElement;
-                  if (parent) {
-                    parent.style.backgroundColor = '#1DAFA1';
-                    parent.innerText = trip.driver.name
-                      .split(' ')
-                      .map((w) => w[0])
-                      .join('')
-                      .slice(0, 2);
-                    parent.style.color = 'white';
-                    parent.style.fontSize = '18px';
-                    parent.style.fontWeight = '700';
-                  }
-                }}
-              />
+              {trip.driver.avatar ? (
+                <img
+                  src={trip.driver.avatar}
+                  alt={trip.driver.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#1DAFA1] text-white font-bold text-[18px]">
+                  {trip.driver.initials}
+                </div>
+              )}
             </div>
             <div className="flex flex-col">
               <span className="text-[14px] font-medium text-[#1DAFA1] whitespace-nowrap">
@@ -140,7 +157,8 @@ export default function TripHistoryPage() {
         label: 'ROUTE',
         render: (trip) => (
           <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap">
-            {trip.route.from} <span className="mx-1">→</span> {trip.route.to}
+            {trip.route.pickupLocation.split(',')[0]} <span className="mx-1">→</span>{' '}
+            {trip.route.destination.split(',')[0]}
           </span>
         ),
       },
@@ -171,7 +189,7 @@ export default function TripHistoryPage() {
         label: 'STATUS',
         sortable: true,
         render: (trip) => {
-          const style = STATUS_STYLES[trip.status];
+          const style = STATUS_STYLES[trip.status as TripStatus] || STATUS_STYLES.Assigned;
           return (
             <div className="flex items-center gap-1.5">
               <div className={`w-[6px] h-[6px] rounded-full shrink-0 ${style.dot}`} />
@@ -198,7 +216,15 @@ export default function TripHistoryPage() {
                 <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px]" />
               </button>
               {showCancel && (
-                <button className="cursor-pointer" title="Cancel">
+                <button
+                  className="cursor-pointer"
+                  title="Cancel"
+                  onClick={() => {
+                    setSelectedTrip(trip);
+                    setCancelMode(trip.status === 'In Progress' ? 'force-end' : 'cancel');
+                    setIsCancelModalOpen(true);
+                  }}
+                >
                   <img
                     src="/icons/dashboard/cancel.svg"
                     alt="cancel"
@@ -217,7 +243,6 @@ export default function TripHistoryPage() {
   return (
     <div className="w-full min-h-screen p-1 flex flex-col gap-4">
       <div className="bg-white rounded-lg border border-[#DFE6E5] overflow-hidden">
-        {/* Search + Filter Row */}
         <div className="p-4 border-b border-[#DFE6E5] flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="relative w-full sm:w-[300px]">
             <div className="absolute inset-y-0 left-0 pl-3 flex border-[#DFE6E5] rounded-sm items-center pointer-events-none">
@@ -253,23 +278,34 @@ export default function TripHistoryPage() {
                 </button>
               ))}
             </div>
-            <button className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center">
-              <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />
-              Export
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
+                className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center hover:bg-gray-50 transition-colors"
+              >
+                <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />
+                Export
+              </button>
+              <ExportDropdown
+                isOpen={isExportDropdownOpen}
+                onClose={() => setIsExportDropdownOpen(false)}
+                onExportCSV={handleExportCSV}
+                onExportPDF={handleExportPDF}
+              />
+            </div>
           </div>
         </div>
 
-        {/* DataTable */}
         <DataTable<TripRecord>
           columns={columns}
-          data={paginated}
+          data={filtered}
           rowKey={(trip) => trip.id}
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
           emptyText="No trips found."
           minHeight="400px"
+          loading={loading}
         />
       </div>
 
@@ -280,6 +316,29 @@ export default function TripHistoryPage() {
           setSelectedTrip(null);
         }}
         trip={selectedTrip}
+      />
+
+      <CancelRideModal
+        isOpen={isCancelModalOpen}
+        mode={cancelMode}
+        onClose={() => {
+          setIsCancelModalOpen(false);
+          setSelectedTrip(null);
+        }}
+        isLoading={isCancelling}
+        onConfirm={async (reason) => {
+          if (!selectedTrip) return;
+          try {
+            const success = await cancelTrip(selectedTrip.rideId || selectedTrip.id, reason);
+            if (success) {
+              setIsCancelModalOpen(false);
+              setSelectedTrip(null);
+              refetch();
+            }
+          } catch (err) {
+            console.error('Cancellation failed:', err);
+          }
+        }}
       />
     </div>
   );

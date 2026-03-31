@@ -9,6 +9,8 @@ export const API = {
   RIDERS: '/v1/riders',
   RIDER_DETAILS: (id: string) => `/v1/riders/${id}`,
   RIDER_BULK_STATUS: '/v1/riders/status',
+  RIDER_SUMMARY: '/v1/riders/summary',
+  RIDER_SPENDING_TREND: '/v1/riders/spending-trend',
 
   DRIVER: '/v1/driver',
   DRIVER_DETAILS: (id: string) => `/v1/driver/${id}`,

@@ -1,11 +1,17 @@
+import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
 
+import SupportPDFDocument from '../../components/support/SupportPDFDocument';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
-import { useSupportTickets } from '../../hooks/useSupportTickets';
+import {
+  useSupportTickets,
+  useExportSupportCSV,
+  useExportSupportPDF,
+} from '../../hooks/useSupportTickets';
 import type { UseSupportTicketsParams } from '../../hooks/useSupportTickets';
 import type { SupportTicket } from '../../types/support.types';
 
@@ -21,6 +27,35 @@ const SupportTicketsPage: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const { exportCSV } = useExportSupportCSV();
+  const { fetchAllTickets, setIsExporting: setIsExportingPDF } = useExportSupportPDF();
+
+  const handleExportCSV = async () => {
+    await exportCSV(params);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const allTickets = await fetchAllTickets(params);
+      if (allTickets && allTickets.length > 0) {
+        const blob = await pdf(<SupportPDFDocument tickets={allTickets} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Support_Export_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF Export failed:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     let dotColor = '';
@@ -169,10 +204,11 @@ const SupportTicketsPage: React.FC = () => {
                   onClick={() => {
                     setParams((prev) => ({ ...prev, status: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.status === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    params.status === filter
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                  }`}
                 >
                   {filter}
                 </button>
@@ -187,7 +223,12 @@ const SupportTicketsPage: React.FC = () => {
                 <img src="/icons/rider/export.svg" alt="export" className="w-[18px] h-[18px]" />
                 Export
               </button>
-              <ExportDropdown isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+              <ExportDropdown
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                onExportCSV={handleExportCSV}
+                onExportPDF={handleExportPDF}
+              />
             </div>
           </div>
         </div>

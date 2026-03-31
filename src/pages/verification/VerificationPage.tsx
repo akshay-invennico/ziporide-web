@@ -1,3 +1,4 @@
+import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -6,7 +7,12 @@ import DataTable, { type Column } from '@/components/ui/DataTable';
 import type { Driver } from '@/types/driver.types';
 
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
-import { useDrivers } from '../../hooks/useVerificationDriver';
+import VerificationPDFDocument from '../../components/verification/VerificationPDFDocument';
+import {
+  useDrivers,
+  useExportVerificationCSV,
+  useExportVerificationPDF,
+} from '../../hooks/useVerificationDriver';
 
 const getStatusColor = (status: string) => {
   const s = status?.charAt(0).toUpperCase() + status?.slice(1).toLowerCase();
@@ -48,6 +54,35 @@ const VerificationPage = () => {
     itemsPerPage,
     debouncedSearchQuery,
   );
+
+  const { exportCSV } = useExportVerificationCSV();
+  const { fetchAllDrivers, setIsExporting: setIsExportingPDF } = useExportVerificationPDF();
+
+  const handleExportCSV = async () => {
+    await exportCSV(filterStatus);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const allDrivers = await fetchAllDrivers(filterStatus);
+      if (allDrivers && allDrivers.length > 0) {
+        const blob = await pdf(<VerificationPDFDocument drivers={allDrivers} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Verification_Export_${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('PDF Export failed:', err);
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
 
   const currentData = drivers.filter((request) => {
     if (!searchQuery) return true;
@@ -261,7 +296,12 @@ const VerificationPage = () => {
                 <img src="/icons/rider/export.svg" alt="export" className="w-[20px] h-[20px]" />
                 Export
               </button>
-              <ExportDropdown isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+              <ExportDropdown
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                onExportCSV={handleExportCSV}
+                onExportPDF={handleExportPDF}
+              />
             </div>
           </div>
         </div>

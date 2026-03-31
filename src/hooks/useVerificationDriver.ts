@@ -207,3 +207,112 @@ export const usePendingDriverCount = () => {
 
   return { count, loading, refetch: fetchCount };
 };
+
+export const useExportVerificationCSV = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportCSV = useCallback(async (statusFilter?: string) => {
+    setIsExporting(true);
+    try {
+      let allDrivers: Driver[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number> = {
+          page: currentPage,
+          limit: 20,
+        };
+        if (statusFilter && statusFilter !== 'All') {
+          params.status = statusFilter.toLowerCase();
+        }
+
+        const response = await apiClient.get<DriverResponse>(API.DRIVER, { params });
+        if (response.data && response.data.success) {
+          const results = response.data.data?.results || response.data.data || [];
+          allDrivers = [...allDrivers, ...(Array.isArray(results) ? results : [])];
+          totalPages = response.data.data?.totalPages || 1;
+          currentPage++;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      if (allDrivers.length > 0) {
+        const headers = ['Driver ID', 'Name', 'Email', 'Phone', 'Applied On', 'Status', 'Reason'];
+        const rows = allDrivers.map((driver) => [
+          driver.id || driver._id,
+          driver.driverName || driver.name || 'Unknown',
+          driver.email || '',
+          driver.phone,
+          driver.appliedOn || driver.createdAt
+            ? new Date(driver.appliedOn || driver.createdAt!).toLocaleDateString()
+            : '-',
+          driver.status,
+          driver.reason || driver.rejectedReason || '',
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute(
+          'download',
+          `Verification_Export_${new Date().toISOString().split('T')[0]}.csv`,
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      console.error('CSV Export failed:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
+  return { exportCSV, isExporting };
+};
+
+export const useExportVerificationPDF = () => {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const fetchAllDrivers = useCallback(async (statusFilter?: string) => {
+    setIsExporting(true);
+    try {
+      let allDrivers: Driver[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const params: Record<string, string | number> = {
+          page: currentPage,
+          limit: 20,
+        };
+        if (statusFilter && statusFilter !== 'All') {
+          params.status = statusFilter.toLowerCase();
+        }
+
+        const response = await apiClient.get<DriverResponse>(API.DRIVER, { params });
+        if (response.data && response.data.success) {
+          const results = response.data.data?.results || response.data.data || [];
+          allDrivers = [...allDrivers, ...(Array.isArray(results) ? results : [])];
+          totalPages = response.data.data?.totalPages || 1;
+          currentPage++;
+        } else {
+          break;
+        }
+      } while (currentPage <= totalPages);
+
+      return allDrivers;
+    } catch (err) {
+      console.error('Failed to fetch drivers for PDF:', err);
+      return [];
+    } finally {
+      setIsExporting(false);
+    }
+  }, []);
+
+  return { fetchAllDrivers, isExporting, setIsExporting };
+};
