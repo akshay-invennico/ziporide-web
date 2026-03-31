@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useDriverSubscriptions } from '@/hooks/useDriver';
 
 const ITEMS_PER_PAGE = 12;
@@ -30,7 +31,7 @@ export default function DriverSubscriptionTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-10">
-        <div className="text-[#1DAFA1]">Loading subscription details...</div>
+        <LoadingSpinner />
       </div>
     );
   }

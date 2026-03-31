@@ -7,6 +7,9 @@ import type { VehicleCategory, VehicleCategoryResponse } from '@/types/vehicle.t
 export const useVehicleCategories = () => {
   const [categories, setCategories] = useState<VehicleCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [isRemoving, setIsRemoving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchCategories = useCallback(async () => {
@@ -44,6 +47,7 @@ export const useVehicleCategories = () => {
 
   const updateCategory = useCallback(
     async (id: string, payload: Partial<VehicleCategory>) => {
+      setIsUpdating(true);
       try {
         const apiPayload = {
           ...(payload.name !== undefined && { name: payload.name }),
@@ -59,6 +63,8 @@ export const useVehicleCategories = () => {
       } catch (err: unknown) {
         const error = err as Error;
         setError(error.message || 'Failed to update category');
+      } finally {
+        setIsUpdating(false);
       }
     },
     [fetchCategories],
@@ -66,6 +72,7 @@ export const useVehicleCategories = () => {
 
   const createCategory = useCallback(
     async (payload: Partial<VehicleCategory>) => {
+      setIsCreating(true);
       try {
         const apiPayload = {
           ...(payload.name !== undefined && { name: payload.name }),
@@ -82,6 +89,8 @@ export const useVehicleCategories = () => {
         const error = err as Error;
         setError(error.message || 'Failed to create category');
         throw error;
+      } finally {
+        setIsCreating(false);
       }
     },
     [fetchCategories],
@@ -89,6 +98,7 @@ export const useVehicleCategories = () => {
 
   const removeCategory = useCallback(
     async (id: string) => {
+      setIsRemoving(true);
       try {
         await apiClient.delete(API.REMOVE_CATEGORY(id));
         fetchCategories();
@@ -96,6 +106,8 @@ export const useVehicleCategories = () => {
         const error = err as Error;
         setError(error.message || 'Failed to remove category');
         throw error;
+      } finally {
+        setIsRemoving(false);
       }
     },
     [fetchCategories],
@@ -108,6 +120,9 @@ export const useVehicleCategories = () => {
   return {
     categories,
     loading,
+    isCreating,
+    isUpdating,
+    isRemoving,
     error,
     refetch: fetchCategories,
     updateCategory,

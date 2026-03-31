@@ -5,6 +5,8 @@ import * as Yup from 'yup';
 
 import type { VehicleCategory } from '@/types/vehicle.types';
 
+import LoadingSpinner from './LoadingSpinner';
+
 interface AddCategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,6 +20,7 @@ interface AddCategoryModalProps {
     categoryIcon: File | string | null;
   }) => void;
   initialData?: VehicleCategory | null;
+  isLoading?: boolean;
 }
 
 const InputWrapper = ({
@@ -130,6 +133,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
   onClose,
   onConfirm,
   initialData,
+  isLoading = false,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isEditing = !!initialData;
@@ -176,6 +180,12 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
       }
     },
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      formik.resetForm();
+    }
+  }, [isOpen, formik]);
 
   // Derived state to show a preview
   const previewUrl =
@@ -388,9 +398,16 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
             </button>
             <button
               onClick={() => formik.handleSubmit()}
-              className="px-6 py-2.5 rounded-md text-[14px] font-medium text-white bg-[#1DAFA1] cursor-pointer"
+              disabled={isLoading}
+              className="px-6 py-2.5 rounded-md text-[14px] font-medium text-white bg-[#1DAFA1] cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
             >
-              {isEditing ? 'Update Category' : 'Create Category'}
+              {isLoading ? (
+                <LoadingSpinner size={20} className="text-white" />
+              ) : isEditing ? (
+                'Update Category'
+              ) : (
+                'Create Category'
+              )}
             </button>
           </div>
         </div>

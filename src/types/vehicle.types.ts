@@ -32,3 +32,37 @@ export interface VehicleCategoryResponse {
     totalResults: number;
   };
 }
+
+export interface ApiVehicle {
+  _id: string;
+  vehicle: {
+    make: string;
+    model: string;
+    year: number;
+    color?: string;
+    licensePlate: string;
+    type: string;
+    category: string | null;
+  };
+  driver: {
+    _id: string;
+    name: string;
+    phone: string;
+    profilePhotoUrl?: string;
+  };
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VehiclesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    results: ApiVehicle[];
+    page: number;
+    limit: number;
+    totalPages: number;
+    totalResults: number;
+  };
+}

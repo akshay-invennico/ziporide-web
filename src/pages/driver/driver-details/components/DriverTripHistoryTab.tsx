@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useDriverTrips, useTripDetails } from '@/hooks/useDriver';
 import type { TripRecord } from '@/types/driver.types';
 
+import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 
 const ITEMS_PER_PAGE = 12;
@@ -104,8 +105,8 @@ export default function DriverTripHistoryTab() {
 
   if (loading && trips.length === 0) {
     return (
-      <div className="flex items-center justify-center py-10 text-[#1DAFA1]">
-        Loading trip history...
+      <div className="flex items-center justify-center py-10">
+        <LoadingSpinner />
       </div>
     );
   }
@@ -242,7 +243,7 @@ export default function DriverTripHistoryTab() {
                       className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1] cursor-pointer disabled:opacity-50"
                     >
                       {loadingTripId === (trip.rideId || trip.id) ? (
-                        <div className="w-5 h-5 border-2 border-[#1DAFA1] border-t-transparent rounded-full animate-spin" />
+                        <LoadingSpinner size={20} />
                       ) : (
                         <>
                           <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />

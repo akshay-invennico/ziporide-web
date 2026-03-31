@@ -1,7 +1,8 @@
-import { CheckCircle2, XCircle, X, Check, ArrowLeft, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, X, Check, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/context/useToast';
 
 import DocumentViewModal from '../../components/ui/DocumentViewModal';
@@ -66,7 +67,7 @@ const ApplicationDetailsPage = () => {
   if (loading) {
     return (
       <div className="w-full min-h-screen p-1 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#1DAFA1]" />
+        <LoadingSpinner />
       </div>
     );
   }

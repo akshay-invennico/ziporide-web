@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useAuthData } from '@/hooks/useAuthData';
 import { routes } from '@/routes/routes';
 
@@ -134,9 +135,9 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Logging in...' : 'Log in'}
+            {isLoading ? <LoadingSpinner size={20} className="text-white" /> : 'Log in'}
           </button>
         </form>
 

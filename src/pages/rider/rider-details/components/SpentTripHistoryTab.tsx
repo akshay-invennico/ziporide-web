@@ -15,6 +15,7 @@ import { useRiderTrips, useRideDetails } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 import type { Rider } from '@/types/rider.types';
 
+import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 
 interface Props {
@@ -78,7 +79,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Trips</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              {summaryLoading ? '...' : summary?.totalTrips || 0}
+              {summaryLoading ? <LoadingSpinner size={20} /> : summary?.totalTrips || 0}
             </h3>
           </div>
           <img src="/icons/rider/card1.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -88,7 +89,12 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Spent</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              £{summaryLoading ? '...' : Number(summary?.totalSpent || 0).toFixed(2)}
+              £
+              {summaryLoading ? (
+                <LoadingSpinner size={20} />
+              ) : (
+                Number(summary?.totalSpent || 0).toFixed(2)
+              )}
             </h3>
           </div>
           <img src="/icons/rider/card2.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -98,7 +104,12 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Average Trip Value</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              £{summaryLoading ? '...' : Number(summary?.averageTripValue || 0).toFixed(2)}
+              £
+              {summaryLoading ? (
+                <LoadingSpinner size={20} />
+              ) : (
+                Number(summary?.averageTripValue || 0).toFixed(2)
+              )}
             </h3>
           </div>
           <img src="/icons/rider/card3.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -108,7 +119,12 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Cancellation Rate</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              {summaryLoading ? '...' : (summary?.cancellationRate || 0).toFixed(1)}%
+              {summaryLoading ? (
+                <LoadingSpinner size={20} />
+              ) : (
+                (summary?.cancellationRate || 0).toFixed(1)
+              )}
+              %
             </h3>
           </div>
           <img src="/icons/rider/card4.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -233,9 +249,8 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               {tripsLoading ? (
                 <tr>
                   <td colSpan={8} className="p-10 text-center text-[#4E616A]">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-8 h-8 border-4 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
-                      <span>Loading trips...</span>
+                    <div className="flex flex-col items-center justify-center">
+                      <LoadingSpinner />
                     </div>
                   </td>
                 </tr>

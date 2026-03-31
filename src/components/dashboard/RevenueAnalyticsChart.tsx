@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useRevenueAnalytics } from '@/hooks/useDashboard';
 
 type FilterKey = 'Month' | 'Daily';
@@ -72,7 +73,7 @@ export default function RevenueAnalyticsChart() {
       <div className="h-[300px] w-full relative">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">
-            <div className="w-8 h-8 border-4 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
+            <LoadingSpinner />
           </div>
         )}
 
