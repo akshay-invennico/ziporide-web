@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useDriverDetails, useUpdateDriverStatus } from '@/hooks/useDriver';
-import { usePermissions } from '@/hooks/usePermissions';
 import { routes } from '@/routes/routes';
 
 import SuspendRiderModal from '../../../components/ui/SuspendRiderModal';
@@ -33,8 +32,6 @@ export default function DriverDetailsPage() {
 
   const { driver, loading, error, refetch } = useDriverDetails(id);
   const { updateStatus, isUpdating } = useUpdateDriverStatus();
-  const { hasPermission } = usePermissions();
-  const canManageDrivers = hasPermission('drivers.manage');
 
   if (loading) {
     return (
@@ -111,7 +108,7 @@ export default function DriverDetailsPage() {
       </div>
 
       {/* Status Update Button */}
-      {activeTab === 'info' && canManageDrivers && (
+      {activeTab === 'info' && (
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}

@@ -100,7 +100,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   };
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-[460px] h-[550px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 flex flex-col items-start overflow-hidden">
+    <div className="absolute right-0 top-full mt-2 w-[460px] h-[530px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 flex flex-col items-start overflow-hidden">
       <div className="p-5 w-full border-b border-[#DFE6E5]">
         <h3 className="font-semibold text-[#000000] text-[18px]">Filters</h3>
       </div>
@@ -270,7 +270,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="p-5 cursor-pointer w-full border-t border-[#DFE6E5] flex items-center justify-between">
+      <div className="p-5  cursor-pointer w-[90%] mx-auto border-t border-[#DFE6E5] flex items-center justify-between">
         <button onClick={clearAll} className="text-[14px] font-medium text-[#000000]">
           Clear all
         </button>

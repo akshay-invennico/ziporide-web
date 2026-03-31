@@ -463,7 +463,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                           {category.label}
                         </span>
                       </div>
-                      <div className="space-y-3 pl-1">
+                      <div className="space-y-4">
                         {category.permissions.map((permission) => {
                           const isSelected = formik.values.permissions.includes(permission.id);
                           return (

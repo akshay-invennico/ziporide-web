@@ -1,6 +1,6 @@
 import { pdf } from '@react-pdf/renderer';
 import { Search, Star } from 'lucide-react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
@@ -24,6 +24,22 @@ const RiderPage = () => {
   const itemsPerPage = 10;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const filterRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setIsFilterOpen(false);
+      }
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setIsExportOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const [filters, setFilters] = useState<FilterType>({
     status: 'All',
@@ -170,30 +186,37 @@ const RiderPage = () => {
         label: 'ACTION',
         render: (rider) => (
           <div className="flex items-center gap-3">
-            <Link to={`/rider/details/${rider.id}`} className="cursor-pointer" title="View Rider">
-              <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px]" />
+            <Link
+              to={`/rider/details/${rider.id}`}
+              className="shrink-0 cursor-pointer"
+              title="View Rider"
+            >
+              <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px] shrink-0" />
             </Link>
-            {canManageRiders && (
+            {rider.status?.toLowerCase() === 'active' && (
               <button
                 onClick={() => setSuspendedRiderId(rider.id)}
-                className="cursor-pointer"
-                title={
-                  rider.status?.toLowerCase() === 'suspended' ? 'Reactivate Rider' : 'Suspend Rider'
-                }
+                className="shrink-0 cursor-pointer"
+                title="Suspend Rider"
               >
-                {rider.status?.toLowerCase() === 'suspended' ? (
-                  <img
-                    src="/icons/driver/greenUser.svg"
-                    alt="reactivate"
-                    className="w-[22px] h-[22px]"
-                  />
-                ) : (
-                  <img
-                    src="/icons/driver/redUser.svg"
-                    alt="suspend"
-                    className="w-[22px] h-[22px]"
-                  />
-                )}
+                <img
+                  src="/icons/driver/redUser.svg"
+                  alt="suspend"
+                  className="w-[24px] h-[24px] shrink-0"
+                />
+              </button>
+            )}
+            {rider.status?.toLowerCase() === 'suspended' && (
+              <button
+                onClick={() => setSuspendedRiderId(rider.id)}
+                className="shrink-0 cursor-pointer"
+                title="Reactivate Rider"
+              >
+                <img
+                  src="/icons/driver/greenUser.svg"
+                  alt="reactivate"
+                  className="w-[24px] h-[24px] shrink-0"
+                />
               </button>
             )}
           </div>
@@ -224,9 +247,12 @@ const RiderPage = () => {
             />
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto relative">
-            <div className="relative">
+            <div className="relative" ref={filterRef}>
               <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                onClick={() => {
+                  setIsFilterOpen((prev) => !prev);
+                  setIsExportOpen(false);
+                }}
                 className="flex cursor-pointer items-center gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center"
               >
                 <img src="/icons/rider/filters.svg" alt="filters" className="w-[22px] h-[22px]" />
@@ -239,9 +265,12 @@ const RiderPage = () => {
                 setFilters={setFilters}
               />
             </div>
-            <div className="relative">
+            <div className="relative" ref={exportRef}>
               <button
-                onClick={() => setIsExportOpen(!isExportOpen)}
+                onClick={() => {
+                  setIsExportOpen((prev) => !prev);
+                  setIsFilterOpen(false);
+                }}
                 className="flex cursor-pointer items-center gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center"
               >
                 <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />

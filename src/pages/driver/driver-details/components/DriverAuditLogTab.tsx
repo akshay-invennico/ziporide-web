@@ -74,17 +74,17 @@ export default function DriverAuditLogTab() {
       <div className="border border-[#DFE6E5] rounded-lg p-6">
         <h3 className="text-[20px] font-semibold text-[#000000] mb-4">Activity Timeline</h3>
 
-        <div className="flex flex-col border-t border-[#DFE6E5] ">
+        <div className="flex flex-col border-t border-[#DFE6E5] mb-2 ">
           {timelineData.map((item, index) => {
             const isLast = index === timelineData.length - 1;
             const isSystem = item.actor === 'System';
 
             return (
-              <div key={item.id} className="flex gap-5 mt-5">
+              <div key={item.id} className="flex gap-3  mt-2">
                 {/* Timeline Column */}
                 <div className="flex flex-col items-center">
                   {/* Teal circle dot */}
-                  <div className="w-[18px] h-[18px] rounded-full border-[2.5px] border-[#1DAFA1] bg-white shrink-0 z-10 mt-0.5" />
+                  <div className="w-[14px] h-[14px] rounded-full border-[2.5px] border-[#1DAFA1] bg-white shrink-0 z-10 mt-0.5" />
                   {/* Connecting line */}
                   {!isLast && <div className="w-px flex-1 bg-[#DFE6E5] my-1" />}
                 </div>

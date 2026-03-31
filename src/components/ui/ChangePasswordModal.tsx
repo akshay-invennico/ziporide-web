@@ -60,7 +60,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-110 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-xl shadow-lg border border-[#DFE6E5] w-[648px] h-[520px] overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg border border-[#DFE6E5] w-[648px] max-h-[520px] overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-[#DFE6E5] flex items-start gap-4">
           <div className="w-[52px] h-[52px] bg-[#F9F9F9] rounded-full flex items-center justify-center shrink-0">

@@ -21,8 +21,6 @@ export default function RiderDetailsPage() {
 
   const { rider, loading, error, refetch } = useRiderDetails(id);
   const { updateStatus, isUpdating } = useUpdateRiderStatus();
-  const { hasPermission } = usePermissions();
-  const canManageRiders = hasPermission('riders.manage');
 
   if (loading) {
     return (
@@ -84,7 +82,7 @@ export default function RiderDetailsPage() {
         {activeTab === 'timeline' && <ActivityTimelineTab />}
       </div>
 
-      {activeTab === 'info' && canManageRiders && (
+      {activeTab === 'info' && (
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}

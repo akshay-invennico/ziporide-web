@@ -120,14 +120,14 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
             {ticket.status === 'open' && (
               <button
                 onClick={() => onStatusChange?.(ticket.ticketId, 'checking')}
-                className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer transition-colors hover:bg-[#EEFFFD]"
+                className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer "
               >
                 Mark as Checking
               </button>
             )}
             <button
               onClick={() => onStatusChange?.(ticket.ticketId, 'resolved')}
-              className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer transition-colors hover:bg-[#EEFFFD]"
+              className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer"
             >
               Mark as Resolved
             </button>

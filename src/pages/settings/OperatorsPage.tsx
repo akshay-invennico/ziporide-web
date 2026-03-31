@@ -114,7 +114,9 @@ const OperatorsPage = () => {
         label: 'ID',
         sortable: true,
         render: (row) => (
-          <span className="text-[14px] font-medium text-[#1DAFA1]">{row.operatorId}</span>
+          <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap">
+            {row.operatorId}
+          </span>
         ),
       },
       {
@@ -144,7 +146,7 @@ const OperatorsPage = () => {
         sortable: true,
         render: (row) => (
           <span
-            className={`px-3 py-2 rounded-full text-[12px] font-semibold ${ROLE_STYLES[row.role] || 'bg-gray-100 text-gray-600'}`}
+            className={`px-6 py-2 rounded-full text-[12px] font-semibold text-nowrap ${ROLE_STYLES[row.role] || 'bg-gray-100 text-gray-600'}`}
           >
             {ROLE_LABELS[row.role] || row.role}
           </span>

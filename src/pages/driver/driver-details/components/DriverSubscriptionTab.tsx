@@ -51,13 +51,17 @@ export default function DriverSubscriptionTab() {
     currentPage * ITEMS_PER_PAGE,
   );
 
+  // ✅ Updated formatDate (YYYY-MM-DD)
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'N/A';
-    return new Date(dateStr).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'numeric',
-      year: 'numeric',
-    });
+
+    const d = new Date(dateStr);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   };
 
   const getPageNumbers = () => {
@@ -95,10 +99,9 @@ export default function DriverSubscriptionTab() {
               minHeight: '152px',
               borderRadius: '12px',
               padding: '18px 20px',
+
               background:
-                'linear-gradient(145deg, #1DAFA1 0%, #29b89a 35%, #d4880a 80%, #e09010 100%)',
-              border: '1.5px solid rgba(255,255,255,0.18)',
-              boxShadow: '0 4px 24px 0 rgba(29,175,161,0.18)',
+                'linear-gradient(to bottom, #1DAFA1 0%, #29b89a 35%, #d4880a 100%, #FD8800 100%)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -130,13 +133,16 @@ export default function DriverSubscriptionTab() {
                     {currentSubscription ? 'Zipo Subscription' : 'No Active Plan'}
                   </p>
                   <p className="text-white text-[12px] font-medium m-0 mt-0.5">
-                    Subscribe on : {formatDate(currentSubscription?.subscribedOn)}
+                    Subscribe on :{' '}
+                    {currentSubscription?.subscribedOn
+                      ? new Date(currentSubscription.subscribedOn).toISOString().split('T')[0]
+                      : '-'}
                   </p>
                 </div>
               </div>
               {currentSubscription && (
                 <span
-                  className="text-white text-[12px] font-semibold px-3 py-1 rounded-full shrink-0 uppercase"
+                  className="text-white text-[12px] font-semibold px-3 py-1 rounded-full shrink-0 first-letter:uppercase"
                   style={{ background: '#F6921E', backdropFilter: 'blur(4px)' }}
                 >
                   {currentSubscription.status}
@@ -318,7 +324,7 @@ export default function DriverSubscriptionTab() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page as number)}
-                  className={`min-w-[32px] h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
+                  className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
                     currentPage === page
                       ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
                       : 'text-[#4E616A] border-transparent hover:bg-gray-50'
@@ -332,7 +338,7 @@ export default function DriverSubscriptionTab() {
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-full border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-full cursor-pointer border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-[20px] h-[20px]" />
             </button>

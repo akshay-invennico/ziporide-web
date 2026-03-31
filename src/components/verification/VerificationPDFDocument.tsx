@@ -105,7 +105,7 @@ export const VerificationPDFDocument = ({ drivers }: { drivers: Driver[] }) => (
             <Text style={styles.tableCell}>{driver.phone}</Text>
             <Text style={styles.tableCell}>
               {driver.appliedOn || driver.createdAt
-                ? new Date(driver.appliedOn || driver.createdAt!).toLocaleDateString()
+                ? new Date(driver.appliedOn || driver.createdAt!).toLocaleDateString('en-CA')
                 : '-'}
             </Text>
             <Text

@@ -10,6 +10,7 @@ interface TripDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   trip: TripRecord | null;
+  viewMode?: 'rider' | 'driver';
 }
 
 const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = {
@@ -19,7 +20,12 @@ const STATUS_BADGE: Record<string, { bg: string; dot: string; text: string }> = 
   Cancelled: { bg: 'bg-[#FFEEEE]', dot: 'bg-[#FF0707]', text: 'text-[#FF0707]' },
 };
 
-const TripDetailsModal = ({ isOpen, onClose, trip: initialTrip }: TripDetailsModalProps) => {
+const TripDetailsModal = ({
+  isOpen,
+  onClose,
+  trip: initialTrip,
+  viewMode,
+}: TripDetailsModalProps) => {
   const { trip: detailedTrip, loading: isFetchingDetails } = useTripDetails(
     isOpen ? initialTrip?.rideId || initialTrip?.id : undefined,
   );
@@ -308,93 +314,99 @@ const TripDetailsModal = ({ isOpen, onClose, trip: initialTrip }: TripDetailsMod
             </div>
 
             {/* Rider + Driver Section */}
-            <div className="border-t border-[#DFE6E5] pt-5 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="flex flex-col gap-2">
-                <span className="text-[14px] font-medium text-[#4E616A]">Rider's Info</span>
-                <div className="flex items-center gap-3">
-                  <div className="w-[42px] h-[42px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-[16px] font-bold shrink-0">
-                    {trip.rider.avatar || trip.rider.initials}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[14px] font-semibold text-[#101828]">
-                      {trip.rider.name}
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[12px] text-[#1DAFA1] font-medium">
-                        {trip.rider.id}
-                      </span>
-                      <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
-                      <div className="flex items-center gap-1">
-                        <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
-                        <span className="text-[12px] text-[#4E616A] font-medium">
-                          {trip.rider.rating}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <span className="text-[14px] font-medium text-[#4E616A]">Driver's Info</span>
-                <div className="flex items-center gap-3">
-                  {trip.driver.avatar ? (
-                    <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
-                      <img
-                        src={trip.driver.avatar}
-                        alt={trip.driver.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
+            <div
+              className={`border-t border-[#DFE6E5] pt-5 mt-2 grid grid-cols-1 ${viewMode ? 'sm:grid-cols-1' : 'sm:grid-cols-2'} gap-5`}
+            >
+              {viewMode !== 'rider' && !(isCancelled && viewMode === 'driver') && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-[14px] font-medium text-[#4E616A]">Rider's Info</span>
+                  <div className="flex items-center gap-3">
                     <div className="w-[42px] h-[42px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-[16px] font-bold shrink-0">
-                      {trip.driver.initials}
+                      {trip.rider.avatar || trip.rider.initials}
                     </div>
-                  )}
-                  <div className="flex flex-col">
-                    <span className="text-[14px] font-semibold text-[#101828]">
-                      {trip.driver.name}
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[12px] text-[#1DAFA1] font-medium">
-                        {trip.driver.id}
+                    <div className="flex flex-col">
+                      <span className="text-[14px] font-semibold text-[#101828]">
+                        {trip.rider.name}
                       </span>
-                      <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
-                      <div className="flex items-center gap-1">
-                        <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
-                        <span className="text-[12px] text-[#4E616A] font-medium">
-                          {trip.driver.rating}
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[12px] text-[#1DAFA1] font-medium">
+                          {trip.rider.id}
                         </span>
+                        <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
+                        <div className="flex items-center gap-1">
+                          <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
+                          <span className="text-[12px] text-[#4E616A] font-medium">
+                            {trip.rider.rating}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className=" rounded-lg p-3 flex items-center justify-between mt-1 bg-[#F7F7F7]">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[12px] font-medium text-[#4E616A]">Vehicle</span>
-                    <span className="text-[14px] font-semibold text-[#101828]">
-                      {trip.driver.vehicle.name}
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[12px] font-medium text-[#4E616A]">
-                        {trip.driver.vehicle.color}
+              )}
+
+              {(viewMode !== 'driver' || (isCancelled && viewMode === 'driver')) && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-[14px] font-medium text-[#4E616A]">Driver's Info</span>
+                  <div className="flex items-center gap-3">
+                    {trip.driver.avatar ? (
+                      <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
+                        <img
+                          src={trip.driver.avatar}
+                          alt={trip.driver.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-[42px] h-[42px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-[16px] font-bold shrink-0">
+                        {trip.driver.initials}
+                      </div>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="text-[14px] font-semibold text-[#101828]">
+                        {trip.driver.name}
                       </span>
-                      <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
-                      <span className="text-[12px] font-medium text-[#4E616A]">
-                        {trip.driver.vehicle.registrationNumber}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[12px] text-[#1DAFA1] font-medium">
+                          {trip.driver.id}
+                        </span>
+                        <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
+                        <div className="flex items-center gap-1">
+                          <Star className="w-[16px] h-[16px] text-[#E9A90A] fill-[#E9A90A]" />
+                          <span className="text-[12px] text-[#4E616A] font-medium">
+                            {trip.driver.rating}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <img
-                    src="/icons/tripDetails/car.svg"
-                    alt="car"
-                    className="h-[68px] object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
+                  <div className="w-[400px] rounded-lg p-3 flex items-center justify-between mt-1 bg-[#F7F7F7]">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[12px] font-medium text-[#4E616A]">Vehicle</span>
+                      <span className="text-[14px] font-semibold text-[#101828]">
+                        {trip.driver.vehicle.name}
+                      </span>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          {trip.driver.vehicle.color}
+                        </span>
+                        <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          {trip.driver.vehicle.registrationNumber}
+                        </span>
+                      </div>
+                    </div>
+                    <img
+                      src="/icons/tripDetails/car.svg"
+                      alt="car"
+                      className="h-[68px] object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {isCompleted && (

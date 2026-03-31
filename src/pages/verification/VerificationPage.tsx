@@ -1,6 +1,6 @@
 import { pdf } from '@react-pdf/renderer';
 import { Search } from 'lucide-react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
@@ -37,6 +37,18 @@ const VerificationPage = () => {
   );
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setIsExportOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -147,7 +159,7 @@ const VerificationPage = () => {
             {request.appliedOn || request.consents?.acceptedAt || request.createdAt
               ? new Date(
                   request.appliedOn || request.consents?.acceptedAt || request.createdAt!,
-                ).toLocaleDateString()
+                ).toLocaleDateString('en-CA')
               : '-'}
           </span>
         ),
@@ -172,7 +184,7 @@ const VerificationPage = () => {
                     request.appliedOn ||
                     request.consents?.acceptedAt ||
                     request.createdAt!,
-                ).toLocaleDateString()
+                ).toLocaleDateString('en-CA')
               : '-'}
           </span>
         ),
@@ -288,7 +300,7 @@ const VerificationPage = () => {
               </button>
             ))}
 
-            <div className="relative">
+            <div className="relative" ref={exportRef}>
               <button
                 onClick={() => setIsExportOpen((o) => !o)}
                 className="flex items-center cursor-pointer gap-2 px-4 py-1.5 border border-[#DFE6E5] rounded-sm text-[13px] font-medium text-[#4E616A]"

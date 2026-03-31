@@ -148,7 +148,7 @@ export const useExportSupportCSV = () => {
           ticket.cause,
           ticket.driver?.name || 'N/A',
           ticket.driver?.phone || 'N/A',
-          new Date(ticket.createdAt).toLocaleDateString(),
+          new Date(ticket.createdAt).toLocaleDateString('en-CA'),
           ticket.status,
         ]);
 

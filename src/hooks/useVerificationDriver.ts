@@ -246,7 +246,7 @@ export const useExportVerificationCSV = () => {
           driver.email || '',
           driver.phone,
           driver.appliedOn || driver.createdAt
-            ? new Date(driver.appliedOn || driver.createdAt!).toLocaleDateString()
+            ? new Date(driver.appliedOn || driver.createdAt!).toLocaleDateString('en-CA')
             : '-',
           driver.status,
           driver.reason || driver.rejectedReason || '',
