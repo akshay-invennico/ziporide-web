@@ -61,7 +61,8 @@ export interface RiderSummaryResponse {
 }
 
 export interface SpendingTrendItem {
-  name: string;
+  month?: string;
+  day?: string;
   spent: number;
   rides: number;
 }

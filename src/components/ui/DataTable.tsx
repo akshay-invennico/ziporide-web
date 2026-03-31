@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useId } from 'react';
 
+import LoadingSpinner from './LoadingSpinner';
 import Pagination from './Pagination';
 
 export type SortDirection = 'asc' | 'desc' | null;
@@ -31,35 +32,12 @@ export interface DataTableProps<T> {
   selectedKeys?: string[];
   onSelectionChange?: (keys: string[]) => void;
   loading?: boolean;
-  skeletonRows?: number;
   emptyText?: string;
   emptyElement?: React.ReactNode;
   minHeight?: string;
   className?: string;
   rowClassName?: (row: T) => string;
 }
-
-const SkeletonCell: React.FC = () => (
-  <td className="px-6 py-4">
-    <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
-  </td>
-);
-
-const SkeletonRow: React.FC<{ colCount: number; hasCheckbox: boolean }> = ({
-  colCount,
-  hasCheckbox,
-}) => (
-  <tr className="border-b border-[#DFE6E5]">
-    {hasCheckbox && (
-      <td className="px-6 py-4">
-        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
-      </td>
-    )}
-    {Array.from({ length: colCount }).map((_, i) => (
-      <SkeletonCell key={i} />
-    ))}
-  </tr>
-);
 
 const SortIcon: React.FC<{ direction: SortDirection }> = ({ direction }) => {
   if (!direction) {
@@ -99,7 +77,6 @@ function DataTable<T extends object>({
   selectedKeys = [],
   onSelectionChange,
   loading = false,
-  skeletonRows = 6,
   emptyText = 'No data found',
   emptyElement,
   minHeight = '500px',
@@ -215,13 +192,13 @@ function DataTable<T extends object>({
 
           <tbody className="divide-y divide-[#DFE6E5]">
             {loading ? (
-              Array.from({ length: skeletonRows }).map((_, i) => (
-                <SkeletonRow
-                  key={`skeleton-${i}`}
-                  colCount={columns.length}
-                  hasCheckbox={selectable}
-                />
-              ))
+              <tr>
+                <td colSpan={totalCols} className="px-6 py-16 text-center">
+                  <div className="flex justify-center items-center">
+                    <LoadingSpinner />
+                  </div>
+                </td>
+              </tr>
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={totalCols} className="px-6 py-16 text-center">
@@ -256,8 +233,8 @@ function DataTable<T extends object>({
                         {col.render
                           ? col.render(row, rowIndex)
                           : (String(
-                            (row as Record<string, unknown>)[col.key] ?? '',
-                          ) as React.ReactNode)}
+                              (row as Record<string, unknown>)[col.key] ?? '',
+                            ) as React.ReactNode)}
                       </td>
                     ))}
                   </tr>

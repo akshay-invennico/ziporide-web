@@ -215,10 +215,11 @@ const TransactionsPage: React.FC = () => {
                   onClick={() => {
                     setParams((prev) => ({ ...prev, category: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.category === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    params.category === filter
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                  }`}
                 >
                   {filter}
                 </button>

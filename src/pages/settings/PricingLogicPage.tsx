@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { usePricing } from '@/hooks/usePricing';
 import type { PricingData } from '@/types/pricing.types';
 
@@ -47,7 +48,7 @@ const PricingLogicPage = () => {
   if (!pricing && isLoading) {
     return (
       <div className="w-full h-full flex items-center justify-center p-10">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#14B8A6]"></div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -245,9 +246,13 @@ const PricingLogicPage = () => {
         <button
           onClick={handleUpdate}
           disabled={isLoading}
-          className="px-6 py-3 bg-[#14B8A6] cursor-pointer text-white text-[14px] font-semibold rounded-md disabled:opacity-50"
+          className="px-6 py-3 bg-[#14B8A6] cursor-pointer text-white text-[14px] font-semibold rounded-md disabled:opacity-50 flex items-center justify-center min-w-[200px]"
         >
-          {isLoading ? 'Updating...' : 'Update Pricing Logics'}
+          {isLoading ? (
+            <LoadingSpinner size={20} className="text-white" />
+          ) : (
+            'Update Pricing Logics'
+          )}
         </button>
       </div>
     </div>

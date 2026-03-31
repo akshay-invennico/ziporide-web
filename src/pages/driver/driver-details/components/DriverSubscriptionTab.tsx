@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useDriverSubscriptions } from '@/hooks/useDriver';
 
 const ITEMS_PER_PAGE = 12;
@@ -30,7 +31,7 @@ export default function DriverSubscriptionTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-10">
-        <div className="text-[#1DAFA1]">Loading subscription details...</div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -132,7 +133,8 @@ export default function DriverSubscriptionTab() {
                     {currentSubscription ? 'Zipo Subscription' : 'No Active Plan'}
                   </p>
                   <p className="text-white text-[12px] font-medium m-0 mt-0.5">
-                    Subscribe on : {currentSubscription?.subscribedOn
+                    Subscribe on :{' '}
+                    {currentSubscription?.subscribedOn
                       ? new Date(currentSubscription.subscribedOn).toISOString().split('T')[0]
                       : '-'}
                   </p>
@@ -322,10 +324,11 @@ export default function DriverSubscriptionTab() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page as number)}
-                  className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
-                    ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                    : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                    }`}
+                  className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
+                    currentPage === page
+                      ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                      : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+                  }`}
                 >
                   {page}
                 </button>

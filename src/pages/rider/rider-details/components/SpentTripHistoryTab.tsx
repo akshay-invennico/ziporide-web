@@ -15,6 +15,7 @@ import { useRiderTrips, useRideDetails } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 import type { Rider } from '@/types/rider.types';
 
+import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 
 interface Props {
@@ -78,7 +79,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Trips</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              {summaryLoading ? '...' : summary?.totalTrips || 0}
+              {summaryLoading ? <LoadingSpinner size={20} /> : summary?.totalTrips || 0}
             </h3>
           </div>
           <img src="/icons/rider/card1.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -88,7 +89,12 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Total Spent</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              £{summaryLoading ? '...' : Number(summary?.totalSpent || 0).toFixed(2)}
+              £
+              {summaryLoading ? (
+                <LoadingSpinner size={20} />
+              ) : (
+                Number(summary?.totalSpent || 0).toFixed(2)
+              )}
             </h3>
           </div>
           <img src="/icons/rider/card2.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -98,7 +104,12 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Average Trip Value</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              £{summaryLoading ? '...' : Number(summary?.averageTripValue || 0).toFixed(2)}
+              £
+              {summaryLoading ? (
+                <LoadingSpinner size={20} />
+              ) : (
+                Number(summary?.averageTripValue || 0).toFixed(2)
+              )}
             </h3>
           </div>
           <img src="/icons/rider/card3.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -108,7 +119,12 @@ export default function SpentTripHistoryTab({ rider }: Props) {
           <div>
             <p className="text-[12px] font-medium text-[#4A5565] mb-1">Cancellation Rate</p>
             <h3 className="text-[24px] font-bold text-[#101828]">
-              {summaryLoading ? '...' : (summary?.cancellationRate || 0).toFixed(1)}%
+              {summaryLoading ? (
+                <LoadingSpinner size={20} />
+              ) : (
+                (summary?.cancellationRate || 0).toFixed(1)
+              )}
+              %
             </h3>
           </div>
           <img src="/icons/rider/card4.svg" alt="card1" className="w-[58px] h-[58px]" />
@@ -130,10 +146,11 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               <button
                 key={filter}
                 onClick={() => setTrendFilter(filter)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-                  }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                  trendFilter === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A] '
+                }`}
               >
                 {filter}
               </button>
@@ -152,7 +169,7 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
               <XAxis
-                dataKey="name"
+                dataKey={(item) => item.month || item.day || 'N/A'}
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 500 }}
@@ -196,10 +213,11 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                   setTripsFilter(filter);
                   setCurrentPage(1); // Reset to page 1 on filter change
                 }}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${tripsFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-                  }`}
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                  tripsFilter === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A] '
+                }`}
               >
                 {filter}
               </button>
@@ -231,9 +249,8 @@ export default function SpentTripHistoryTab({ rider }: Props) {
               {tripsLoading ? (
                 <tr>
                   <td colSpan={8} className="p-10 text-center text-[#4E616A]">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-8 h-8 border-4 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
-                      <span>Loading trips...</span>
+                    <div className="flex flex-col items-center justify-center">
+                      <LoadingSpinner />
                     </div>
                   </td>
                 </tr>
@@ -249,7 +266,9 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     key={trip.id}
                     className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
                   >
-                    <td className="p-4 px-5 text-[#1DAFA1] font-medium text-[14px] text-nowrap">{trip.id}</td>
+                    <td className="p-4 px-5 text-[#1DAFA1] font-medium text-[14px] text-nowrap">
+                      {trip.id}
+                    </td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden shrink-0">
@@ -286,28 +305,32 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     <td className="p-4 font-medium text-[#4E616A] text-[14px]">
                       £{trip.amount ? trip.amount.toFixed(2) : '0.00'}
                     </td>
-                    <td className="p-4 font-medium text-[#4E616A] text-[14px] text-nowrap">{trip.date}</td>
+                    <td className="p-4 font-medium text-[#4E616A] text-[14px] text-nowrap">
+                      {trip.date}
+                    </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${trip.status === 'Completed'
-                            ? 'bg-[#00A63E]'
-                            : trip.status === 'In Progress'
-                              ? 'bg-[#F6921E]'
-                              : trip.status === 'Assigned'
-                                ? 'bg-[#1DAFA1]'
-                                : 'bg-[#FF0707]'
-                            }`}
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            trip.status === 'Completed'
+                              ? 'bg-[#00A63E]'
+                              : trip.status === 'In Progress'
+                                ? 'bg-[#F6921E]'
+                                : trip.status === 'Assigned'
+                                  ? 'bg-[#1DAFA1]'
+                                  : 'bg-[#FF0707]'
+                          }`}
                         ></div>
                         <span
-                          className={`font-semibold text-[12px] ${trip.status === 'Completed'
-                            ? 'text-[#00A63E]'
-                            : trip.status === 'In Progress'
-                              ? 'text-[#F6921E]'
-                              : trip.status === 'Assigned'
-                                ? 'text-[#1DAFA1]'
-                                : 'text-[#FF0707]'
-                            }`}
+                          className={`font-semibold text-[12px] ${
+                            trip.status === 'Completed'
+                              ? 'text-[#00A63E]'
+                              : trip.status === 'In Progress'
+                                ? 'text-[#F6921E]'
+                                : trip.status === 'Assigned'
+                                  ? 'text-[#1DAFA1]'
+                                  : 'text-[#FF0707]'
+                          }`}
                         >
                           {trip.status}
                         </span>
@@ -355,10 +378,11 @@ export default function SpentTripHistoryTab({ rider }: Props) {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${currentPage === pageNum
-                        ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
-                        : 'text-gray-600 hover:bg-gray-50 border border-transparent'
-                        }`}
+                      className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[14px] font-semibold transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-teal-50 text-[#1DAFA1] border border-[#1DAFA1]'
+                          : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+                      }`}
                     >
                       {pageNum}
                     </button>

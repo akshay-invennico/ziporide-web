@@ -102,7 +102,9 @@ export const SupportPDFDocument = ({ tickets }: { tickets: SupportTicket[] }) =>
             <Text style={styles.tableCell}>{ticket.cause}</Text>
             <Text style={styles.tableCell}>{ticket.driver?.name || 'N/A'}</Text>
             <Text style={styles.tableCell}>{ticket.driver?.phone || 'N/A'}</Text>
-            <Text style={styles.tableCell}>{new Date(ticket.createdAt).toLocaleDateString('en-CA')}</Text>
+            <Text style={styles.tableCell}>
+              {new Date(ticket.createdAt).toLocaleDateString('en-CA')}
+            </Text>
             <Text
               style={[
                 styles.tableCell,

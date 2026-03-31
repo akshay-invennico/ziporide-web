@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import LoadingSpinner from './LoadingSpinner';
+
 const CANCELLATION_REASONS = [
   'Rider requested cancellation via support',
   'Driver requested cancellation via support',
@@ -69,9 +71,7 @@ const CancelRideModal = ({
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 overflow-y-auto px-4">
-      <div
-        className="bg-white rounded-xl shadow-xl w-[640px] h-auto p-6 lg:p-8 relative my-8 animate-in fade-in zoom-in duration-200"
-      >
+      <div className="bg-white rounded-xl shadow-xl w-[640px] h-auto p-6 lg:p-8 relative my-8 animate-in fade-in zoom-in duration-200">
         <h2 className="text-[18px] font-semibold text-[#000000] mb-2">{title}</h2>
         <p className="text-[14px] text-[#4E616A] font-medium mb-3 leading-relaxed">{description}</p>
 
@@ -118,10 +118,12 @@ const CancelRideModal = ({
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!selectedReason || (selectedReason === 'Other' && !details.trim()) || isLoading}
+            disabled={
+              !selectedReason || (selectedReason === 'Other' && !details.trim()) || isLoading
+            }
             className="px-6 py-2.5 bg-[#FF0707] cursor-pointer text-white rounded-sm text-[14px] font-medium "
           >
-            {isLoading ? 'Processing...' : confirmLabel}
+            {isLoading ? <LoadingSpinner size={20} className="text-white" /> : confirmLabel}
           </button>
         </div>
       </div>

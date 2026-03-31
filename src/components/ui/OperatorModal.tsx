@@ -157,13 +157,13 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
 
   const permissionCategories = config
     ? Object.entries(config.modules).map(([key, mod]) => ({
-      id: key,
-      label: mod.label,
-      permissions: mod.permissions.map((p) => ({
-        id: p,
-        label: PERMISSION_LABELS[p] || p,
-      })),
-    }))
+        id: key,
+        label: mod.label,
+        permissions: mod.permissions.map((p) => ({
+          id: p,
+          label: PERMISSION_LABELS[p] || p,
+        })),
+      }))
     : PERMISSION_CATEGORIES;
 
   const roleDefaults = useMemo(() => config?.roleDefaults || {}, [config?.roleDefaults]);
@@ -176,8 +176,8 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
       : isView
         ? Yup.string()
         : Yup.string()
-          .min(8, 'Password must be at least 8 characters')
-          .required('Password is required'),
+            .min(8, 'Password must be at least 8 characters')
+            .required('Password is required'),
     role: Yup.string().required('Role is required'),
   });
 

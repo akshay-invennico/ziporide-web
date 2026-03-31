@@ -186,7 +186,11 @@ const RiderPage = () => {
         label: 'ACTION',
         render: (rider) => (
           <div className="flex items-center gap-3">
-            <Link to={`/rider/details/${rider.id}`} className="shrink-0 cursor-pointer" title="View Rider">
+            <Link
+              to={`/rider/details/${rider.id}`}
+              className="shrink-0 cursor-pointer"
+              title="View Rider"
+            >
               <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px] shrink-0" />
             </Link>
             {rider.status?.toLowerCase() === 'active' && (
@@ -245,7 +249,10 @@ const RiderPage = () => {
           <div className="flex items-center gap-3 w-full sm:w-auto relative">
             <div className="relative" ref={filterRef}>
               <button
-                onClick={() => { setIsFilterOpen((prev) => !prev); setIsExportOpen(false); }}
+                onClick={() => {
+                  setIsFilterOpen((prev) => !prev);
+                  setIsExportOpen(false);
+                }}
                 className="flex cursor-pointer items-center gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center"
               >
                 <img src="/icons/rider/filters.svg" alt="filters" className="w-[22px] h-[22px]" />
@@ -260,7 +267,10 @@ const RiderPage = () => {
             </div>
             <div className="relative" ref={exportRef}>
               <button
-                onClick={() => { setIsExportOpen((prev) => !prev); setIsFilterOpen(false); }}
+                onClick={() => {
+                  setIsExportOpen((prev) => !prev);
+                  setIsFilterOpen(false);
+                }}
                 className="flex cursor-pointer items-center gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center"
               >
                 <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />

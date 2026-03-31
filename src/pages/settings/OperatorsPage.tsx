@@ -114,7 +114,9 @@ const OperatorsPage = () => {
         label: 'ID',
         sortable: true,
         render: (row) => (
-          <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap">{row.operatorId}</span>
+          <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap">
+            {row.operatorId}
+          </span>
         ),
       },
       {

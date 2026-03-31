@@ -201,7 +201,11 @@ const DriverPage = () => {
           const id = getDriverId(driver);
           return (
             <div className="flex items-center gap-3">
-              <Link to={`/driver/details/${id}`} className="shrink-0 cursor-pointer" title="View Driver">
+              <Link
+                to={`/driver/details/${id}`}
+                className="shrink-0 cursor-pointer"
+                title="View Driver"
+              >
                 <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px] shrink-0" />
               </Link>
               {driver.status?.toLowerCase() === 'approved' && (
@@ -261,7 +265,10 @@ const DriverPage = () => {
           <div className="flex items-center gap-3 w-full sm:w-auto relative">
             <div className="relative" ref={filterRef}>
               <button
-                onClick={() => { setIsFilterOpen((prev) => !prev); setIsExportOpen(false); }}
+                onClick={() => {
+                  setIsFilterOpen((prev) => !prev);
+                  setIsExportOpen(false);
+                }}
                 className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center"
               >
                 <img src="/icons/rider/filters.svg" alt="filters" className="w-[22px] h-[22px]" />
@@ -277,7 +284,10 @@ const DriverPage = () => {
             </div>
             <div className="relative" ref={exportRef}>
               <button
-                onClick={() => { setIsExportOpen((prev) => !prev); setIsFilterOpen(false); }}
+                onClick={() => {
+                  setIsExportOpen((prev) => !prev);
+                  setIsFilterOpen(false);
+                }}
                 className="flex items-center cursor-pointer gap-2 px-4 py-2 border border-[#DFE6E5] rounded-sm text-[14px] font-medium text-[#4E616A] w-full sm:w-auto justify-center"
               >
                 <img src="/icons/rider/export.svg" alt="export" className="w-[22px] h-[22px]" />

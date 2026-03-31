@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useDriverTrips, useTripDetails } from '@/hooks/useDriver';
 import type { TripRecord } from '@/types/driver.types';
 
+import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 
 const ITEMS_PER_PAGE = 12;
@@ -104,8 +105,8 @@ export default function DriverTripHistoryTab() {
 
   if (loading && trips.length === 0) {
     return (
-      <div className="flex items-center justify-center py-10 text-[#1DAFA1]">
-        Loading trip history...
+      <div className="flex items-center justify-center py-10">
+        <LoadingSpinner />
       </div>
     );
   }
@@ -134,10 +135,11 @@ export default function DriverTripHistoryTab() {
                             setPeriod(p);
                             setCurrentPage(1);
                           }}
-                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
-                            ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                            : 'border-[#DFE6E5] text-[#4E616A]'
-                            }`}
+                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                            period === p
+                              ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                              : 'border-[#DFE6E5] text-[#4E616A]'
+                          }`}
                         >
                           {p}
                         </button>
@@ -241,7 +243,7 @@ export default function DriverTripHistoryTab() {
                       className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1] cursor-pointer disabled:opacity-50"
                     >
                       {loadingTripId === (trip.rideId || trip.id) ? (
-                        <div className="w-5 h-5 border-2 border-[#1DAFA1] border-t-transparent rounded-full animate-spin" />
+                        <LoadingSpinner size={20} />
                       ) : (
                         <>
                           <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
@@ -275,10 +277,11 @@ export default function DriverTripHistoryTab() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page as number)}
-                className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
-                  ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
-                  : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                  }`}
+                className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
+                  currentPage === page
+                    ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
+                    : 'text-[#4E616A] border-transparent hover:bg-gray-50'
+                }`}
               >
                 {page}
               </button>

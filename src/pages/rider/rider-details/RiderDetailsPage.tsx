@@ -2,6 +2,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useRiderDetails, useUpdateRiderStatus } from '@/hooks/useRider';
 import { routes } from '@/routes/routes';
 
@@ -23,7 +25,7 @@ export default function RiderDetailsPage() {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-white p-6 flex items-center justify-center">
-        <div className="text-center text-gray-500">Loading rider details...</div>
+        <LoadingSpinner />
       </div>
     );
   }

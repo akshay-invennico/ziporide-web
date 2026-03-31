@@ -249,16 +249,18 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
               <button
                 key={r.value}
                 onClick={() => handleRatingChange(r.value)}
-                className={`flex items-center cursor-pointer gap-1.5 px-3 py-2 border rounded-md text-[12px] font-medium transition-colors ${localFilters.rating === r.value
-                  ? 'bg-[#1DAFA1] text-white border-[#1DAFA1]'
-                  : 'bg-white text-[#000000] border-[#DFE6E5]'
-                  }`}
+                className={`flex items-center cursor-pointer gap-1.5 px-3 py-2 border rounded-md text-[12px] font-medium transition-colors ${
+                  localFilters.rating === r.value
+                    ? 'bg-[#1DAFA1] text-white border-[#1DAFA1]'
+                    : 'bg-white text-[#000000] border-[#DFE6E5]'
+                }`}
               >
                 <Star
-                  className={`w-4 h-4 ${localFilters.rating === r.value
-                    ? 'fill-white text-white'
-                    : 'fill-[#E9A90A] text-[#E9A90A]'
-                    }`}
+                  className={`w-4 h-4 ${
+                    localFilters.rating === r.value
+                      ? 'fill-white text-white'
+                      : 'fill-[#E9A90A] text-[#E9A90A]'
+                  }`}
                 />
                 {r.label}
               </button>

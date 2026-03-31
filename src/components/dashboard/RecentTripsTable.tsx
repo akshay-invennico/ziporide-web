@@ -5,6 +5,7 @@ import { useTrips, useCancelTrip } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 
 import CancelRideModal from '../ui/CancelRideModal';
+import LoadingSpinner from '../ui/LoadingSpinner';
 import TripDetailsModal from '../ui/TripDetailsModal';
 
 export default function RecentTripsTable() {
@@ -54,9 +55,8 @@ export default function RecentTripsTable() {
             {loading ? (
               <tr>
                 <td colSpan={8} className="px-4 py-10 text-center text-[#4E616A]">
-                  <div className="flex justify-center items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
-                    <span>Loading trips...</span>
+                  <div className="flex justify-center items-center">
+                    <LoadingSpinner />
                   </div>
                 </td>
               </tr>
@@ -73,7 +73,9 @@ export default function RecentTripsTable() {
                   className="border-b border-[#DFE6E5] hover:bg-gray-50/50 transition-colors"
                 >
                   {/* Trip ID */}
-                  <td className="px-4 py-3.5 text-[#14B8A6] font-medium text-[14px] text-nowrap">{trip.id}</td>
+                  <td className="px-4 py-3.5 text-[#14B8A6] font-medium text-[14px] text-nowrap">
+                    {trip.id}
+                  </td>
 
                   {/* Rider */}
                   <td className="px-4 py-3.5">
@@ -135,28 +137,30 @@ export default function RecentTripsTable() {
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2">
                       <div
-                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${trip.status === 'Completed'
-                          ? 'bg-[#00A63E]'
-                          : trip.status === 'In Progress'
-                            ? 'bg-[#F6921E]'
-                            : trip.status === 'Assigned'
-                              ? 'bg-[#1DAFA1]'
-                              : trip.status === 'Cancelled'
-                                ? 'bg-[#FF0707]'
-                                : 'bg-[#6B7280]'
-                          }`}
+                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                          trip.status === 'Completed'
+                            ? 'bg-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'bg-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'bg-[#1DAFA1]'
+                                : trip.status === 'Cancelled'
+                                  ? 'bg-[#FF0707]'
+                                  : 'bg-[#6B7280]'
+                        }`}
                       />
                       <span
-                        className={`font-semibold text-[12px] ${trip.status === 'Completed'
-                          ? 'text-[#00A63E]'
-                          : trip.status === 'In Progress'
-                            ? 'text-[#F6921E]'
-                            : trip.status === 'Assigned'
-                              ? 'text-[#1DAFA1]'
-                              : trip.status === 'Cancelled'
-                                ? 'text-[#FF0707]'
-                                : 'text-[#6B7280]'
-                          }`}
+                        className={`font-semibold text-[12px] ${
+                          trip.status === 'Completed'
+                            ? 'text-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'text-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'text-[#1DAFA1]'
+                                : trip.status === 'Cancelled'
+                                  ? 'text-[#FF0707]'
+                                  : 'text-[#6B7280]'
+                        }`}
                       >
                         {trip.status}
                       </span>
@@ -165,7 +169,8 @@ export default function RecentTripsTable() {
 
                   {/* Time */}
                   <td className="px-4 py-3.5 font-medium text-[#4A5565] text-[14px]">
-                    {trip.date} | {trip.time}
+                    {/* {trip.date} */}
+                    {trip.time}
                   </td>
 
                   {/* Action */}

@@ -1,7 +1,8 @@
-import { CheckCircle2, XCircle, X, Check, ArrowLeft, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, X, Check, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/context/useToast';
 
 import DocumentViewerModal from '../../components/ui/DocumentViewerModal';
@@ -66,7 +67,7 @@ const ApplicationDetailsPage = () => {
   if (loading) {
     return (
       <div className="w-full min-h-screen p-1 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#1DAFA1]" />
+        <LoadingSpinner />
       </div>
     );
   }
@@ -251,9 +252,9 @@ const ApplicationDetailsPage = () => {
               <span className="text-[12px] text-[#4E616A] font-medium">Joined on</span>
               <span className="text-[14px] font-medium text-[#101828]">
                 {request.consents?.acceptedAt || request.createdAt
-                  ? new Date(
-                      (request.consents?.acceptedAt || request.createdAt) as string,
-                    ).toISOString().split('T')[0]
+                  ? new Date((request.consents?.acceptedAt || request.createdAt) as string)
+                      .toISOString()
+                      .split('T')[0]
                   : '-'}
               </span>
             </div>
@@ -420,12 +421,6 @@ const ApplicationDetailsPage = () => {
               <span className="text-[14px] font-medium text-[#4E616A]">Year</span>
               <span className="text-[14px] font-medium text-[#000000]">
                 {request.vehicle?.year || '-'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-[14px] font-medium text-[#4E616A]">Color</span>
-              <span className="text-[14px] font-medium text-[#000000]">
-                {request.vehicle?.colour || request.vehicle?.color || '-'}
               </span>
             </div>
             <div className="flex justify-between items-center">

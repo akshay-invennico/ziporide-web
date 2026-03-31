@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/context/useAuth';
+import { useAdminProfile } from '@/hooks/useAdminProfile';
 import { routes } from '@/routes/routes';
 
 import NotificationDropdown from './NotificationDropdown';
@@ -18,7 +19,7 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   },
   [routes.RIDER_DETAILS]: {
     title: 'Rider Details',
-    subtitle: 'Here\'s your hub for managing rider information and activity.',
+    subtitle: "Here's your hub for managing rider information and activity.",
   },
   [routes.DRIVER]: {
     title: 'Drivers',
@@ -26,7 +27,7 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   },
   [routes.DRIVER_DETAILS]: {
     title: 'Driver Details',
-    subtitle: 'Here\s your hub for managing Driver information and activity.',
+    subtitle: 'Here is your hub for managing Driver information and activity.',
   },
   [routes.VERIFICATION]: {
     title: 'Verification Requests',
@@ -72,7 +73,8 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
 
 export default function Header() {
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const { getProfile } = useAdminProfile();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -91,6 +93,10 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    getProfile();
+  }, [getProfile]);
 
   const getPageTitle = () => {
     // Sort keys by length descending to match more specific routes (like /details) before base routes
@@ -130,7 +136,7 @@ export default function Header() {
           <NotificationDropdown isOpen={isNotificationOpen} />
         </div>
 
-        <div className='border-r border-[#DFE6E5] h-10'></div>
+        <div className="border-r border-[#DFE6E5] h-10"></div>
 
         <div className="relative" ref={dropdownRef}>
           <div
@@ -138,13 +144,14 @@ export default function Header() {
             className="flex items-center gap-3 cursor-pointer border border-[#DFE6E5] p-1.5 rounded-full pr-3 transition-colors hover:bg-gray-50"
           >
             <img
-              src="https://i.pravatar.cc/150?img=11"
+              src={user?.profile || 'https://i.pravatar.cc/150?img=11'}
               alt="Profile"
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full object-cover"
             />
             <ChevronDown
-              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
-                }`}
+              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${
+                isDropdownOpen ? 'rotate-180' : ''
+              }`}
             />
           </div>
 

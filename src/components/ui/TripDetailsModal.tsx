@@ -420,10 +420,11 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 5)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.riderFeedback?.rating || 5)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>
@@ -442,10 +443,11 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 5)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.driverFeedback?.rating || 5)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>

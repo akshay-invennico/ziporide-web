@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useAuthData } from '@/hooks/useAuthData';
 
 const ResetPasswordPage = () => {
@@ -137,9 +138,9 @@ const ResetPasswordPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60"
+            className="w-full bg-[#1DAFA1] cursor-pointer text-white font-semibold text-[16px] py-2.5 rounded-lg transition disabled:opacity-60 flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Resetting...' : 'Reset Password'}
+            {isLoading ? <LoadingSpinner size={20} className="text-white" /> : 'Reset Password'}
           </button>
         </form>
 
