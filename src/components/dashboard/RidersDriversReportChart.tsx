@@ -36,11 +36,10 @@ export default function RidersDriversReportChart() {
               key={item}
               onClick={() => setFilter(item)}
               disabled={loading}
-              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                filter === item
+              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${filter === item
                   ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                   : 'border-[#DFE6E5] text-[#4E616A] bg-white'
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {item}
             </button>
@@ -76,13 +75,13 @@ export default function RidersDriversReportChart() {
                 dataKey={(item) => item.month || item.day || 'N/A'}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
                 dy={10}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
                 tickFormatter={(value) => (value >= 1000 ? `${value / 1000}K` : value)}
                 allowDecimals={false}
                 width={55}

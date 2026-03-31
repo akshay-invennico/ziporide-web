@@ -203,7 +203,7 @@ export default function TripHistoryPage() {
         render: (trip) => {
           const style = STATUS_STYLES[trip.status as TripStatus] || STATUS_STYLES.Assigned;
           return (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 text-nowrap">
               <div className={`w-[6px] h-[6px] rounded-full shrink-0 ${style.dot}`} />
               <span className={`text-[12px] font-semibold ${style.text}`}>{trip.status}</span>
             </div>
@@ -274,8 +274,7 @@ export default function TripHistoryPage() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-4 py-2 rounded-sm text-[14px] cursor-pointer font-medium transition-all ${
-                    activeTab === tab
+                  className={`px-4 py-2 rounded-sm text-[14px] cursor-pointer font-medium transition-all ${activeTab === tab
                       ? tab === 'Assigned' || tab === 'All'
                         ? 'bg-[#EEFFFD] text-[#1DAFA1] border border-[#1DAFA1]'
                         : tab === 'In Progress'
@@ -284,7 +283,7 @@ export default function TripHistoryPage() {
                             ? 'bg-[#EAFFF2] text-[#00A63E] border border-[#00A63E]'
                             : 'bg-[#FFF6F6] text-[#FF0707] border border-[#FF0707]'
                       : 'text-[#4E616A] bg-transparent border border-[#DFE6E5]'
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>

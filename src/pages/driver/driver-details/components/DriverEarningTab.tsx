@@ -141,11 +141,10 @@ export default function DriverEarningTab() {
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors capitalize ${
-                  period === p
+                className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors capitalize ${period === p
                     ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                     : 'border-[#DFE6E5] text-[#4E616A] '
-                }`}
+                  }`}
               >
                 {p}
               </button>
@@ -172,7 +171,7 @@ export default function DriverEarningTab() {
             />
             <YAxis
               tickFormatter={formatY}
-              tick={{ fill: '#4E616A', fontSize: 11, fontWeight: 500 }}
+              tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
               axisLine={false}
               tickLine={false}
               width={50}

@@ -174,7 +174,7 @@ const RiderPage = () => {
               className={`h-2 w-2 rounded-full ${rider.status?.toLowerCase() === 'active' ? 'bg-[#00A63E]' : 'bg-[#FF0707]'}`}
             />
             <span
-              className={`font-semibold text-[12px] ${rider.status?.toLowerCase() === 'active' ? 'text-[#00A63E]' : 'text-[#FF0707]'}`}
+              className={`font-semibold text-[12px] text-nowrap ${rider.status?.toLowerCase() === 'active' ? 'text-[#00A63E]' : 'text-[#FF0707]'}`}
             >
               {rider.status?.toLowerCase() === 'active' ? 'Active' : 'Suspended'}
             </span>

@@ -135,11 +135,10 @@ export default function DriverTripHistoryTab() {
                             setPeriod(p);
                             setCurrentPage(1);
                           }}
-                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                            period === p
+                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
                               ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                               : 'border-[#DFE6E5] text-[#4E616A]'
-                          }`}
+                            }`}
                         >
                           {p}
                         </button>
@@ -231,7 +230,7 @@ export default function DriverTripHistoryTab() {
                   </td>
 
                   {/* Status */}
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-nowrap">
                     <StatusBadge status={trip.status} />
                   </td>
 
@@ -277,11 +276,10 @@ export default function DriverTripHistoryTab() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page as number)}
-                className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${
-                  currentPage === page
+                className={`min-w-[32px] cursor-pointer h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-colors border ${currentPage === page
                     ? 'bg-teal-50 text-[#1DAFA1] border-[#1DAFA1]'
                     : 'text-[#4E616A] border-transparent hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 {page}
               </button>
