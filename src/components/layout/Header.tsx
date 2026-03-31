@@ -110,6 +110,8 @@ export default function Header() {
           <NotificationDropdown isOpen={isNotificationOpen} />
         </div>
 
+        <div className='border-r border-[#DFE6E5] h-10'></div>
+
         <div className="relative" ref={dropdownRef}>
           <div
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -121,9 +123,8 @@ export default function Header() {
               className="w-10 h-10 rounded-full"
             />
             <ChevronDown
-              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${
-                isDropdownOpen ? 'rotate-180' : ''
-              }`}
+              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
+                }`}
             />
           </div>
 
