@@ -5,8 +5,8 @@ export interface FilterType {
   status: string;
   minEarnings?: number;
   maxEarnings?: number;
-  minSpent?: number;
-  maxSpent?: number;
+  minSpend?: number;
+  maxSpend?: number;
   minTrips: number;
   maxTrips: number;
   rating: string;
@@ -39,8 +39,8 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   if (!isOpen) return null;
 
   const isRider = userType === 'rider';
-  const minAmount = isRider ? localFilters.minSpent : localFilters.minEarnings;
-  const maxAmount = isRider ? localFilters.maxSpent : localFilters.maxEarnings;
+  const minAmount = isRider ? localFilters.minSpend : localFilters.minEarnings;
+  const maxAmount = isRider ? localFilters.maxSpend : localFilters.maxEarnings;
 
   const handleStatusChange = (status: string) => {
     setLocalFilters({ ...localFilters, status });
@@ -49,7 +49,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const handleAmountMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Math.min(Number(e.target.value), (maxAmount || 1000) - 10);
     if (isRider) {
-      setLocalFilters({ ...localFilters, minSpent: value });
+      setLocalFilters({ ...localFilters, minSpend: value });
     } else {
       setLocalFilters({ ...localFilters, minEarnings: value });
     }
@@ -58,7 +58,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const handleAmountMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Math.max(Number(e.target.value), (minAmount || 0) + 10);
     if (isRider) {
-      setLocalFilters({ ...localFilters, maxSpent: value });
+      setLocalFilters({ ...localFilters, maxSpend: value });
     } else {
       setLocalFilters({ ...localFilters, maxEarnings: value });
     }
@@ -83,8 +83,8 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       status: 'All',
       minEarnings: 0,
       maxEarnings: 1000,
-      minSpent: 0,
-      maxSpent: 1000,
+      minSpend: 0,
+      maxSpend: 1000,
       minTrips: 0,
       maxTrips: 500,
       rating: 'All',
@@ -242,9 +242,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             {[
               { label: 'All', value: 'All' },
-              { label: '5 Star', value: '5_and_above' },
-              { label: '4 & above', value: '4_and_above' },
-              { label: '3 & above', value: '3_and_above' },
+              { label: '5 Star', value: '5' },
+              { label: '4 & above', value: '4' },
+              { label: '3 & above', value: '3' },
             ].map((r) => (
               <button
                 key={r.value}
