@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { usePermissions } from '@/hooks/usePermissions';
 import { useRiderDetails, useUpdateRiderStatus } from '@/hooks/useRider';
 import { routes } from '@/routes/routes';
 
@@ -86,9 +85,8 @@ export default function RiderDetailsPage() {
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}
-            className={`flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium ${
-              rider.status?.toLowerCase() === 'suspended' ? 'text-[#00A63E]' : 'text-[#FF0707]'
-            }`}
+            className={`flex items-center cursor-pointer gap-2 px-4 py-2.5 rounded-sm border border-[#DFE6E5] bg-white text-[14px] font-medium ${rider.status?.toLowerCase() === 'suspended' ? 'text-[#00A63E]' : 'text-[#FF0707]'
+              }`}
           >
             {rider.status?.toLowerCase() === 'suspended' ? (
               <img
