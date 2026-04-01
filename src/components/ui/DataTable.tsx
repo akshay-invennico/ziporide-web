@@ -76,8 +76,8 @@ function DataTable<T extends object>({
     if (!column) return data;
 
     return [...data].sort((a, b) => {
-      const valA = (a as Record<string, any>)[sortKey];
-      const valB = (b as Record<string, any>)[sortKey];
+      const valA = (a as Record<string, unknown>)[sortKey];
+      const valB = (b as Record<string, unknown>)[sortKey];
 
       if (valA === valB) return 0;
       if (valA === null || valA === undefined) return 1;
@@ -85,22 +85,25 @@ function DataTable<T extends object>({
 
       switch (column.type) {
         case 'number': {
-          const numA = parseFloat(String(valA).replace(/[£,\+\-]/g, '')) || 0;
-          const numB = parseFloat(String(valB).replace(/[£,\+\-]/g, '')) || 0;
+          const numA = parseFloat(String(valA).replace(/[£,+-]/g, '')) || 0;
+          const numB = parseFloat(String(valB).replace(/[£,+-]/g, '')) || 0;
           return numA - numB;
         }
         case 'date': {
           // Join date and time if available (Ziporide pattern)
-          const dateStrA = (a as any).date && (a as any).time ? `${(a as any).date} ${(a as any).time}` : String(valA);
-          const dateStrB = (b as any).date && (b as any).time ? `${(b as any).date} ${(b as any).time}` : String(valB);
+          const recA = a as Record<string, unknown>;
+          const recB = b as Record<string, unknown>;
+          const dateStrA = recA.date && recA.time ? `${recA.date} ${recA.time}` : String(valA);
+          const dateStrB = recB.date && recB.time ? `${recB.date} ${recB.time}` : String(valB);
 
-          return new Date(dateStrA).getTime() - new Date(dateStrB).getTime();
+          return new Date(String(dateStrA)).getTime() - new Date(String(dateStrB)).getTime();
         }
         case 'string':
         default: {
-          const toString = (val: any) => {
+          const toString = (val: unknown) => {
             if (val && typeof val === 'object') {
-              if (val.pickupLocation) return val.pickupLocation;
+              const obj = val as Record<string, unknown>;
+              if (obj.pickupLocation) return String(obj.pickupLocation);
               return JSON.stringify(val);
             }
             return String(val ?? '');

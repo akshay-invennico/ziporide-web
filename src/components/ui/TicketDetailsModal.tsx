@@ -2,6 +2,7 @@ import { X, Copy } from 'lucide-react';
 import React from 'react';
 
 import type { SupportTicket } from '../../types/support.types';
+
 import LoadingSpinner from './LoadingSpinner';
 
 interface TicketDetailsModalProps {

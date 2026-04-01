@@ -2,8 +2,8 @@ import { Star, ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import DataTable, { type Column } from '@/components/ui/DataTable';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useDriverTrips, useTripDetails } from '@/hooks/useDriver';
 import type { TripRecord } from '@/types/driver.types';
 
