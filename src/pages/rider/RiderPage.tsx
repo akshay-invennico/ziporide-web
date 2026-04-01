@@ -17,6 +17,7 @@ import RiderPDFDocument from '../../components/rider/RiderPDFDocument';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
+import BulkExportBar from '../../components/ui/BulkExportBar';
 
 const RiderPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,6 +103,7 @@ const RiderPage = () => {
       {
         key: 'name',
         label: 'RIDER',
+        type: 'string',
         sortable: true,
         render: (rider) => (
           <div className="flex items-center gap-3">
@@ -128,6 +130,7 @@ const RiderPage = () => {
       {
         key: 'email',
         label: 'EMAIL',
+        type: 'string',
         sortable: true,
         render: (rider) => (
           <span className="text-[#1DAFA1] font-medium text-[14px]">{rider.email || '-'}</span>
@@ -136,6 +139,7 @@ const RiderPage = () => {
       {
         key: 'totalTrips',
         label: 'TOTAL TRIPS',
+        type: 'number',
         sortable: true,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">{rider.totalTrips || 0}</span>
@@ -144,6 +148,7 @@ const RiderPage = () => {
       {
         key: 'totalSpent',
         label: 'TOTAL SPENT',
+        type: 'number',
         sortable: true,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
@@ -154,6 +159,7 @@ const RiderPage = () => {
       {
         key: 'rating',
         label: 'RATINGS',
+        type: 'number',
         sortable: true,
         render: (rider) => (
           <div className="flex items-center gap-1.5">
@@ -167,6 +173,7 @@ const RiderPage = () => {
       {
         key: 'status',
         label: 'STATUS',
+        type: 'string',
         sortable: true,
         render: (rider) => (
           <div className="flex items-center gap-2">
@@ -327,6 +334,12 @@ const RiderPage = () => {
             ? 'reactivate'
             : 'suspend'
         }
+      />
+
+      <BulkExportBar
+        count={selectedRiderIds.length}
+        onExportPDF={handleExportPDF}
+        onExportCSV={handleExportCSV}
       />
     </div>
   );

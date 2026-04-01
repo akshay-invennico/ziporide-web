@@ -63,6 +63,19 @@ const TripDetailsModal = ({
   const cancelledByRider = isCancelled && trip.cancellationDetails?.cancelledBy === 'rider';
   const cancelledByDriver = isCancelled && trip.cancellationDetails?.cancelledBy === 'driver';
 
+  const formatTripDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+
+    const day = String(d.getDate()).padStart(2, '0');
+    // Ensure month formats beautifully (e.g. Feb instead of full string if default gets weird) 
+    const month = d.toLocaleString('en-US', { month: 'short' });
+    const year = d.getFullYear();
+
+    return `${day} ${month}, ${year}`;
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(trip.id);
   };
@@ -118,7 +131,7 @@ const TripDetailsModal = ({
               <div className="flex items-center gap-3 text-[14px] font-medium text-[#000000]">
                 <div className="flex items-center gap-1.5">
                   <img src="/icons/verification/cale.svg" alt="date" className="w-4 h-4" />
-                  <span>{trip.date}</span>
+                  <span>{formatTripDate(trip.date)}</span>
                 </div>
                 <div className="w-[5px] h-[5px] rounded-full bg-[#939999]" />
                 <div className="flex items-center gap-3">
@@ -317,7 +330,7 @@ const TripDetailsModal = ({
             <div
               className={`border-t border-[#DFE6E5] pt-5 mt-2 grid grid-cols-1 ${viewMode ? 'sm:grid-cols-1' : 'sm:grid-cols-2'} gap-5`}
             >
-              {viewMode !== 'rider' && !(isCancelled && viewMode === 'driver') && (
+              {viewMode !== 'rider' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[14px] font-medium text-[#4E616A]">Rider's Info</span>
                   <div className="flex items-center gap-3">
@@ -345,7 +358,7 @@ const TripDetailsModal = ({
                 </div>
               )}
 
-              {(viewMode !== 'driver' || (isCancelled && viewMode === 'driver')) && (
+              {viewMode !== 'driver' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[14px] font-medium text-[#4E616A]">Driver's Info</span>
                   <div className="flex items-center gap-3">
@@ -420,11 +433,10 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.riderFeedback?.rating || 5)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 5)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>
@@ -443,11 +455,10 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.driverFeedback?.rating || 5)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 5)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>

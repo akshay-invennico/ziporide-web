@@ -19,9 +19,9 @@ const TransactionsPage: React.FC = () => {
   const [params, setParams] = useState<UseTransactionsParams>({
     page: 1,
     limit: 12,
-    category: 'All',
     search: '',
   });
+  const [activeFilter, setActiveFilter] = useState<'All' | 'Pay-in' | 'Payout' | 'Refund'>('All');
 
   const { transactions, loading, pagination } = useTransactions(params);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -74,22 +74,14 @@ const TransactionsPage: React.FC = () => {
     }
   };
 
-  const formatAmount = (amount: number, type: string) => {
-    const isPositive =
-      [
-        'Ride Payment',
-        'Subscription Payment',
-        'Cancellation Fee',
-        'No-Show Fee',
-        'Driver Incentive',
-      ].includes(type) && amount > 0;
-    const sign = isPositive ? '+' : '-';
-    // Ensure amount is treated as positive for formatting, then add sign
+  const formatAmount = (amount: number) => {
+    const isNegative = amount < 0;
     const absAmount = Math.abs(amount).toFixed(2);
-    const color = isPositive ? 'text-[#1DAFA1]' : 'text-[#FF0707]';
+    const color = isNegative ? 'text-[#FF0707]' : 'text-[#1DAFA1]';
+
     return (
       <span className={`font-semibold ${color}`}>
-        {sign} £{absAmount}
+        {isNegative ? '-' : '+'} £{absAmount}
       </span>
     );
   };
@@ -127,6 +119,7 @@ const TransactionsPage: React.FC = () => {
       {
         key: 'id',
         label: 'TRANSACTION ID',
+        type: 'string',
         sortable: true,
         render: (txn) => (
           <span
@@ -140,6 +133,7 @@ const TransactionsPage: React.FC = () => {
       {
         key: 'type',
         label: 'TYPE',
+        type: 'string',
         render: (txn) => (
           <span className="text-[#4E616A] text-[14px] font-medium whitespace-nowrap">
             {txn.type}
@@ -149,14 +143,16 @@ const TransactionsPage: React.FC = () => {
       {
         key: 'amount',
         label: 'AMOUNT',
+        type: 'number',
         sortable: true,
         render: (txn) => (
-          <span className="whitespace-nowrap">{formatAmount(txn.amount, txn.type)}</span>
+          <span className="whitespace-nowrap">{formatAmount(txn.amount)}</span>
         ),
       },
       {
         key: 'date',
         label: 'TIME & DATE',
+        type: 'date',
         sortable: true,
         render: (txn) => (
           <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap flex items-center gap-2">
@@ -169,6 +165,7 @@ const TransactionsPage: React.FC = () => {
       {
         key: 'status',
         label: 'STATUS',
+        type: 'string',
         sortable: true,
         render: (txn) => getStatusBadge(txn.status),
       },
@@ -187,6 +184,25 @@ const TransactionsPage: React.FC = () => {
     ],
     [],
   );
+
+  const filteredTransactions = useMemo(() => {
+    if (activeFilter === 'All') return transactions;
+    return transactions.filter((txn) => {
+      const type = txn.type.toLowerCase();
+      const filterType = txn.filterType?.toLowerCase();
+
+      if (activeFilter === 'Pay-in') {
+        return filterType === 'pay-in' || type.includes('subscription') || type === 'pay_in';
+      }
+      if (activeFilter === 'Payout') {
+        return filterType === 'payout' || type.includes('payout') || (type === 'charge' && !filterType);
+      }
+      if (activeFilter === 'Refund') {
+        return filterType === 'refunded' || type.includes('refunded');
+      }
+      return true;
+    });
+  }, [transactions, activeFilter]);
 
   return (
     <div className="flex flex-col bg-white p-1 h-full">
@@ -213,13 +229,13 @@ const TransactionsPage: React.FC = () => {
                 <button
                   key={filter}
                   onClick={() => {
-                    setParams((prev) => ({ ...prev, category: filter, page: 1 }));
+                    setActiveFilter(filter);
+                    setParams((prev) => ({ ...prev, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                    params.category === filter
-                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                      : 'border-[#DFE6E5] text-[#4E616A]'
-                  }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${activeFilter === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A]'
+                    }`}
                 >
                   {filter}
                 </button>
@@ -245,7 +261,7 @@ const TransactionsPage: React.FC = () => {
 
         <DataTable<Transaction>
           columns={columns}
-          data={transactions}
+          data={filteredTransactions}
           rowKey={(txn) => txn.id}
           loading={loading}
           currentPage={pagination.currentPage}

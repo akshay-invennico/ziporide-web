@@ -53,21 +53,14 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
     );
   };
 
-  const formatAmount = (amount: number, type: string) => {
-    const isPositive =
-      [
-        'Ride Payment',
-        'Subscription Payment',
-        'Cancellation Fee',
-        'No-Show Fee',
-        'Driver Incentive',
-      ].includes(type) && amount > 0;
-    const sign = isPositive ? '+' : '-';
+  const formatAmount = (amount: number) => {
+    const isNegative = amount < 0;
     const absAmount = Math.abs(amount).toFixed(2);
-    const color = isPositive ? 'text-[#1DAFA1]' : 'text-[#FF0707]';
+    const color = isNegative ? 'text-[#FF0707]' : 'text-[#1DAFA1]';
+
     return (
       <span className={`text-[16px] font-semibold ${color}`}>
-        {sign} £{absAmount}
+        {isNegative ? '-' : '+'} £{absAmount}
       </span>
     );
   };
@@ -123,7 +116,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
           <div className="grid grid-cols-2 gap-y-4 gap-x-12">
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-[#747C84]">Amount</span>
-              {formatAmount(transaction.amount, transaction.type)}
+              {formatAmount(transaction.amount)}
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-[#747C84]">Type</span>
@@ -142,53 +135,59 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
               </span>
             </div>
 
-            {/* For most types (except Subscription), show Trip ID */}
-            {transaction.type !== 'Subscription Payment' && (
-              <div className="flex flex-col gap-1.5 col-span-2">
-                <span className="text-[12px] font-medium text-[#747C84]">Trip ID</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-medium text-[#1DAFA1]">
-                    {transaction.tripId || 'N/A'}
-                  </span>
-                  {transaction.tripId && transaction.tripId !== 'N/A' && (
-                    <button
-                      onClick={() => handleCopy(transaction.tripId!)}
-                      className="p-1 hover:bg-gray-50 rounded cursor-pointer"
-                    >
-                      <Copy className="w-4 h-4 text-[#1DAFA1]" />
-                    </button>
-                  )}
+            {/* Contextual Trip ID Section */}
+            {(transaction.type.includes('Ride') ||
+              transaction.type.includes('Fee') ||
+              transaction.type.includes('Trip') ||
+              transaction.type === 'Charge') && (
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <span className="text-[12px] font-medium text-[#747C84]">Trip ID</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-medium text-[#1DAFA1]">
+                      {transaction.tripId || 'N/A'}
+                    </span>
+                    {transaction.tripId && transaction.tripId !== 'N/A' && (
+                      <button
+                        onClick={() => handleCopy(transaction.tripId!)}
+                        className="p-1 hover:bg-gray-50 rounded cursor-pointer"
+                      >
+                        <Copy className="w-4 h-4 text-[#1DAFA1]" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Show Driver/Receiver Info for Subscription, Refund, or Driver Payout */}
-            {(transaction.type === 'Subscription Payment' ||
-              transaction.type === 'Refund' ||
-              transaction.type === 'Driver Payout') && (
-              <div className="flex flex-col gap-1.5 col-span-2">
-                <span className="text-[12px] font-medium text-[#667085]">
-                  {transaction.type === 'Refund' ? 'Receiver Info' : 'Driver Info'}
-                </span>
-                <div className="flex items-center gap-3">
-                  <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
-                    <img
-                      src={transaction.driver?.avatar || '/icons/driver/avatar1.png'}
-                      alt={transaction.driver?.name || 'User'}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[14px] font-semibold text-[#101828]">
-                      {transaction.driver?.name || 'Unknown User'}
-                    </span>
-                    <span className="text-[12px] text-[#1DAFA1] font-medium">
-                      {transaction.driver?.id || 'N/A'}
-                    </span>
+            {/* Contextual Driver/Pilot Info Section */}
+            {(transaction.type.includes('Subscription') ||
+              transaction.type.includes('Refund') ||
+              transaction.type.includes('Payout') ||
+              transaction.type.includes('Incentive') ||
+              transaction.type.includes('Payment') ||
+              transaction.type === 'Charge') && (
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <span className="text-[12px] font-medium text-[#667085]">
+                    {transaction.type === 'Refund' ? 'Receiver Info' : 'Driver Info'}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
+                      <img
+                        src={transaction.driver?.profile || '/icons/profileImage.jpg'}
+                        alt={transaction.driver?.name || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[14px] font-semibold text-[#101828]">
+                        {transaction.driver?.name || 'Unknown User'}
+                      </span>
+                      <span className="text-[12px] text-[#1DAFA1] font-medium">
+                        {transaction.driver?.id || 'N/A'}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>

@@ -146,6 +146,7 @@ export const useExportSupportCSV = () => {
         const rows = allTickets.map((ticket) => [
           ticket.ticketId,
           ticket.cause,
+          ticket.driver?.profile || 'N/A',
           ticket.driver?.name || 'N/A',
           ticket.driver?.phone || 'N/A',
           new Date(ticket.createdAt).toLocaleDateString('en-CA'),

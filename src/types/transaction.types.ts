@@ -8,6 +8,7 @@ export interface Transaction {
   source: string;
   gateway: string;
   receiptUrl?: string;
+  filterType?: string;
   createdAt: string;
   updatedAt: string;
   date?: string; // Mapped for UI
@@ -18,7 +19,7 @@ export interface Transaction {
   driver?: {
     name: string;
     id: string;
-    avatar?: string;
+    profile?: string;
     email?: string;
     phone?: string;
   };
