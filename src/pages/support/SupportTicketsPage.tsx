@@ -15,6 +15,7 @@ import {
 import type { UseSupportTicketsParams } from '../../hooks/useSupportTickets';
 import type { SupportTicket } from '../../types/support.types';
 
+
 const SupportTicketsPage: React.FC = () => {
   const [params, setParams] = useState<UseSupportTicketsParams>({
     page: 1,
@@ -27,6 +28,7 @@ const SupportTicketsPage: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState<'checking' | 'resolved' | null>(null);
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -96,9 +98,14 @@ const SupportTicketsPage: React.FC = () => {
   };
 
   const handleStatusChange = async (ticketId: string, newStatus: SupportTicket['status']) => {
-    await updateTicketStatus(ticketId, newStatus);
-    if (selectedTicket?.ticketId === ticketId) {
-      setSelectedTicket((prev) => (prev ? { ...prev, status: newStatus } : null));
+    setUpdatingStatus(newStatus as 'checking' | 'resolved');
+    try {
+      await updateTicketStatus(ticketId, newStatus);
+      if (selectedTicket?.ticketId === ticketId) {
+        setSelectedTicket((prev) => (prev ? { ...prev, status: newStatus } : null));
+      }
+    } finally {
+      setUpdatingStatus(null);
     }
   };
 
@@ -129,14 +136,26 @@ const SupportTicketsPage: React.FC = () => {
         render: (ticket) =>
           ticket.driver ? (
             <div className="flex items-center gap-3">
-              <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 bg-[#1DAFA1]">
-                {ticket.driver.name
-                  .trim()
-                  .split(' ')
-                  .map((w) => w[0])
-                  .join('')
-                  .toUpperCase()
-                  .slice(0, 2)}
+              <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 bg-[#1DAFA1] overflow-hidden relative">
+                <span className="absolute inset-0 flex items-center justify-center">
+                  {ticket.driver.name
+                    ?.trim()
+                    .split(' ')
+                    .map((w) => w[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2) || 'DR'}
+                </span>
+                {ticket.driver.profile && (
+                  <img
+                    src={ticket.driver.profile}
+                    alt={ticket.driver.name}
+                    className="w-full h-full object-cover relative z-10"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                )}
               </div>
               <div className="flex flex-col">
                 <span className="text-[14px] font-semibold text-[#1DAFA1]">
@@ -216,11 +235,10 @@ const SupportTicketsPage: React.FC = () => {
                   onClick={() => {
                     setParams((prev) => ({ ...prev, status: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                    params.status === filter
-                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                      : 'border-[#DFE6E5] text-[#4E616A]'
-                  }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.status === filter
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A]'
+                    }`}
                 >
                   {filter}
                 </button>
@@ -262,6 +280,7 @@ const SupportTicketsPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         ticket={selectedTicket}
         onStatusChange={handleStatusChange}
+        updatingStatus={updatingStatus}
       />
     </div>
   );

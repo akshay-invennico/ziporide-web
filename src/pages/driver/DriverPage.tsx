@@ -17,6 +17,7 @@ import DriverPDFDocument from '../../components/driver/DriverPDFDocument';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
+import BulkExportBar from '../../components/ui/BulkExportBar';
 
 const DriverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -352,6 +353,12 @@ const DriverPage = () => {
             ? 'reactivate'
             : 'suspend'
         }
+      />
+
+      <BulkExportBar
+        count={selectedDriverIds.length}
+        onExportPDF={handleExportPDF}
+        onExportCSV={handleExportCSV}
       />
     </div>
   );

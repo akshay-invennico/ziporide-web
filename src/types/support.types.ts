@@ -14,6 +14,7 @@ export interface SupportTicket {
     id: string;
     name: string;
     phone: string;
+    profile?: string;
   } | null;
   createdAt: string;
 }

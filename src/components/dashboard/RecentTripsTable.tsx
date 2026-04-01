@@ -120,7 +120,7 @@ export default function RecentTripsTable() {
                   </td>
 
                   {/* Route */}
-                  <td className="px-4 py-3.5 font-medium text-[#4E616A] text-[14px]">
+                  <td className="px-4 py-3.5 font-medium text-[#4E616A] text-[14px] text-nowrap">
                     <div className="flex items-center gap-1.5">
                       <span>{trip.route.pickupLocation.split(',')[0]}</span>
                       <ArrowRight className="w-[18px] h-[18px]" />

@@ -141,17 +141,16 @@ export default function Header() {
         <div className="relative" ref={dropdownRef}>
           <div
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 cursor-pointer border border-[#DFE6E5] p-1.5 rounded-full pr-3 transition-colors hover:bg-gray-50"
+            className="flex items-center gap-3 cursor-pointer border border-[#DFE6E5] p-1 rounded-[500px] pr-3 w-[100px] h-[54px] transition-colors"
           >
             <img
-              src={user?.profile || '/icons/noProfileImage.jpg'}
+              src={user?.profile || '/icons/profileImage.jpg'}
               alt="Profile"
               className="w-12 h-12 rounded-full object-cover"
             />
             <ChevronDown
-              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${
-                isDropdownOpen ? 'rotate-180' : ''
-              }`}
+              className={`text-[#2D2D2D] w-[20px] h-[20px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
+                }`}
             />
           </div>
 

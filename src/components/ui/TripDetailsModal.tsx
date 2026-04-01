@@ -62,6 +62,8 @@ const TripDetailsModal = ({
   const isCancelled = trip.status === 'Cancelled';
   const hasCancellationInfo = isCancelled && !!trip.cancellationDetails;
 
+
+
   const handleCopy = () => {
     navigator.clipboard.writeText(trip.id);
   };
@@ -120,12 +122,12 @@ const TripDetailsModal = ({
                   <span>
                     {trip.date !== 'N/A'
                       ? new Date(trip.date)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                          })
-                          .replace(' ', ', ')
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                        .replace(' ', ', ')
                       : 'N/A'}
                   </span>
                 </div>
@@ -326,7 +328,7 @@ const TripDetailsModal = ({
             <div
               className={`border-t border-[#DFE6E5] pt-5 mt-2 grid grid-cols-1 ${viewMode ? 'sm:grid-cols-1' : 'sm:grid-cols-2'} gap-5`}
             >
-              {viewMode !== 'rider' && !(isCancelled && viewMode === 'driver') && (
+              {viewMode !== 'rider' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[14px] font-medium text-[#4E616A]">Rider's Info</span>
                   <div className="flex items-center gap-3">
@@ -354,7 +356,7 @@ const TripDetailsModal = ({
                 </div>
               )}
 
-              {(viewMode !== 'driver' || (isCancelled && viewMode === 'driver')) && (
+              {viewMode !== 'driver' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[14px] font-medium text-[#4E616A]">Driver's Info</span>
                   <div className="flex items-center gap-3">
@@ -425,11 +427,10 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.riderFeedback?.rating || 0)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 0)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>
@@ -448,11 +449,10 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.driverFeedback?.rating || 0)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 0)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>

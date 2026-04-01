@@ -113,6 +113,7 @@ export default function TripHistoryPage() {
       {
         key: 'id',
         label: 'TRIP ID',
+        type: 'string',
         sortable: true,
         render: (trip) => (
           <span className="text-[14px] font-medium text-[#14B8A6] whitespace-nowrap">
@@ -123,6 +124,7 @@ export default function TripHistoryPage() {
       {
         key: 'rider',
         label: 'RIDER',
+        type: 'string',
         sortable: true,
         render: (trip) => (
           <div className="flex items-center gap-2.5">
@@ -141,6 +143,7 @@ export default function TripHistoryPage() {
       {
         key: 'driver',
         label: 'DRIVER',
+        type: 'string',
         sortable: true,
         render: (trip) => (
           <div className="flex items-center gap-2.5">
@@ -171,6 +174,8 @@ export default function TripHistoryPage() {
       {
         key: 'route',
         label: 'ROUTE',
+        type: 'string',
+        sortable: true,
         render: (trip) => (
           <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap">
             {trip.route.pickupLocation.split(',')[0]} <span className="mx-1">→</span>{' '}
@@ -181,6 +186,7 @@ export default function TripHistoryPage() {
       {
         key: 'amount',
         label: 'AMOUNT',
+        type: 'number',
         sortable: true,
         render: (trip) => (
           <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap">
@@ -191,6 +197,7 @@ export default function TripHistoryPage() {
       {
         key: 'date',
         label: 'TIME & DATE',
+        type: 'date',
         sortable: true,
         render: (trip) => (
           <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap flex items-center gap-2">
@@ -203,6 +210,7 @@ export default function TripHistoryPage() {
       {
         key: 'status',
         label: 'STATUS',
+        type: 'string',
         sortable: true,
         render: (trip) => {
           const style = STATUS_STYLES[trip.status as TripStatus] || STATUS_STYLES.Assigned;
