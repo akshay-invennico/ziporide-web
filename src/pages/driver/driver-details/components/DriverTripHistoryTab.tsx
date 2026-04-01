@@ -1,11 +1,11 @@
-import { Star, ChevronLeft, ChevronRight, ArrowRightIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useDriverTrips, useTripDetails } from '@/hooks/useDriver';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { useDriverTrips } from '@/hooks/useDriver';
 import type { TripRecord } from '@/types/driver.types';
 
-import LoadingSpinner from '../../../../components/ui/LoadingSpinner';
 import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 
 const ITEMS_PER_PAGE = 12;
@@ -22,7 +22,7 @@ const tripTableColumns: TripTableColumn[] = [
   { key: 'route', label: 'ROUTE', sortable: true },
   { key: 'amount', label: 'AMOUNT', sortable: true },
   { key: 'date', label: 'DATE', sortable: true },
-  { key: 'rating', label: 'RATING', sortable: true },
+  // { key: 'rating', label: 'RATING', sortable: true },
   { key: 'status', label: 'STATUS', sortable: true },
   { key: 'action', label: 'ACTION', sortable: false },
 ];
@@ -49,7 +49,6 @@ export default function DriverTripHistoryTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
-  const [loadingTripId, setLoadingTripId] = useState<string | null>(null);
 
   const { trips, loading, error, totalPages } = useDriverTrips(
     driverId,
@@ -57,8 +56,6 @@ export default function DriverTripHistoryTab() {
     currentPage,
     ITEMS_PER_PAGE,
   );
-
-  const { fetchDetails } = useTripDetails(undefined);
 
   const getPages = () => {
     const pages: (number | '...')[] = [];
@@ -79,28 +76,9 @@ export default function DriverTripHistoryTab() {
     return pages;
   };
 
-  const handleViewTrip = async (trip: TripRecord) => {
-    // Show loading for this specific trip
-    setLoadingTripId(trip.rideId || trip.id);
-    try {
-      // Use the custom hook to fetch single trip details
-      const fullTripData = await fetchDetails(trip.rideId || trip.id);
-      if (fullTripData) {
-        setSelectedTrip(fullTripData);
-        setIsModalOpen(true);
-      } else {
-        // Fallback to the trip data we already have if API fails
-        setSelectedTrip(trip);
-        setIsModalOpen(true);
-      }
-    } catch (err) {
-      console.error('Failed to fetch full trip details:', err);
-      // Fallback on error
-      setSelectedTrip(trip);
-      setIsModalOpen(true);
-    } finally {
-      setLoadingTripId(null);
-    }
+  const handleViewTrip = (trip: TripRecord) => {
+    setSelectedTrip(trip);
+    setIsModalOpen(true);
   };
 
   if (loading && trips.length === 0) {
@@ -135,10 +113,11 @@ export default function DriverTripHistoryTab() {
                             setPeriod(p);
                             setCurrentPage(1);
                           }}
-                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
-                            ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                            : 'border-[#DFE6E5] text-[#4E616A]'
-                            }`}
+                          className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                            period === p
+                              ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                              : 'border-[#DFE6E5] text-[#4E616A]'
+                          }`}
                         >
                           {p}
                         </button>
@@ -199,14 +178,22 @@ export default function DriverTripHistoryTab() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
                         <div className="w-[36px] h-[36px] rounded-full flex bg-[#1DAFA1] items-center justify-center text-white font-bold text-[14px] shrink-0">
-                          {trip.rider.initials}
+                          {trip.rider.initials ||
+                            trip.rider.name
+                              ?.trim()
+                              .split(/\s+/)
+                              .map((n) => n[0])
+                              .join('')
+                              .toUpperCase()
+                              .slice(0, 2) ||
+                            'R'}
                         </div>
                         <div>
                           <p className="text-[14px] font-medium text-[#1DAFA1] leading-tight text-nowrap">
                             {trip.rider.name}
                           </p>
                           <p className="text-[12px] text-[#4E616A] font-medium">
-                            {trip.rider.phone}
+                            {trip.rider.countryCode} {trip.rider.phone}
                           </p>
                         </div>
                       </div>
@@ -231,20 +218,6 @@ export default function DriverTripHistoryTab() {
                       {trip.date}
                     </td>
 
-                    {/* Rating */}
-                    <td className="px-4 py-3">
-                      {trip.rider.rating !== null ? (
-                        <div className="flex items-center gap-1">
-                          <Star className="w-[14px] h-[14px] fill-[#E9A90A] text-[#E9A90A]" />
-                          <span className="text-[14px] font-medium text-[#4E616A]">
-                            {trip.rider.rating.toFixed(1)}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-[14px] text-[#4E616A]">-</span>
-                      )}
-                    </td>
-
                     {/* Status */}
                     <td className="px-4 py-3">
                       <StatusBadge status={trip.status} />
@@ -254,21 +227,10 @@ export default function DriverTripHistoryTab() {
                     <td className="px-4 py-3">
                       <button
                         onClick={() => handleViewTrip(trip)}
-                        disabled={loadingTripId === (trip.rideId || trip.id)}
-                        className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1] cursor-pointer disabled:opacity-50"
+                        className="flex items-center gap-1.5 text-[14px] font-medium text-[#1DAFA1] cursor-pointer"
                       >
-                        {loadingTripId === (trip.rideId || trip.id) ? (
-                          <LoadingSpinner size={20} />
-                        ) : (
-                          <>
-                            <img
-                              src="/icons/rider/eye.svg"
-                              alt="eye"
-                              className="w-[22px] h-[22px]"
-                            />
-                            View
-                          </>
-                        )}
+                        <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
+                        View
                       </button>
                     </td>
                   </tr>

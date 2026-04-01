@@ -7,11 +7,10 @@ import { useToast } from '@/context/useToast';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useVehicleCategories } from '@/hooks/useVehicleCategories';
 import { useVehicles } from '@/hooks/useVehicles';
-import type { VehicleCategory } from '@/types/vehicle.types';
+import type { VehicleCategory, VehicleDatabaseRow } from '@/types/vehicle.types';
 
 import AddCategoryModal from '../../components/ui/AddCategoryModal';
 import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
-import type { VehicleDatabaseRow } from '../../data/VehicleDatabaseData';
 
 const VehicleInventoryPage: React.FC = () => {
   const {
@@ -136,7 +135,9 @@ const VehicleInventoryPage: React.FC = () => {
             />
             <div className="flex flex-col gap-0.5">
               <span className="font-medium text-[#1DAFA1] text-[14px]">{vehicle.driver.name}</span>
-              <span className="text-[12px] font-medium text-[#4E616A]">{vehicle.driver.phone}</span>
+              <span className="text-[12px] font-medium text-[#4E616A]">
+                {vehicle.driver.countryCode} {vehicle.driver.phone}
+              </span>
             </div>
           </div>
         ),

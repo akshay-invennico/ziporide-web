@@ -120,7 +120,17 @@ const VerificationPage = () => {
           <div className="flex items-center gap-3">
             <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[16px] shrink-0 overflow-hidden">
               {!request.avatar || request.avatar.length <= 2 ? (
-                <span>{request.avatar || request.name?.substring(0, 2).toUpperCase() || 'DR'}</span>
+                <span>
+                  {request.avatar && request.avatar.length <= 2
+                    ? request.avatar
+                    : (request.driverName || request.name)
+                        ?.trim()
+                        .split(/\s+/)
+                        .map((n) => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2) || 'DR'}
+                </span>
               ) : (
                 <img
                   src={request.avatar}

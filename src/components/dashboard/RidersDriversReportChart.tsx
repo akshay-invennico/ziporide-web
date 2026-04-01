@@ -36,10 +36,11 @@ export default function RidersDriversReportChart() {
               key={item}
               onClick={() => setFilter(item)}
               disabled={loading}
-              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${filter === item
+              className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                filter === item
                   ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                   : 'border-[#DFE6E5] text-[#4E616A] bg-white'
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {item}
             </button>

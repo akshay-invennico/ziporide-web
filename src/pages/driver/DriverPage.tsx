@@ -129,14 +129,22 @@ const DriverPage = () => {
               </div>
             ) : (
               <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
-                {(driver.name || driver.driverName || 'D')[0].toUpperCase()}
+                {(driver.name || driver.driverName)
+                  ?.trim()
+                  .split(/\s+/)
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2) || 'D'}
               </div>
             )}
             <div className="flex flex-col">
               <span className="font-medium text-[#1DAFA1] text-[14px]">
                 {driver.name || driver.driverName}
               </span>
-              <span className="text-[12px] font-medium text-[#4E616A]">{driver.phone}</span>
+              <span className="text-[12px] font-medium text-[#4E616A] whitespace-nowrap">
+                {driver.countryCode} {driver.phone}
+              </span>
             </div>
           </div>
         ),

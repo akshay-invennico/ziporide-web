@@ -1,12 +1,13 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import Header from './Header';
 import Sidebar from './Sidebar';
 
 export default function AdminLayout() {
+  const location = useLocation();
   return (
     // Full viewport — dark background always visible, no page-level scroll
-    <div className="flex h-screen bg-[#2D2D2D] font-sans overflow-hidden">
+    <div className="flex h-screen bg-[#2D2D2D] font-sans">
       {/* Sidebar sits directly ON the dark background, fixed, never scrolls */}
       <Sidebar />
 
@@ -21,7 +22,7 @@ export default function AdminLayout() {
 
           {/* Main: ONLY this scrolls — content clips inside the rounded card */}
           <main className="flex-1 overflow-y-auto overflow-x-hidden px-8 py-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <Outlet />
+            <Outlet key={location.pathname} />
           </main>
         </div>
       </div>

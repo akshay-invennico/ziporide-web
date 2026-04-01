@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
-import type { VehicleDatabaseRow } from '@/data/VehicleDatabaseData';
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
-import type { VehiclesResponse, ApiVehicle } from '@/types/vehicle.types';
+import type { VehiclesResponse, ApiVehicle, VehicleDatabaseRow } from '@/types/vehicle.types';
 
 export const useVehicles = (
   page: number = 1,
@@ -42,6 +41,7 @@ export const useVehicles = (
           driver: {
             name: item.driver.name,
             phone: item.driver.phone,
+            countryCode: item.driver.countryCode || '',
             image: item.driver.profilePhotoUrl || 'https://i.pravatar.cc/150',
           },
           status: item.status === 'approved' ? 'Active' : 'Suspended',

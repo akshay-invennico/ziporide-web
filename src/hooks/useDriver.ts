@@ -91,10 +91,7 @@ export const useDrivers = (
           params.maxTrips = initialFilters.maxTrips;
         }
         if (initialFilters.rating && initialFilters.rating !== 'All') {
-          params.rating = String(initialFilters.rating)
-            .toLowerCase()
-            .replace(/ & /g, '_')
-            .replace(/ /g, '_');
+          params.rating = `${initialFilters.rating}_and_above`;
         }
       }
 
@@ -342,7 +339,7 @@ export const mapBackendTripToFrontend = (t: RawRideData): TripRecord => {
           phone: t.rider.phone || 'N/A',
           avatar: t.rider.avatar || '',
           initials: t.rider.initials || (t.rider.name ? t.rider.name.charAt(0) : 'U'),
-          rating: typeof t.rider.rating === 'number' ? t.rider.rating : 5.0,
+          rating: typeof t.rider.rating === 'number' ? t.rider.rating : 0,
         }
       : {
           id: 'N/A',
@@ -350,7 +347,7 @@ export const mapBackendTripToFrontend = (t: RawRideData): TripRecord => {
           phone: 'N/A',
           avatar: '',
           initials: 'U',
-          rating: 5.0,
+          rating: 0,
         },
     driver: t.driver
       ? {
@@ -435,13 +432,15 @@ export const useDriverTrips = (
         page,
         limit,
       };
-      if (dateFilter && dateFilter !== 'Year') {
+      if (dateFilter) {
         params.dateFilter =
-          dateFilter === 'This Month'
-            ? 'currentMonth'
-            : dateFilter === 'This Week'
-              ? 'currentWeek'
-              : dateFilter;
+          dateFilter === 'Year'
+            ? 'currentYear'
+            : dateFilter === 'This Month'
+              ? 'currentMonth'
+              : dateFilter === 'This Week'
+                ? 'currentWeek'
+                : dateFilter;
       }
 
       const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
@@ -552,10 +551,7 @@ export const useExportDriversCSV = () => {
           if (filters.maxTrips !== undefined && filters.maxTrips < 500)
             params.maxTrips = filters.maxTrips;
           if (filters.rating && filters.rating !== 'All') {
-            params.rating = String(filters.rating)
-              .toLowerCase()
-              .replace(/ & /g, '_')
-              .replace(/ /g, '_');
+            params.rating = `${filters.rating}_and_above`;
           }
         } else {
           params.page = currentPage;
@@ -659,10 +655,7 @@ export const useExportDriversPDF = () => {
           if (filters.maxTrips !== undefined && filters.maxTrips < 500)
             params.maxTrips = filters.maxTrips;
           if (filters.rating && filters.rating !== 'All') {
-            params.rating = String(filters.rating)
-              .toLowerCase()
-              .replace(/ & /g, '_')
-              .replace(/ /g, '_');
+            params.rating = `${filters.rating}_and_above`;
           }
         } else {
           params.page = currentPage;
