@@ -25,16 +25,17 @@ const mapStatus = (status: string) => {
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
-const mapPaymentMethod = (pm: any) => {
+const mapPaymentMethod = (pm: Record<string, unknown> | string | null | undefined): string => {
   if (!pm) return 'N/A';
   if (typeof pm === 'string') return pm;
   if (pm.type === 'card' && pm.card) {
-    const brand = pm?.card?.brand
-      ? pm.card.brand.charAt(0).toUpperCase() + pm.card.brand.slice(1)
+    const card = pm.card as Record<string, unknown>;
+    const brand = card?.brand
+      ? String(card.brand).charAt(0).toUpperCase() + String(card.brand).slice(1)
       : 'Card';
-    return `${brand} •••• ${pm?.card?.last4}`;
+    return `${brand} •••• ${card?.last4}`;
   }
-  return pm.type ? pm.type.charAt(0).toUpperCase() + pm.type.slice(1) : 'N/A';
+  return pm.type ? String(pm.type).charAt(0).toUpperCase() + String(pm.type).slice(1) : 'N/A';
 };
 
 export const useTransactions = (
@@ -76,8 +77,8 @@ export const useTransactions = (
           date: item.createdAt.substring(0, 10),
           time: item.createdAt.substring(11, 16),
           paymentMethod: mapPaymentMethod(item.paymentMethod),
-          externalId: (item as any).stripeTransferId || 'N/A',
-          tripId: (item as any).ride?.rideNumber || 'N/A',
+          externalId: ((item as unknown) as Record<string, unknown>).stripeTransferId as string || 'N/A',
+          tripId: (((item as unknown) as Record<string, unknown>).ride as Record<string, unknown>)?.rideNumber as string || 'N/A',
           driver: item.driver
             ? {
               ...item.driver,

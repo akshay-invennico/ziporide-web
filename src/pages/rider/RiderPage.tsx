@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
-import { usePermissions } from '@/hooks/usePermissions';
 import {
   useRiders,
   useUpdateRiderStatus,
@@ -14,10 +13,10 @@ import {
 import type { Rider } from '@/types/rider.types';
 
 import RiderPDFDocument from '../../components/rider/RiderPDFDocument';
+import BulkExportBar from '../../components/ui/BulkExportBar';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
-import BulkExportBar from '../../components/ui/BulkExportBar';
 
 const RiderPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,8 +65,6 @@ const RiderPage = () => {
   const [suspendedRiderId, setSuspendedRiderId] = useState<string | null>(null);
 
   const { updateStatus, isUpdating } = useUpdateRiderStatus();
-  const { hasPermission } = usePermissions();
-  const canManageRiders = hasPermission('riders.manage');
 
   const { exportCSV } = useExportRidersCSV();
   const { fetchAllRiders, setIsExporting: setIsExportingPDF } = useExportRidersPDF();
@@ -240,7 +237,7 @@ const RiderPage = () => {
         ),
       },
     ],
-    [canManageRiders],
+    [],
   );
 
   return (

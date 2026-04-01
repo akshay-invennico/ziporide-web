@@ -10,14 +10,13 @@ import {
   useExportDriversCSV,
   useExportDriversPDF,
 } from '@/hooks/useDriver';
-import { usePermissions } from '@/hooks/usePermissions';
 import type { Driver } from '@/types/driver.types';
 
 import DriverPDFDocument from '../../components/driver/DriverPDFDocument';
+import BulkExportBar from '../../components/ui/BulkExportBar';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
-import BulkExportBar from '../../components/ui/BulkExportBar';
 
 const DriverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,9 +65,6 @@ const DriverPage = () => {
   const [suspendedDriverId, setSuspendedDriverId] = useState<string | null>(null);
 
   const { updateStatus, isUpdating } = useUpdateDriverStatus();
-  const { hasPermission } = usePermissions();
-  const canManageDrivers = hasPermission('drivers.manage');
-
   const { exportCSV } = useExportDriversCSV();
   const { fetchAllDrivers, setIsExporting: setIsExportingPDF } = useExportDriversPDF();
 
@@ -248,7 +244,7 @@ const DriverPage = () => {
         },
       },
     ],
-    [canManageDrivers],
+    [],
   );
 
   return (
