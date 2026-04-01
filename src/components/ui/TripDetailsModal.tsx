@@ -62,18 +62,7 @@ const TripDetailsModal = ({
   const isCancelled = trip.status === 'Cancelled';
   const hasCancellationInfo = isCancelled && !!trip.cancellationDetails;
 
-  const formatTripDate = (dateStr?: string) => {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
 
-    const day = String(d.getDate()).padStart(2, '0');
-    // Ensure month formats beautifully (e.g. Feb instead of full string if default gets weird) 
-    const month = d.toLocaleString('en-US', { month: 'short' });
-    const year = d.getFullYear();
-
-    return `${day} ${month}, ${year}`;
-  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(trip.id);
@@ -439,8 +428,8 @@ const TripDetailsModal = ({
                         <Star
                           key={s}
                           className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 0)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
                             }`}
                         />
                       ))}
@@ -461,8 +450,8 @@ const TripDetailsModal = ({
                         <Star
                           key={s}
                           className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 0)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
                             }`}
                         />
                       ))}

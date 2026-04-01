@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from 'lucide-react';
+import { Star, ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -11,22 +11,6 @@ import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 
 const ITEMS_PER_PAGE = 12;
 
-interface TripTableColumn {
-  key: string;
-  label: string;
-  sortable: boolean;
-}
-
-const tripTableColumns: TripTableColumn[] = [
-  { key: 'tripId', label: 'TRIP ID', sortable: true },
-  { key: 'rider', label: 'RIDER', sortable: true },
-  { key: 'route', label: 'ROUTE', sortable: true },
-  { key: 'amount', label: 'AMOUNT', sortable: true },
-  { key: 'date', label: 'DATE', sortable: true },
-  // { key: 'rating', label: 'RATING', sortable: true },
-  { key: 'status', label: 'STATUS', sortable: true },
-  { key: 'action', label: 'ACTION', sortable: false },
-];
 
 function StatusBadge({ status }: { status: string }) {
   const cfg: Record<string, { dot: string; text: string }> = {
@@ -50,6 +34,7 @@ export default function DriverTripHistoryTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
+  const [loadingTripId, setLoadingTripId] = useState<string | null>(null);
 
   const { trips, loading, error, totalPages } = useDriverTrips(
     driverId,
@@ -177,9 +162,19 @@ export default function DriverTripHistoryTab() {
     },
   ];
 
-  const handleViewTrip = (trip: TripRecord) => {
-    setSelectedTrip(trip);
-    setIsModalOpen(true);
+  const handleViewTrip = async (trip: TripRecord) => {
+    setLoadingTripId(trip.rideId || trip.id);
+    try {
+      const details = await fetchDetails(trip.rideId || trip.id);
+      setSelectedTrip(details || trip);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch trip details:', error);
+      setSelectedTrip(trip);
+      setIsModalOpen(true);
+    } finally {
+      setLoadingTripId(null);
+    }
   };
 
   if (loading && trips.length === 0) {
