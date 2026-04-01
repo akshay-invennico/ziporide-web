@@ -58,10 +58,11 @@ export default function RevenueAnalyticsChart() {
               key={filter}
               onClick={() => setTrendFilter(filter)}
               disabled={loading}
-              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                : 'border-[#DFE6E5] text-[#4E616A] '
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                trendFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {filter}
             </button>

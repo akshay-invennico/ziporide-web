@@ -69,10 +69,7 @@ export const useRiders = (
           params.maxTrips = initialFilters.maxTrips;
         }
         if (initialFilters.rating && initialFilters.rating !== 'All') {
-          params.rating = String(initialFilters.rating)
-            .toLowerCase()
-            .replace(/ & /g, '_')
-            .replace(/ /g, '_');
+          params.rating = initialFilters.rating;
         }
       }
 
@@ -284,6 +281,21 @@ export const useExportRidersCSV = () => {
         if (filters.status && filters.status !== 'All') {
           params.status = filters.status.toLowerCase();
         }
+        if (filters.minSpend !== undefined && filters.minSpend > 0) {
+          params.minSpend = filters.minSpend;
+        }
+        if (filters.maxSpend !== undefined && filters.maxSpend < 1000) {
+          params.maxSpend = filters.maxSpend;
+        }
+        if (filters.minTrips !== undefined && filters.minTrips > 0) {
+          params.minTrips = filters.minTrips;
+        }
+        if (filters.maxTrips !== undefined && filters.maxTrips < 500) {
+          params.maxTrips = filters.maxTrips;
+        }
+        if (filters.rating && filters.rating !== 'All') {
+          params.rating = filters.rating;
+        }
 
         const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
         if (response.data && response.data.success) {
@@ -311,7 +323,7 @@ export const useExportRidersCSV = () => {
           rider.id,
           rider.name,
           rider.email || '',
-          rider.phone,
+          `${rider.countryCode || ''}${rider.phone}`,
           rider.totalTrips || 0,
           (rider.totalSpent || 0).toFixed(2),
           (rider.rating || 0).toFixed(1),
@@ -359,6 +371,21 @@ export const useExportRidersPDF = () => {
 
         if (filters.status && filters.status !== 'All') {
           params.status = filters.status.toLowerCase();
+        }
+        if (filters.minSpend !== undefined && filters.minSpend > 0) {
+          params.minSpend = filters.minSpend;
+        }
+        if (filters.maxSpend !== undefined && filters.maxSpend < 1000) {
+          params.maxSpend = filters.maxSpend;
+        }
+        if (filters.minTrips !== undefined && filters.minTrips > 0) {
+          params.minTrips = filters.minTrips;
+        }
+        if (filters.maxTrips !== undefined && filters.maxTrips < 500) {
+          params.maxTrips = filters.maxTrips;
+        }
+        if (filters.rating && filters.rating !== 'All') {
+          params.rating = filters.rating;
         }
 
         const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });

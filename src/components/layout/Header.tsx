@@ -149,8 +149,9 @@ export default function Header() {
               className="w-12 h-12 rounded-full object-cover"
             />
             <ChevronDown
-              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
-                }`}
+              className={`text-[#2D2D2D] w-4 h-4 transition-transform duration-200 ${
+                isDropdownOpen ? 'rotate-180' : ''
+              }`}
             />
           </div>
 

@@ -16,9 +16,27 @@ export default function RiderInfoTab({ rider }: Props) {
 
         <div className="flex flex-col md:flex-row md:items-start justify-between mb-10 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-[72px] h-[72px] rounded-full bg-[#14B8A6] flex items-center justify-center text-white text-xl font-bold shrink-0">
-              {rider.initials}
-            </div>
+            {rider.profilePhotoUrl || rider.avatar ? (
+              <div className="w-[72px] h-[72px] rounded-full overflow-hidden shrink-0 border border-gray-200">
+                <img
+                  src={rider.profilePhotoUrl || rider.avatar}
+                  alt={rider.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-[72px] h-[72px] rounded-full bg-[#14B8A6] flex items-center justify-center text-white text-xl font-bold shrink-0">
+                {rider.initials ||
+                  rider.name
+                    ?.trim()
+                    .split(/\s+/)
+                    .map((n) => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2) ||
+                  'R'}
+              </div>
+            )}
             <div className="flex flex-col justify-center">
               <h2 className="text-[20px] font-semibold text-[#101828] mb-1">{rider.name}</h2>
               <span className="text-[14px] font-medium text-[#1DAFA1]">{rider.riderId}</span>
@@ -52,7 +70,9 @@ export default function RiderInfoTab({ rider }: Props) {
             </div>
             <div>
               <p className="text-[12px] text-[#4E616A] font-medium mb-1">Phone Number</p>
-              <p className="text-[14px] font-medium text-[#101828]">{rider.phone || '-'}</p>
+              <p className="text-[14px] font-medium text-[#101828] whitespace-nowrap">
+                {rider.countryCode || ''} {rider.phone || '-'}
+              </p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -93,39 +113,31 @@ export default function RiderInfoTab({ rider }: Props) {
             Saved Addresses
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
-                <img src="/icons/rider/homeIcon.svg" alt="home" className="w-[18px] h-[20px]" />
-              </div>
-              <div>
-                <p className="text-[14px] font-semibold text-[#000000] mb-1">Home</p>
-                <p className="text-[12px] text-[#747C84] leading-relaxed font-medium">
-                  {rider.addresses?.home || '-'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
-                <img src="/icons/rider/work.svg" alt="work" className="w-[18px] h-[18px]" />
-              </div>
-              <div>
-                <p className="text-[14px] font-semibold text-[#000000] mb-1">Work</p>
-                <p className="text-[12px] text-[#747C84] leading-relaxed font-medium">
-                  {rider.addresses?.work || '-'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center">
-                <img src="/icons/rider/address.svg" alt="address" className="w-[18px] h-[18px]" />
-              </div>
-              <div>
-                <p className="text-[14px] font-semibold text-[#000000] mb-1">Other</p>
-                <p className="text-[12px] text-[#747C84] leading-relaxed font-medium">
-                  {rider.addresses?.other || '-'}
-                </p>
-              </div>
-            </div>
+            {['home', 'work', 'other'].map((label) => {
+              const addr = rider.addresses?.find((a) => a.label?.toLowerCase() === label);
+              const icon =
+                label === 'home'
+                  ? '/icons/rider/homeIcon.svg'
+                  : label === 'work'
+                    ? '/icons/rider/work.svg'
+                    : '/icons/rider/address.svg';
+
+              return (
+                <div key={label} className="flex items-start gap-3">
+                  <div className="mt-0.5 bg-[#F9F9F9] rounded-full w-[40px] h-[40px] flex items-center justify-center shrink-0">
+                    <img src={icon} alt={label} className="w-[18px] h-[20px]" />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-semibold text-[#000000] mb-1 capitalize">
+                      {label}
+                    </p>
+                    <p className="text-[12px] text-[#747C84] leading-relaxed font-medium">
+                      {addr?.address || '-'}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -83,7 +83,13 @@ export default function DriverInfoTab({ driver }: Props) {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    (driver.name || driver.driverName || 'D')[0].toUpperCase()
+                    (driver.name || driver.driverName || 'D')
+                      .trim()
+                      .split(/\s+/)
+                      .map((n) => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2)
                   )}
                 </div>
                 <div className="flex flex-col justify-center gap-0.5">
