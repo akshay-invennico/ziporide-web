@@ -128,7 +128,7 @@ const OperatorsPage = () => {
             <div className="w-10 h-10 rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
               {getInitials(row.name)}
             </div>
-            <span className="text-[14px] font-medium text-[#1DAFA1]">{row.name}</span>
+            <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap">{row.name}</span>
           </div>
         ),
       },
