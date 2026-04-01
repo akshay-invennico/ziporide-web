@@ -119,7 +119,17 @@ const ApplicationDetailsPage = () => {
           <div className="flex items-center gap-4">
             <div className="w-[72px] h-[72px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-lg font-bold shrink-0 overflow-hidden">
               {!request.profilePhotoUrl && (!request.avatar || request.avatar.length <= 2) ? (
-                <span>{request.avatar || request.name?.substring(0, 2).toUpperCase() || 'DR'}</span>
+                <span>
+                  {request.avatar && request.avatar.length <= 2
+                    ? request.avatar
+                    : (request.driverName || request.name)
+                        ?.trim()
+                        .split(/\s+/)
+                        .map((n) => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2) || 'DR'}
+                </span>
               ) : (
                 <img
                   src={request.profilePhotoUrl || request.avatar}

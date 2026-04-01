@@ -1,7 +1,14 @@
 export interface Address {
-  home?: string;
-  work?: string;
-  other?: string;
+  id: string;
+  label: string;
+  address: string;
+  isDefault: boolean;
+  location: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  user: string;
+  placeId: string;
 }
 
 export interface Rider {
@@ -10,6 +17,7 @@ export interface Rider {
   name: string;
   email: string | null;
   phone: string;
+  countryCode?: string;
   gender?: string;
   status: string;
   avatar?: string;
@@ -22,8 +30,7 @@ export interface Rider {
   rating?: number;
   avgRating?: number; // Consistent with Driver
   initials?: string;
-  address?: Address | string;
-  addresses?: Address; // Consistent with mock
+  addresses?: Address[]; // Consistent with API
 }
 
 export interface RiderResponse {
@@ -61,6 +68,7 @@ export interface RiderSummaryResponse {
 }
 
 export interface SpendingTrendItem {
+  year?: string;
   month?: string;
   day?: string;
   spent: number;

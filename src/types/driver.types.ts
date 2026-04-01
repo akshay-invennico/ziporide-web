@@ -253,6 +253,7 @@ export interface RawRideData {
     id: string;
     name: string;
     phone: string;
+    countryCode?: string;
     avatar?: string;
     initials?: string;
     rating?: number;
@@ -261,6 +262,7 @@ export interface RawRideData {
     id: string;
     name: string;
     phone: string;
+    countryCode?: string;
     avatar?: string;
     profilePhotoUrl?: string;
     rating?: number;
@@ -310,8 +312,9 @@ export interface RawRideData {
   distanceKm?: number;
   durationMinutes?: number;
   cancellation?: {
-    cancelledBy: 'rider' | 'driver';
+    cancelledBy: 'rider' | 'driver' | 'admin';
     reason: string;
+    cancelledAt?: string;
   };
 }
 
@@ -322,6 +325,7 @@ export interface TripRecord {
     id: string;
     name: string;
     phone: string;
+    countryCode?: string;
     avatar: string;
     initials: string;
     rating: number;
@@ -330,6 +334,7 @@ export interface TripRecord {
     id: string;
     name: string;
     phone: string;
+    countryCode?: string;
     avatar: string;
     initials: string;
     rating: number;
@@ -368,7 +373,7 @@ export interface TripRecord {
     note: string;
   };
   cancellationDetails?: {
-    cancelledBy: 'rider' | 'driver';
+    cancelledBy: 'rider' | 'driver' | 'admin';
     tripStage: string;
     reason: string;
     fee: number;
