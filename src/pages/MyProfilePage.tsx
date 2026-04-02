@@ -91,7 +91,7 @@ const MyProfilePage = () => {
                 <div className="relative w-[130px] h-[130px]">
                   <div className="w-full h-full rounded-full border-2 border-dashed border-[#1DAFA1] p-1 overflow-hidden">
                     <img
-                      src={previewUrl || '/images/default-avatar.png'}
+                      src={previewUrl || '/icons/userProfile.svg'}
                       alt="Profile"
                       className="w-full h-full rounded-full object-cover"
                     />
