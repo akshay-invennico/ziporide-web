@@ -62,8 +62,6 @@ const TripDetailsModal = ({
   const isCancelled = trip.status === 'Cancelled';
   const hasCancellationInfo = isCancelled && !!trip.cancellationDetails;
 
-
-
   const handleCopy = () => {
     navigator.clipboard.writeText(trip.id);
   };
@@ -122,12 +120,12 @@ const TripDetailsModal = ({
                   <span>
                     {trip.date !== 'N/A'
                       ? new Date(trip.date)
-                        .toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        })
-                        .replace(' ', ', ')
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })
+                          .replace(' ', ', ')
                       : 'N/A'}
                   </span>
                 </div>
@@ -427,10 +425,11 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 0)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.riderFeedback?.rating || 0)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>
@@ -449,10 +448,11 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 0)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.driverFeedback?.rating || 0)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>

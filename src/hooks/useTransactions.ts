@@ -77,15 +77,18 @@ export const useTransactions = (
           date: item.createdAt.substring(0, 10),
           time: item.createdAt.substring(11, 16),
           paymentMethod: mapPaymentMethod(item.paymentMethod),
-          externalId: ((item as unknown) as Record<string, unknown>).stripeTransferId as string || 'N/A',
-          tripId: (((item as unknown) as Record<string, unknown>).ride as Record<string, unknown>)?.rideNumber as string || 'N/A',
+          externalId:
+            ((item as unknown as Record<string, unknown>).stripeTransferId as string) || 'N/A',
+          tripId:
+            (((item as unknown as Record<string, unknown>).ride as Record<string, unknown>)
+              ?.rideNumber as string) || 'N/A',
           driver: item.driver
             ? {
-              ...item.driver,
-              avatar:
-                item.driver.profile ||
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(item.driver.name)}&background=1DAFA1&color=fff`,
-            }
+                ...item.driver,
+                avatar:
+                  item.driver.profile ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(item.driver.name)}&background=1DAFA1&color=fff`,
+              }
             : undefined,
         }));
 
@@ -114,12 +117,7 @@ export const useTransactions = (
       limit: initialParams.limit,
       search: initialParams.search,
     });
-  }, [
-    fetchTransactions,
-    initialParams.page,
-    initialParams.limit,
-    initialParams.search,
-  ]);
+  }, [fetchTransactions, initialParams.page, initialParams.limit, initialParams.search]);
 
   return {
     transactions,
@@ -144,8 +142,6 @@ export const useExportTransactionsCSV = () => {
         const queryParams = new URLSearchParams();
         queryParams.append('page', currentPage.toString());
         queryParams.append('limit', '50'); // Fetch larger chunks for export
-
-
 
         if (params.search) {
           queryParams.append('search', params.search);
@@ -230,8 +226,6 @@ export const useExportTransactionsPDF = () => {
         const queryParams = new URLSearchParams();
         queryParams.append('page', currentPage.toString());
         queryParams.append('limit', '50');
-
-
 
         if (params.search) {
           queryParams.append('search', params.search);

@@ -140,23 +140,23 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
               transaction.type.includes('Fee') ||
               transaction.type.includes('Trip') ||
               transaction.type === 'Charge') && (
-                <div className="flex flex-col gap-1.5 col-span-2">
-                  <span className="text-[12px] font-medium text-[#747C84]">Trip ID</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[14px] font-medium text-[#1DAFA1]">
-                      {transaction.tripId || 'N/A'}
-                    </span>
-                    {transaction.tripId && transaction.tripId !== 'N/A' && (
-                      <button
-                        onClick={() => handleCopy(transaction.tripId!)}
-                        className="p-1 hover:bg-gray-50 rounded cursor-pointer"
-                      >
-                        <Copy className="w-4 h-4 text-[#1DAFA1]" />
-                      </button>
-                    )}
-                  </div>
+              <div className="flex flex-col gap-1.5 col-span-2">
+                <span className="text-[12px] font-medium text-[#747C84]">Trip ID</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px] font-medium text-[#1DAFA1]">
+                    {transaction.tripId || 'N/A'}
+                  </span>
+                  {transaction.tripId && transaction.tripId !== 'N/A' && (
+                    <button
+                      onClick={() => handleCopy(transaction.tripId!)}
+                      className="p-1 hover:bg-gray-50 rounded cursor-pointer"
+                    >
+                      <Copy className="w-4 h-4 text-[#1DAFA1]" />
+                    </button>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
             {/* Contextual Driver/Pilot Info Section */}
             {(transaction.type.includes('Subscription') ||
@@ -165,29 +165,29 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
               transaction.type.includes('Incentive') ||
               transaction.type.includes('Payment') ||
               transaction.type === 'Charge') && (
-                <div className="flex flex-col gap-1.5 col-span-2">
-                  <span className="text-[12px] font-medium text-[#667085]">
-                    {transaction.type === 'Refund' ? 'Receiver Info' : 'Driver Info'}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
-                      <img
-                        src={transaction.driver?.profile || '/icons/profileImage.jpg'}
-                        alt={transaction.driver?.name || 'User'}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[14px] font-semibold text-[#101828]">
-                        {transaction.driver?.name || 'Unknown User'}
-                      </span>
-                      <span className="text-[12px] text-[#1DAFA1] font-medium">
-                        {transaction.driver?.id || 'N/A'}
-                      </span>
-                    </div>
+              <div className="flex flex-col gap-1.5 col-span-2">
+                <span className="text-[12px] font-medium text-[#667085]">
+                  {transaction.type === 'Refund' ? 'Receiver Info' : 'Driver Info'}
+                </span>
+                <div className="flex items-center gap-3">
+                  <div className="w-[42px] h-[42px] rounded-full bg-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
+                    <img
+                      src={transaction.driver?.profile || '/icons/profileImage.jpg'}
+                      alt={transaction.driver?.name || 'User'}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[14px] font-semibold text-[#101828]">
+                      {transaction.driver?.name || 'Unknown User'}
+                    </span>
+                    <span className="text-[12px] text-[#1DAFA1] font-medium">
+                      {transaction.driver?.id || 'N/A'}
+                    </span>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
           </div>
         </div>
       </div>

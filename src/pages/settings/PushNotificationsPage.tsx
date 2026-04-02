@@ -33,17 +33,13 @@ const columns: Column<NotificationRecord>[] = [
   {
     key: 'title',
     label: 'Title',
-    render: (row) => (
-      <span className="text-[14px] font-medium text-[#101828]">{row.title}</span>
-    ),
+    render: (row) => <span className="text-[14px] font-medium text-[#101828]">{row.title}</span>,
   },
   {
     key: 'body',
     label: 'Message',
     render: (row) => (
-      <span className="text-[14px] text-[#4E616A] max-w-[200px] truncate block">
-        {row.body}
-      </span>
+      <span className="text-[14px] text-[#4E616A] max-w-[200px] truncate block">{row.body}</span>
     ),
   },
   {
@@ -60,9 +56,7 @@ const columns: Column<NotificationRecord>[] = [
   {
     key: 'sentBy',
     label: 'Sent By',
-    render: (row) => (
-      <span className="text-[14px] text-[#4E616A]">{row.sentBy?.name || '-'}</span>
-    ),
+    render: (row) => <span className="text-[14px] text-[#4E616A]">{row.sentBy?.name || '-'}</span>,
   },
   {
     key: 'totalSent',
@@ -163,10 +157,13 @@ const PushNotificationsPage = () => {
                   value={targetAudience}
                   onChange={(e) => {
                     setTargetAudience(e.target.value as TargetAudience | '');
-                    if (errors.targetAudience) setErrors((prev) => ({ ...prev, targetAudience: undefined }));
+                    if (errors.targetAudience)
+                      setErrors((prev) => ({ ...prev, targetAudience: undefined }));
                   }}
                   className={`w-full appearance-none bg-white cursor-pointer border rounded-md px-4 py-3 pr-10 text-[#000000] text-[14px] font-medium outline-none transition-colors ${
-                    errors.targetAudience ? 'border-red-500' : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
+                    errors.targetAudience
+                      ? 'border-red-500'
+                      : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
                   }`}
                 >
                   <option value="">Select Audience</option>
@@ -203,9 +200,7 @@ const PushNotificationsPage = () => {
                   errors.title ? 'border-red-500' : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
                 }`}
               />
-              {errors.title && (
-                <p className="mt-1 text-[12px] text-red-500">{errors.title}</p>
-              )}
+              {errors.title && <p className="mt-1 text-[12px] text-red-500">{errors.title}</p>}
             </div>
 
             {/* Message */}
@@ -224,9 +219,7 @@ const PushNotificationsPage = () => {
                   errors.body ? 'border-red-500' : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
                 }`}
               />
-              {errors.body && (
-                <p className="mt-1 text-[12px] text-red-500">{errors.body}</p>
-              )}
+              {errors.body && <p className="mt-1 text-[12px] text-red-500">{errors.body}</p>}
             </div>
 
             {/* Send Button */}

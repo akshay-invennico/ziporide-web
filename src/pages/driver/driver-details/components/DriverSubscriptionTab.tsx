@@ -76,9 +76,7 @@ export default function DriverSubscriptionTab() {
       label: 'Plan',
       sortable: false,
       render: (row) => (
-        <span className="text-[14px] font-medium text-[#4E616A]">
-          {row.description}
-        </span>
+        <span className="text-[14px] font-medium text-[#4E616A]">{row.description}</span>
       ),
     },
     {
@@ -150,11 +148,7 @@ export default function DriverSubscriptionTab() {
           className="cursor-pointer inline-block"
           title="Download Receipt"
         >
-          <img
-            src="/icons/driver/Download.svg"
-            alt="download"
-            className="w-[22px] h-[22px]"
-          />
+          <img src="/icons/driver/Download.svg" alt="download" className="w-[22px] h-[22px]" />
         </a>
       ),
     },
@@ -270,9 +264,7 @@ export default function DriverSubscriptionTab() {
       <div className="p-1">
         <div className="border border-[#DFE6E5] rounded-lg overflow-hidden bg-white">
           <div className="px-4 py-4 border-b border-[#DFE6E5] bg-white">
-            <span className="text-[20px] font-semibold text-[#000000]">
-              Billing History
-            </span>
+            <span className="text-[20px] font-semibold text-[#000000]">Billing History</span>
           </div>
           <DataTable<BillingHistoryRow>
             columns={columns}

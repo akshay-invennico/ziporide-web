@@ -11,7 +11,6 @@ import TripDetailsModal from '../../../../components/ui/TripDetailsModal';
 
 const ITEMS_PER_PAGE = 12;
 
-
 function StatusBadge({ status }: { status: string }) {
   const cfg: Record<string, { dot: string; text: string }> = {
     Completed: { dot: 'bg-[#00A63E]', text: 'text-[#00A63E]' },
@@ -69,9 +68,7 @@ export default function DriverTripHistoryTab() {
             <p className="text-[14px] font-medium text-[#1DAFA1] leading-tight text-nowrap">
               {trip.rider.name}
             </p>
-            <p className="text-[12px] text-[#4E616A] font-medium">
-              {trip.rider.phone}
-            </p>
+            <p className="text-[12px] text-[#4E616A] font-medium">{trip.rider.phone}</p>
           </div>
         </div>
       ),
@@ -94,9 +91,7 @@ export default function DriverTripHistoryTab() {
       type: 'number',
       sortable: true,
       render: (trip) => (
-        <span className="text-[14px] font-medium text-[#4E616A]">
-          £{trip.totalFare.toFixed(2)}
-        </span>
+        <span className="text-[14px] font-medium text-[#4E616A]">£{trip.totalFare.toFixed(2)}</span>
       ),
     },
     {
@@ -114,7 +109,7 @@ export default function DriverTripHistoryTab() {
       key: 'rating',
       label: 'RATING',
       sortable: false,
-      render: (trip) => (
+      render: (trip) =>
         trip.rider.rating !== null ? (
           <div className="flex items-center gap-1">
             <Star className="w-[14px] h-[14px] fill-[#E9A90A] text-[#E9A90A]" />
@@ -124,16 +119,13 @@ export default function DriverTripHistoryTab() {
           </div>
         ) : (
           <span className="text-[14px] text-[#4E616A]">-</span>
-        )
-      ),
+        ),
     },
     {
       key: 'status',
       label: 'STATUS',
       sortable: true,
-      render: (trip) => (
-        <StatusBadge status={trip.status} />
-      ),
+      render: (trip) => <StatusBadge status={trip.status} />,
     },
     {
       key: 'action',
@@ -149,11 +141,7 @@ export default function DriverTripHistoryTab() {
             <LoadingSpinner size={20} />
           ) : (
             <>
-              <img
-                src="/icons/rider/eye.svg"
-                alt="eye"
-                className="w-[22px] h-[22px]"
-              />
+              <img src="/icons/rider/eye.svg" alt="eye" className="w-[22px] h-[22px]" />
               View
             </>
           )}
@@ -204,10 +192,11 @@ export default function DriverTripHistoryTab() {
                     setPeriod(p);
                     setCurrentPage(1);
                   }}
-                  className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    period === p
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                  }`}
                 >
                   {p}
                 </button>

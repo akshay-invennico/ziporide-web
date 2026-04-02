@@ -15,7 +15,6 @@ import {
 import type { UseSupportTicketsParams } from '../../hooks/useSupportTickets';
 import type { SupportTicket } from '../../types/support.types';
 
-
 const SupportTicketsPage: React.FC = () => {
   const [params, setParams] = useState<UseSupportTicketsParams>({
     page: 1,
@@ -235,10 +234,11 @@ const SupportTicketsPage: React.FC = () => {
                   onClick={() => {
                     setParams((prev) => ({ ...prev, status: filter, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${params.status === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    params.status === filter
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                  }`}
                 >
                   {filter}
                 </button>

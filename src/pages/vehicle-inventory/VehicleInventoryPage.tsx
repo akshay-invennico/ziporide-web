@@ -169,8 +169,9 @@ const VehicleInventoryPage: React.FC = () => {
       <div className="flex gap-8  mb-6">
         <button
           onClick={() => setActiveTab('category')}
-          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-            }`}
+          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${
+            activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+          }`}
         >
           Vehicle Category
           {activeTab === 'category' && (
@@ -179,8 +180,9 @@ const VehicleInventoryPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('database')}
-          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-            }`}
+          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${
+            activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+          }`}
         >
           Vehicle Database
           {activeTab === 'database' && (

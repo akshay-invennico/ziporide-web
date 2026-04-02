@@ -137,7 +137,8 @@ export default function RecentTripsTable() {
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2">
                       <div
-                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${trip.status === 'Completed'
+                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                          trip.status === 'Completed'
                             ? 'bg-[#00A63E]'
                             : trip.status === 'In Progress'
                               ? 'bg-[#F6921E]'
@@ -146,10 +147,11 @@ export default function RecentTripsTable() {
                                 : trip.status === 'Cancelled'
                                   ? 'bg-[#FF0707]'
                                   : 'bg-[#6B7280]'
-                          }`}
+                        }`}
                       />
                       <span
-                        className={`font-semibold text-[12px] text-nowrap ${trip.status === 'Completed'
+                        className={`font-semibold text-[12px] text-nowrap ${
+                          trip.status === 'Completed'
                             ? 'text-[#00A63E]'
                             : trip.status === 'In Progress'
                               ? 'text-[#F6921E]'
@@ -158,7 +160,7 @@ export default function RecentTripsTable() {
                                 : trip.status === 'Cancelled'
                                   ? 'text-[#FF0707]'
                                   : 'text-[#6B7280]'
-                          }`}
+                        }`}
                       >
                         {trip.status}
                       </span>

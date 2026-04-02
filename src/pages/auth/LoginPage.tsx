@@ -53,10 +53,11 @@ const LoginPage = () => {
             </label>
             <div
               className={`flex items-center border rounded-lg px-3 py-3 transition 
-                            ${formik.touched.email && formik.errors.email
-                  ? 'border-red-400 focus-within:border-red-500 '
-                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                }`}
+                            ${
+                              formik.touched.email && formik.errors.email
+                                ? 'border-red-400 focus-within:border-red-500 '
+                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                            }`}
             >
               <img src="/icons/auth/mail.svg" alt="email" className="w-5 h-5 mr-2 shrink-0" />
               <input
@@ -78,10 +79,11 @@ const LoginPage = () => {
             </label>
             <div
               className={`flex items-center border rounded-lg px-3 py-3 transition
-                            ${formik.touched.password && formik.errors.password
-                  ? 'border-red-400 focus-within:border-red-500'
-                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                }`}
+                            ${
+                              formik.touched.password && formik.errors.password
+                                ? 'border-red-400 focus-within:border-red-500'
+                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                            }`}
             >
               <img
                 src={formik.values.password ? '/icons/auth/lockOn.svg' : '/icons/auth/lockOff.svg'}
@@ -121,7 +123,7 @@ const LoginPage = () => {
                   backgroundImage: formik.values.rememberMe
                     ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")`
                     : 'none',
-                  backgroundSize: '100% 100%'
+                  backgroundSize: '100% 100%',
                 }}
               />
               <span className="text-[12px] font-medium text-[#000000]">Remember me</span>

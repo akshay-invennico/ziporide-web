@@ -145,9 +145,7 @@ const TransactionsPage: React.FC = () => {
         label: 'AMOUNT',
         type: 'number',
         sortable: true,
-        render: (txn) => (
-          <span className="whitespace-nowrap">{formatAmount(txn.amount)}</span>
-        ),
+        render: (txn) => <span className="whitespace-nowrap">{formatAmount(txn.amount)}</span>,
       },
       {
         key: 'date',
@@ -195,7 +193,9 @@ const TransactionsPage: React.FC = () => {
         return filterType === 'pay-in' || type.includes('subscription') || type === 'pay_in';
       }
       if (activeFilter === 'Payout') {
-        return filterType === 'payout' || type.includes('payout') || (type === 'charge' && !filterType);
+        return (
+          filterType === 'payout' || type.includes('payout') || (type === 'charge' && !filterType)
+        );
       }
       if (activeFilter === 'Refund') {
         return filterType === 'refunded' || type.includes('refunded');
@@ -232,10 +232,11 @@ const TransactionsPage: React.FC = () => {
                     setActiveFilter(filter);
                     setParams((prev) => ({ ...prev, page: 1 }));
                   }}
-                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${activeFilter === filter
-                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                    : 'border-[#DFE6E5] text-[#4E616A]'
-                    }`}
+                  className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                    activeFilter === filter
+                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                      : 'border-[#DFE6E5] text-[#4E616A]'
+                  }`}
                 >
                   {filter}
                 </button>
