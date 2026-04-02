@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
 import { useAuth } from '@/context/useAuth';
 import { routes } from '@/routes/routes';
@@ -36,43 +36,38 @@ function GuestRoute() {
 
 export default function AppRoutes() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to={routes.DASHBOARD} />} />
+    <Routes>
+      <Route path="/" element={<Navigate to={routes.DASHBOARD} />} />
 
-        <Route element={<GuestRoute />}>
-          <Route path={routes.LOGIN} element={<LoginPage />} />
-          <Route path={routes.FORGOT_PASSWORD} element={<ForgetPasswordPage />} />
-          <Route path={routes.VERIFY_OTP} element={<VerifyPasswordPage />} />
-          <Route path={routes.RESET_PASSWORD} element={<ResetPasswordPage />} />
+      <Route element={<GuestRoute />}>
+        <Route path={routes.LOGIN} element={<LoginPage />} />
+        <Route path={routes.FORGOT_PASSWORD} element={<ForgetPasswordPage />} />
+        <Route path={routes.VERIFY_OTP} element={<VerifyPasswordPage />} />
+        <Route path={routes.RESET_PASSWORD} element={<ResetPasswordPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path={routes.DASHBOARD} element={<DashboardPage />} />
+          <Route path={routes.RIDER} element={<RiderPage />} />
+          <Route path={routes.RIDER_DETAILS} element={<RiderDetailsPage />} />
+          <Route path={routes.DRIVER} element={<DriverPage />} />
+          <Route path={routes.DRIVER_DETAILS} element={<DriverDetailsPage />} />
+          <Route path={routes.VERIFICATION} element={<VerificationPage />} />
+          <Route path={routes.VERIFICATION_DETAILS} element={<ApplicationDetailsPage />} />
+          <Route path={routes.TRIPS} element={<TripHistoryPage />} />
+          <Route path={routes.INVENTORY} element={<VehicleInventoryPage />} />
+          <Route path={routes.TRANSACTIONS} element={<TransactionsPage />} />
+          <Route path={routes.SUPPORT} element={<SupportTicketsPage />} />
+          <Route path={routes.SETTINGS} element={<Navigate to={routes.PRICING_LOGIC} replace />} />
+          <Route path={routes.PRICING_LOGIC} element={<PricingLogicPage />} />
+          <Route path={routes.PUSH_NOTIFICATIONS} element={<PushNotificationsPage />} />
+          <Route path={routes.OPERATORS} element={<OperatorsPage />} />
+          <Route path={routes.MY_PROFILE} element={<MyProfilePage />} />
         </Route>
+      </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route path={routes.DASHBOARD} element={<DashboardPage />} />
-            <Route path={routes.RIDER} element={<RiderPage />} />
-            <Route path={routes.RIDER_DETAILS} element={<RiderDetailsPage />} />
-            <Route path={routes.DRIVER} element={<DriverPage />} />
-            <Route path={routes.DRIVER_DETAILS} element={<DriverDetailsPage />} />
-            <Route path={routes.VERIFICATION} element={<VerificationPage />} />
-            <Route path={routes.VERIFICATION_DETAILS} element={<ApplicationDetailsPage />} />
-            <Route path={routes.TRIPS} element={<TripHistoryPage />} />
-            <Route path={routes.INVENTORY} element={<VehicleInventoryPage />} />
-            <Route path={routes.TRANSACTIONS} element={<TransactionsPage />} />
-            <Route path={routes.SUPPORT} element={<SupportTicketsPage />} />
-            <Route
-              path={routes.SETTINGS}
-              element={<Navigate to={routes.PRICING_LOGIC} replace />}
-            />
-            <Route path={routes.PRICING_LOGIC} element={<PricingLogicPage />} />
-            <Route path={routes.PUSH_NOTIFICATIONS} element={<PushNotificationsPage />} />
-            <Route path={routes.OPERATORS} element={<OperatorsPage />} />
-            <Route path={routes.MY_PROFILE} element={<MyProfilePage />} />
-          </Route>
-        </Route>
-
-        <Route path="*" element={<div>Page Not Found</div>} />
-      </Routes>
-    </BrowserRouter>
+      <Route path="*" element={<div>Page Not Found</div>} />
+    </Routes>
   );
 }

@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
-import { usePermissions } from '@/hooks/usePermissions';
 import {
   useRiders,
   useUpdateRiderStatus,
@@ -14,6 +13,7 @@ import {
 import type { Rider } from '@/types/rider.types';
 
 import RiderPDFDocument from '../../components/rider/RiderPDFDocument';
+import BulkExportBar from '../../components/ui/BulkExportBar';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
@@ -65,8 +65,6 @@ const RiderPage = () => {
   const [suspendedRiderId, setSuspendedRiderId] = useState<string | null>(null);
 
   const { updateStatus, isUpdating } = useUpdateRiderStatus();
-  const { hasPermission } = usePermissions();
-  const canManageRiders = hasPermission('riders.manage');
 
   const { exportCSV } = useExportRidersCSV();
   const { fetchAllRiders, setIsExporting: setIsExportingPDF } = useExportRidersPDF();
@@ -102,6 +100,7 @@ const RiderPage = () => {
       {
         key: 'name',
         label: 'RIDER',
+        type: 'string',
         sortable: true,
         render: (rider) => (
           <div className="flex items-center gap-3">
@@ -115,12 +114,22 @@ const RiderPage = () => {
               </div>
             ) : (
               <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
-                {rider.initials || rider.name[0].toUpperCase()}
+                {rider.initials ||
+                  rider.name
+                    ?.trim()
+                    .split(/\s+/)
+                    .map((n) => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2) ||
+                  'R'}
               </div>
             )}
             <div className="flex flex-col">
               <span className="font-medium text-[#1DAFA1] text-[14px]">{rider.name}</span>
-              <span className="text-[12px] font-medium text-[#4E616A]">{rider.phone}</span>
+              <span className="text-[12px] font-medium text-[#4E616A] whitespace-nowrap">
+                {rider?.countryCode} {rider?.phone}
+              </span>
             </div>
           </div>
         ),
@@ -128,6 +137,7 @@ const RiderPage = () => {
       {
         key: 'email',
         label: 'EMAIL',
+        type: 'string',
         sortable: true,
         render: (rider) => (
           <span className="text-[#1DAFA1] font-medium text-[14px]">{rider.email || '-'}</span>
@@ -136,6 +146,7 @@ const RiderPage = () => {
       {
         key: 'totalTrips',
         label: 'TOTAL TRIPS',
+        type: 'number',
         sortable: true,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">{rider.totalTrips || 0}</span>
@@ -144,6 +155,7 @@ const RiderPage = () => {
       {
         key: 'totalSpent',
         label: 'TOTAL SPENT',
+        type: 'number',
         sortable: true,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
@@ -154,6 +166,7 @@ const RiderPage = () => {
       {
         key: 'rating',
         label: 'RATINGS',
+        type: 'number',
         sortable: true,
         render: (rider) => (
           <div className="flex items-center gap-1.5">
@@ -167,6 +180,7 @@ const RiderPage = () => {
       {
         key: 'status',
         label: 'STATUS',
+        type: 'string',
         sortable: true,
         render: (rider) => (
           <div className="flex items-center gap-2">
@@ -223,7 +237,7 @@ const RiderPage = () => {
         ),
       },
     ],
-    [canManageRiders],
+    [],
   );
 
   return (
@@ -327,6 +341,12 @@ const RiderPage = () => {
             ? 'reactivate'
             : 'suspend'
         }
+      />
+
+      <BulkExportBar
+        count={selectedRiderIds.length}
+        onExportPDF={handleExportPDF}
+        onExportCSV={handleExportCSV}
       />
     </div>
   );

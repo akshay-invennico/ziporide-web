@@ -8,7 +8,6 @@ import type { Transaction, TransactionResponse } from '@/types/transaction.types
 export interface UseTransactionsParams {
   page: number;
   limit: number;
-  category: 'All' | 'Pay-in' | 'Payout' | 'Refund';
   search: string;
 }
 
@@ -26,8 +25,21 @@ const mapStatus = (status: string) => {
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
+const mapPaymentMethod = (pm: Record<string, unknown> | string | null | undefined): string => {
+  if (!pm) return 'N/A';
+  if (typeof pm === 'string') return pm;
+  if (pm.type === 'card' && pm.card) {
+    const card = pm.card as Record<string, unknown>;
+    const brand = card?.brand
+      ? String(card.brand).charAt(0).toUpperCase() + String(card.brand).slice(1)
+      : 'Card';
+    return `${brand} •••• ${card?.last4}`;
+  }
+  return pm.type ? String(pm.type).charAt(0).toUpperCase() + String(pm.type).slice(1) : 'N/A';
+};
+
 export const useTransactions = (
-  initialParams: UseTransactionsParams = { page: 1, limit: 12, category: 'All', search: '' },
+  initialParams: UseTransactionsParams = { page: 1, limit: 12, search: '' },
 ) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,10 +57,6 @@ export const useTransactions = (
       const queryParams = new URLSearchParams();
       queryParams.append('page', params.page.toString());
       queryParams.append('limit', params.limit.toString());
-
-      if (params.category !== 'All') {
-        queryParams.append('category', params.category.toLowerCase());
-      }
 
       if (params.search) {
         queryParams.append('search', params.search);
@@ -68,13 +76,16 @@ export const useTransactions = (
           status: mapStatus(item.status),
           date: item.createdAt.substring(0, 10),
           time: item.createdAt.substring(11, 16),
+          paymentMethod: mapPaymentMethod(item.paymentMethod),
+          externalId: ((item as unknown) as Record<string, unknown>).stripeTransferId as string || 'N/A',
+          tripId: (((item as unknown) as Record<string, unknown>).ride as Record<string, unknown>)?.rideNumber as string || 'N/A',
           driver: item.driver
             ? {
-                ...item.driver,
-                avatar:
-                  item.driver.avatar ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(item.driver.name)}&background=1DAFA1&color=fff`,
-              }
+              ...item.driver,
+              avatar:
+                item.driver.profile ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(item.driver.name)}&background=1DAFA1&color=fff`,
+            }
             : undefined,
         }));
 
@@ -101,14 +112,12 @@ export const useTransactions = (
     fetchTransactions({
       page: initialParams.page,
       limit: initialParams.limit,
-      category: initialParams.category,
       search: initialParams.search,
     });
   }, [
     fetchTransactions,
     initialParams.page,
     initialParams.limit,
-    initialParams.category,
     initialParams.search,
   ]);
 
@@ -136,9 +145,7 @@ export const useExportTransactionsCSV = () => {
         queryParams.append('page', currentPage.toString());
         queryParams.append('limit', '50'); // Fetch larger chunks for export
 
-        if (params.category !== 'All') {
-          queryParams.append('category', params.category.toLowerCase());
-        }
+
 
         if (params.search) {
           queryParams.append('search', params.search);
@@ -224,9 +231,7 @@ export const useExportTransactionsPDF = () => {
         queryParams.append('page', currentPage.toString());
         queryParams.append('limit', '50');
 
-        if (params.category !== 'All') {
-          queryParams.append('category', params.category.toLowerCase());
-        }
+
 
         if (params.search) {
           queryParams.append('search', params.search);

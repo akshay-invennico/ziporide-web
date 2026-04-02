@@ -7,11 +7,10 @@ import { useToast } from '@/context/useToast';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useVehicleCategories } from '@/hooks/useVehicleCategories';
 import { useVehicles } from '@/hooks/useVehicles';
-import type { VehicleCategory } from '@/types/vehicle.types';
+import type { VehicleCategory, VehicleDatabaseRow } from '@/types/vehicle.types';
 
 import AddCategoryModal from '../../components/ui/AddCategoryModal';
 import RemoveCategoryModal from '../../components/ui/RemoveCategoryModal';
-import type { VehicleDatabaseRow } from '../../data/VehicleDatabaseData';
 
 const VehicleInventoryPage: React.FC = () => {
   const {
@@ -136,7 +135,9 @@ const VehicleInventoryPage: React.FC = () => {
             />
             <div className="flex flex-col gap-0.5">
               <span className="font-medium text-[#1DAFA1] text-[14px]">{vehicle.driver.name}</span>
-              <span className="text-[12px] font-medium text-[#4E616A]">{vehicle.driver.phone}</span>
+              <span className="text-[12px] font-medium text-[#4E616A]">
+                {vehicle.driver.countryCode} {vehicle.driver.phone}
+              </span>
             </div>
           </div>
         ),
@@ -168,9 +169,8 @@ const VehicleInventoryPage: React.FC = () => {
       <div className="flex gap-8  mb-6">
         <button
           onClick={() => setActiveTab('category')}
-          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${
-            activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-          }`}
+          className={`pb-3 text-[14px] font-medium cursor-pointer transition-all relative ${activeTab === 'category' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+            }`}
         >
           Vehicle Category
           {activeTab === 'category' && (
@@ -179,9 +179,8 @@ const VehicleInventoryPage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('database')}
-          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${
-            activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
-          }`}
+          className={`pb-3 text-[14px] font-semibold cursor-pointer transition-all relative ${activeTab === 'database' ? 'text-[#1DAFA1]' : 'text-[#4E616A]'
+            }`}
         >
           Vehicle Database
           {activeTab === 'database' && (
@@ -219,18 +218,18 @@ const VehicleInventoryPage: React.FC = () => {
               {vehicleCategories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-full min-h-[160px]"
+                  className="border border-[#DFE6E5] rounded-lg p-5 flex flex-col relative overflow-hidden w-full min-h-[160px] whitespace-pre"
                 >
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex mb-2">
                     <div className="shrink-0 flex items-center justify-center">
                       <img
                         src={cat.categoryIcon}
                         alt={cat.name}
-                        className="w-[120px] h-[120px] object-contain"
+                        className="w-[100px] h-[100px] object-contain"
                       />
                     </div>
-                    <div className="flex flex-col gap-1 ml-1 pt-1">
-                      <h3 className="text-[18px] font-semibold text-[#000000] mb-4">{cat.name}</h3>
+                    <div className="flex flex-col gap-1 ml-4 xl:ml-8 lg:ml-12 pt-1">
+                      <p className="text-[18px] font-semibold text-[#000000] mb-2">{cat.name}</p>
 
                       <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-2 gap-4">

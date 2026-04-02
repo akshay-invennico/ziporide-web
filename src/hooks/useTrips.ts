@@ -54,23 +54,25 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
           id: t.rider.id || 'N/A',
           name: t.rider.name || 'Unknown Rider',
           phone: t.rider.phone || 'N/A',
+          countryCode: t.rider.countryCode || '',
           avatar: t.rider.avatar || '',
           initials: t.rider.initials || (t.rider.name ? t.rider.name.charAt(0) : 'U'),
-          rating: typeof t.rider.rating === 'number' ? t.rider.rating : 5.0,
+          rating: typeof t.rider.rating === 'number' ? t.rider.rating : 0,
         }
       : {
-          id: 'N/A',
+          id: 'N|A',
           name: 'Unknown Rider',
           phone: 'N/A',
           avatar: '',
           initials: 'U',
-          rating: 5.0,
+          rating: 0,
         },
     driver: t.driver
       ? {
           id: t.driver.id || 'N/A',
           name: t.driver.name?.trim() || 'Unknown Driver',
           phone: t.driver.phone || 'N/A',
+          countryCode: t.driver.countryCode || '',
           avatar: t.driver.profilePhotoUrl || t.driver.avatar || '',
           initials: t.driver.name
             ? t.driver.name
@@ -207,17 +209,15 @@ export const useRiderTrips = (
         limit,
       };
 
-      if (dateFilter && dateFilter !== 'Year') {
+      if (dateFilter) {
         params.dateFilter =
-          dateFilter === 'This Month'
-            ? 'currentMonth'
-            : dateFilter === 'This Week'
-              ? 'currentWeek'
-              : dateFilter.toLowerCase() === 'month'
-                ? 'currentMonth'
-                : dateFilter.toLowerCase() === 'week'
-                  ? 'currentWeek'
-                  : dateFilter;
+          dateFilter === 'Year'
+            ? 'currentYear'
+            : dateFilter === 'This Month'
+              ? 'currentMonth'
+              : dateFilter === 'This Week'
+                ? 'currentWeek'
+                : dateFilter;
       }
 
       const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });

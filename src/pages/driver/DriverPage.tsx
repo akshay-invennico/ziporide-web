@@ -10,10 +10,10 @@ import {
   useExportDriversCSV,
   useExportDriversPDF,
 } from '@/hooks/useDriver';
-import { usePermissions } from '@/hooks/usePermissions';
 import type { Driver } from '@/types/driver.types';
 
 import DriverPDFDocument from '../../components/driver/DriverPDFDocument';
+import BulkExportBar from '../../components/ui/BulkExportBar';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
@@ -65,9 +65,6 @@ const DriverPage = () => {
   const [suspendedDriverId, setSuspendedDriverId] = useState<string | null>(null);
 
   const { updateStatus, isUpdating } = useUpdateDriverStatus();
-  const { hasPermission } = usePermissions();
-  const canManageDrivers = hasPermission('drivers.manage');
-
   const { exportCSV } = useExportDriversCSV();
   const { fetchAllDrivers, setIsExporting: setIsExportingPDF } = useExportDriversPDF();
 
@@ -129,14 +126,22 @@ const DriverPage = () => {
               </div>
             ) : (
               <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
-                {(driver.name || driver.driverName || 'D')[0].toUpperCase()}
+                {(driver.name || driver.driverName)
+                  ?.trim()
+                  .split(/\s+/)
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2) || 'D'}
               </div>
             )}
             <div className="flex flex-col">
               <span className="font-medium text-[#1DAFA1] text-[14px]">
                 {driver.name || driver.driverName}
               </span>
-              <span className="text-[12px] font-medium text-[#4E616A]">{driver.phone}</span>
+              <span className="text-[12px] font-medium text-[#4E616A] whitespace-nowrap">
+                {driver.countryCode} {driver.phone}
+              </span>
             </div>
           </div>
         ),
@@ -239,7 +244,7 @@ const DriverPage = () => {
         },
       },
     ],
-    [canManageDrivers],
+    [],
   );
 
   return (
@@ -344,6 +349,12 @@ const DriverPage = () => {
             ? 'reactivate'
             : 'suspend'
         }
+      />
+
+      <BulkExportBar
+        count={selectedDriverIds.length}
+        onExportPDF={handleExportPDF}
+        onExportCSV={handleExportCSV}
       />
     </div>
   );

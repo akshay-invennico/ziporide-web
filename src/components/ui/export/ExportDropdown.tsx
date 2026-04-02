@@ -5,6 +5,7 @@ interface ExportDropdownProps {
   onClose: () => void;
   onExportPDF: () => void;
   onExportCSV: () => void;
+  placement?: 'top' | 'bottom';
 }
 
 const ExportDropdown: React.FC<ExportDropdownProps> = ({
@@ -12,11 +13,14 @@ const ExportDropdown: React.FC<ExportDropdownProps> = ({
   onClose,
   onExportPDF,
   onExportCSV,
+  placement = 'bottom',
 }) => {
   if (!isOpen) return null;
 
+  const positionClasses = placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2';
+
   return (
-    <div className="absolute right-0 top-full mt-2 w-[140px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 overflow-hidden py-3">
+    <div className={`absolute right-0 ${positionClasses} w-[140px] bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] z-50 overflow-hidden py-3`}>
       <div className="px-5 pb-2 pt-1">
         <span className="text-[12px] font-medium text-[#4E616A]">Export as</span>
       </div>

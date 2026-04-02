@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useId } from 'react';
+import React, { useState, useCallback, useMemo, useId } from 'react';
 
 import LoadingSpinner from './LoadingSpinner';
 import Pagination from './Pagination';
@@ -13,6 +13,7 @@ export interface SortState {
 export interface Column<T> {
   key: string;
   label: string;
+  type?: 'string' | 'number' | 'date'; // Added for smart sorting
   sortable?: boolean;
   render?: (row: T, index: number) => React.ReactNode;
   headerClassName?: string;
@@ -39,28 +40,11 @@ export interface DataTableProps<T> {
   rowClassName?: (row: T) => string;
 }
 
-const SortIcon: React.FC<{ direction: SortDirection }> = ({ direction }) => {
-  if (!direction) {
-    return (
-      <img src="/icons/rider/updown.svg" alt="sort" className="w-[18px] h-[18px] opacity-60" />
-    );
-  }
+const SortIcon: React.FC = () => {
   return (
-    <svg
-      className="w-[18px] h-[18px] text-[#1DAFA1]"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {direction === 'asc' ? (
-        <polyline points="18 15 12 9 6 15" />
-      ) : (
-        <polyline points="6 9 12 15 18 9" />
-      )}
-    </svg>
+    <div className="flex items-center">
+      <img src="/icons/updown.svg" alt="sort" className="w-[18px] h-[18px]" />
+    </div>
   );
 };
 
@@ -68,8 +52,6 @@ function DataTable<T extends object>({
   columns,
   data,
   rowKey,
-  sort,
-  onSort,
   currentPage,
   totalPages,
   onPageChange,
@@ -84,12 +66,53 @@ function DataTable<T extends object>({
   rowClassName,
 }: DataTableProps<T>) {
   const tableId = useId();
-  const [internalSort, setInternalSort] = useState<SortState>({
-    column: '',
-    direction: null,
-  });
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [isSorted, setIsSorted] = useState<boolean>(false);
 
-  const activeSort = sort ?? internalSort;
+  const sortedData = useMemo(() => {
+    if (!isSorted || !sortKey) return data;
+
+    const column = columns.find((c) => c.key === sortKey);
+    if (!column) return data;
+
+    return [...data].sort((a, b) => {
+      const valA = (a as Record<string, unknown>)[sortKey];
+      const valB = (b as Record<string, unknown>)[sortKey];
+
+      if (valA === valB) return 0;
+      if (valA === null || valA === undefined) return 1;
+      if (valB === null || valB === undefined) return -1;
+
+      switch (column.type) {
+        case 'number': {
+          const numA = parseFloat(String(valA).replace(/[£,+-]/g, '')) || 0;
+          const numB = parseFloat(String(valB).replace(/[£,+-]/g, '')) || 0;
+          return numA - numB;
+        }
+        case 'date': {
+          // Join date and time if available (Ziporide pattern)
+          const recA = a as Record<string, unknown>;
+          const recB = b as Record<string, unknown>;
+          const dateStrA = recA.date && recA.time ? `${recA.date} ${recA.time}` : String(valA);
+          const dateStrB = recB.date && recB.time ? `${recB.date} ${recB.time}` : String(valB);
+
+          return new Date(String(dateStrA)).getTime() - new Date(String(dateStrB)).getTime();
+        }
+        case 'string':
+        default: {
+          const toString = (val: unknown) => {
+            if (val && typeof val === 'object') {
+              const obj = val as Record<string, unknown>;
+              if (obj.pickupLocation) return String(obj.pickupLocation);
+              return JSON.stringify(val);
+            }
+            return String(val ?? '');
+          };
+          return toString(valA).toLowerCase().localeCompare(toString(valB).toLowerCase());
+        }
+      }
+    });
+  }, [data, isSorted, sortKey, columns]);
 
   const getRowKey = useCallback(
     (row: T, index: number): string => {
@@ -101,19 +124,14 @@ function DataTable<T extends object>({
   );
 
   const handleSort = (columnKey: string) => {
-    let direction: SortDirection;
-    if (activeSort.column === columnKey) {
-      if (activeSort.direction === 'asc') direction = 'desc';
-      else if (activeSort.direction === 'desc') direction = null;
-      else direction = 'asc';
+    if (sortKey === columnKey) {
+      // 2nd click: Reset
+      setSortKey(null);
+      setIsSorted(false);
     } else {
-      direction = 'asc';
-    }
-    const newSort: SortState = { column: columnKey, direction };
-    if (onSort) {
-      onSort(newSort);
-    } else {
-      setInternalSort(newSort);
+      // 1st click: Ascending
+      setSortKey(columnKey);
+      setIsSorted(true);
     }
   };
 
@@ -162,27 +180,15 @@ function DataTable<T extends object>({
                 </th>
               )}
               {columns.map((col) => {
-                const isSorted = activeSort.column === col.key;
                 return (
                   <th
                     key={`${tableId}-th-${col.key}`}
                     onClick={col.sortable ? () => handleSort(col.key) : undefined}
-                    aria-sort={
-                      isSorted && activeSort.direction
-                        ? activeSort.direction === 'asc'
-                          ? 'ascending'
-                          : 'descending'
-                        : undefined
-                    }
                     className={`px-6 py-4 ${col.sortable ? 'cursor-pointer group hover:bg-gray-50 select-none' : ''} ${col.headerClassName || ''}`}
                   >
-                    <div
-                      className={`flex items-center ${col.sortable ? 'justify-between' : 'justify-start'} gap-2`}
-                    >
-                      <span>{col.label}</span>
-                      {col.sortable && (
-                        <SortIcon direction={isSorted ? activeSort.direction : null} />
-                      )}
+                    <div className={`flex items-center justify-between gap-2 w-full`}>
+                      <span className="text-nowrap">{col.label}</span>
+                      {col.sortable && <SortIcon />}
                     </div>
                   </th>
                 );
@@ -199,14 +205,14 @@ function DataTable<T extends object>({
                   </div>
                 </td>
               </tr>
-            ) : data.length === 0 ? (
+            ) : sortedData.length === 0 ? (
               <tr>
                 <td colSpan={totalCols} className="px-6 py-16 text-center">
                   {emptyElement || <span className="text-[14px] text-[#939999]">{emptyText}</span>}
                 </td>
               </tr>
             ) : (
-              data.map((row, rowIndex) => {
+              sortedData.map((row: T, rowIndex: number) => {
                 const key = getRowKey(row, rowIndex);
                 const isSelected = selectedKeys.includes(key);
                 return (
@@ -233,8 +239,8 @@ function DataTable<T extends object>({
                         {col.render
                           ? col.render(row, rowIndex)
                           : (String(
-                              (row as Record<string, unknown>)[col.key] ?? '',
-                            ) as React.ReactNode)}
+                            (row as Record<string, unknown>)[col.key] ?? '',
+                          ) as React.ReactNode)}
                       </td>
                     ))}
                   </tr>

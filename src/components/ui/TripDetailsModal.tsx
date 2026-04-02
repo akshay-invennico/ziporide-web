@@ -60,8 +60,9 @@ const TripDetailsModal = ({
   const showCancelBtn = isAssigned || isInProgress;
   const isCompleted = trip.status === 'Completed';
   const isCancelled = trip.status === 'Cancelled';
-  const cancelledByRider = isCancelled && trip.cancellationDetails?.cancelledBy === 'rider';
-  const cancelledByDriver = isCancelled && trip.cancellationDetails?.cancelledBy === 'driver';
+  const hasCancellationInfo = isCancelled && !!trip.cancellationDetails;
+
+
 
   const handleCopy = () => {
     navigator.clipboard.writeText(trip.id);
@@ -118,7 +119,17 @@ const TripDetailsModal = ({
               <div className="flex items-center gap-3 text-[14px] font-medium text-[#000000]">
                 <div className="flex items-center gap-1.5">
                   <img src="/icons/verification/cale.svg" alt="date" className="w-4 h-4" />
-                  <span>{trip.date}</span>
+                  <span>
+                    {trip.date !== 'N/A'
+                      ? new Date(trip.date)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                        .replace(' ', ', ')
+                      : 'N/A'}
+                  </span>
                 </div>
                 <div className="w-[5px] h-[5px] rounded-full bg-[#939999]" />
                 <div className="flex items-center gap-3">
@@ -317,7 +328,7 @@ const TripDetailsModal = ({
             <div
               className={`border-t border-[#DFE6E5] pt-5 mt-2 grid grid-cols-1 ${viewMode ? 'sm:grid-cols-1' : 'sm:grid-cols-2'} gap-5`}
             >
-              {viewMode !== 'rider' && !(isCancelled && viewMode === 'driver') && (
+              {viewMode !== 'rider' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[14px] font-medium text-[#4E616A]">Rider's Info</span>
                   <div className="flex items-center gap-3">
@@ -345,7 +356,7 @@ const TripDetailsModal = ({
                 </div>
               )}
 
-              {(viewMode !== 'driver' || (isCancelled && viewMode === 'driver')) && (
+              {viewMode !== 'driver' && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[14px] font-medium text-[#4E616A]">Driver's Info</span>
                   <div className="flex items-center gap-3">
@@ -388,10 +399,6 @@ const TripDetailsModal = ({
                       </span>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="text-[12px] font-medium text-[#4E616A]">
-                          {trip.driver.vehicle.color}
-                        </span>
-                        <div className="w-[5px] h-[5px] rounded-full bg-[#4E616A]" />
-                        <span className="text-[12px] font-medium text-[#4E616A]">
                           {trip.driver.vehicle.registrationNumber}
                         </span>
                       </div>
@@ -420,16 +427,15 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.riderFeedback?.rating || 5)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 0)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>
                     <span className="text-[12px] font-medium text-[#4E616A]">
-                      {trip.riderFeedback?.note || 'Professional'}
+                      {trip.riderFeedback?.note || 'N/A'}
                     </span>
                   </div>
                 </div>
@@ -443,23 +449,22 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.driverFeedback?.rating || 5)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 0)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>
                     <span className="text-[12px] font-medium text-[#4E616A]">
-                      {trip.driverFeedback?.note || 'Humble'}
+                      {trip.driverFeedback?.note || 'N/A'}
                     </span>
                   </div>
                 </div>
               </div>
             )}
 
-            {cancelledByRider && (
+            {hasCancellationInfo && (
               <div className="border-t border-[#DFE6E5] pt-5 mt-2 flex flex-col gap-5">
                 <span className="text-[14px] font-medium text-[#4E616A]">Cancellation Details</span>
                 <div className="grid grid-cols-2 gap-5 ">
@@ -469,30 +474,24 @@ const TripDetailsModal = ({
                       {trip.cancellationDetails?.cancelledBy || 'Rider'}
                     </span>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[12px] font-medium text-[#4E616A]">Trip Stage</span>
-                    <span className="text-[14px] font-semibold text-[#000000]">
-                      {trip.cancellationDetails?.tripStage || 'After Driver Arrival'}
-                    </span>
-                  </div>
+                  {trip.cancellationDetails?.tripStage &&
+                    trip.cancellationDetails?.tripStage !== 'N/A' && (
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[12px] font-medium text-[#4E616A]">Trip Stage</span>
+                        <span className="text-[14px] font-semibold text-[#000000]">
+                          {trip.cancellationDetails?.tripStage}
+                        </span>
+                      </div>
+                    )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-[12px] font-medium text-[#4E616A]">
                     Reason for Cancellation
                   </span>
                   <span className="text-[14px] font-semibold text-[#000000]">
-                    {trip.cancellationDetails?.reason || "Driver's Behaviour"}
+                    {trip.cancellationDetails?.reason || 'N/A'}
                   </span>
                 </div>
-              </div>
-            )}
-
-            {cancelledByDriver && (
-              <div className="border-t border-[#DFE6E5] pt-5 mt-2 flex flex-col gap-3">
-                <span className="text-[14px] font-medium text-[#4E616A]">Cancellation Reason</span>
-                <span className="text-[14px] font-medium text-[#000000]">
-                  {trip.cancellationDetails?.reason || 'Taking Too Much time to get Ride Confirm'}
-                </span>
               </div>
             )}
           </div>

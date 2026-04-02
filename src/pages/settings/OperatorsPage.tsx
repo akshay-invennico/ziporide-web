@@ -128,7 +128,7 @@ const OperatorsPage = () => {
             <div className="w-10 h-10 rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[18px] shrink-0">
               {getInitials(row.name)}
             </div>
-            <span className="text-[14px] font-medium text-[#1DAFA1]">{row.name}</span>
+            <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap">{row.name}</span>
           </div>
         ),
       },
@@ -156,8 +156,9 @@ const OperatorsPage = () => {
         key: 'createdAt',
         label: 'CREATED ON',
         sortable: true,
+        headerClassName: 'min-w-[160px]',
         render: (row) => (
-          <span className="text-[14px] font-medium text-[#4E616A]">
+          <span className="text-[14px] text-nowrap font-medium text-[#4E616A]">
             {formatDate(row.createdAt)}
           </span>
         ),
@@ -166,6 +167,7 @@ const OperatorsPage = () => {
         key: 'status',
         label: 'STATUS',
         sortable: true,
+        headerClassName: 'min-w-[140px]',
         render: (row) => {
           const style = STATUS_STYLES[row.status] || STATUS_STYLES.inactive;
           return (
@@ -181,11 +183,12 @@ const OperatorsPage = () => {
       {
         key: 'actions',
         label: 'ACTIONS',
+        headerClassName: 'min-w-[140px]',
         render: (row) => (
           <div className="flex items-center gap-4">
             {hasPermission('operators.view') && (
               <button onClick={() => openModal('view', row)} className="cursor-pointer">
-                <img src="/icons/settings/eye.svg" alt="view" className="w-[20px] h-[20px]" />
+                <img src="/icons/settings/eye.svg" alt="view" className="w-[22px] h-[22px]" />
               </button>
             )}
             {hasPermission('operators.manage') && (

@@ -3,11 +3,14 @@ import React from 'react';
 
 import type { SupportTicket } from '../../types/support.types';
 
+import LoadingSpinner from './LoadingSpinner';
+
 interface TicketDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   ticket: SupportTicket | null;
   onStatusChange?: (id: string, newStatus: 'open' | 'checking' | 'resolved') => void;
+  updatingStatus?: 'checking' | 'resolved' | null;
 }
 
 const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
@@ -15,6 +18,7 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
   onClose,
   ticket,
   onStatusChange,
+  updatingStatus,
 }) => {
   if (!isOpen || !ticket) return null;
 
@@ -120,15 +124,19 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
             {ticket.status === 'open' && (
               <button
                 onClick={() => onStatusChange?.(ticket.ticketId, 'checking')}
-                className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer "
+                disabled={!!updatingStatus}
+                className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center"
               >
+                {updatingStatus === 'checking' && <LoadingSpinner size={16} />}
                 Mark as Checking
               </button>
             )}
             <button
               onClick={() => onStatusChange?.(ticket.ticketId, 'resolved')}
-              className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer"
+              disabled={!!updatingStatus}
+              className="px-6 py-2.5 bg-white border border-[#DFE6E5] text-[#1DAFA1] text-[14px] font-medium rounded-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center"
             >
+              {updatingStatus === 'resolved' && <LoadingSpinner size={16} />}
               Mark as Resolved
             </button>
           </div>

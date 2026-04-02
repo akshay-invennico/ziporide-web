@@ -87,8 +87,8 @@ export default function RecentTripsTable() {
                         <span className="font-medium text-[#1DAFA1] text-[14px] text-nowrap">
                           {trip.rider.name}
                         </span>
-                        <span className="text-[12px] font-medium text-[#4E616A]">
-                          {trip.rider.phone}
+                        <span className="text-[12px] font-medium text-[#4E616A] text-nowrap">
+                          {trip.rider.countryCode} {trip.rider.phone}
                         </span>
                       </div>
                     </div>
@@ -113,14 +113,14 @@ export default function RecentTripsTable() {
                           {trip.driver.name}
                         </span>
                         <span className="text-[12px] font-medium text-[#4E616A]">
-                          {trip.driver.phone}
+                          {trip.driver.countryCode} {trip.driver.phone}
                         </span>
                       </div>
                     </div>
                   </td>
 
                   {/* Route */}
-                  <td className="px-4 py-3.5 font-medium text-[#4E616A] text-[14px]">
+                  <td className="px-4 py-3.5 font-medium text-[#4E616A] text-[14px] text-nowrap">
                     <div className="flex items-center gap-1.5">
                       <span>{trip.route.pickupLocation.split(',')[0]}</span>
                       <ArrowRight className="w-[18px] h-[18px]" />
@@ -138,26 +138,26 @@ export default function RecentTripsTable() {
                     <div className="flex items-center gap-2">
                       <div
                         className={`w-1.5 h-1.5 rounded-full shrink-0 ${trip.status === 'Completed'
-                          ? 'bg-[#00A63E]'
-                          : trip.status === 'In Progress'
-                            ? 'bg-[#F6921E]'
-                            : trip.status === 'Assigned'
-                              ? 'bg-[#1DAFA1]'
-                              : trip.status === 'Cancelled'
-                                ? 'bg-[#FF0707]'
-                                : 'bg-[#6B7280]'
+                            ? 'bg-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'bg-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'bg-[#1DAFA1]'
+                                : trip.status === 'Cancelled'
+                                  ? 'bg-[#FF0707]'
+                                  : 'bg-[#6B7280]'
                           }`}
                       />
                       <span
                         className={`font-semibold text-[12px] text-nowrap ${trip.status === 'Completed'
-                          ? 'text-[#00A63E]'
-                          : trip.status === 'In Progress'
-                            ? 'text-[#F6921E]'
-                            : trip.status === 'Assigned'
-                              ? 'text-[#1DAFA1]'
-                              : trip.status === 'Cancelled'
-                                ? 'text-[#FF0707]'
-                                : 'text-[#6B7280]'
+                            ? 'text-[#00A63E]'
+                            : trip.status === 'In Progress'
+                              ? 'text-[#F6921E]'
+                              : trip.status === 'Assigned'
+                                ? 'text-[#1DAFA1]'
+                                : trip.status === 'Cancelled'
+                                  ? 'text-[#FF0707]'
+                                  : 'text-[#6B7280]'
                           }`}
                       >
                         {trip.status}

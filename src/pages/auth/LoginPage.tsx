@@ -31,7 +31,7 @@ const LoginPage = () => {
   });
 
   return (
-    <div className="fixed inset-0 flex items-start sm:items-center justify-center bg-white  p-4">
+    <div className="fixed inset-0 flex items-start sm:items-center justify-center bg-white  p-4 font-inter">
       <div className="bg-white shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] rounded-xl w-full max-w-[560px] max-h-[600px]  px-5 sm:px-10 py-8 sm:py-10 my-auto">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-6">
@@ -53,11 +53,10 @@ const LoginPage = () => {
             </label>
             <div
               className={`flex items-center border rounded-lg px-3 py-3 transition 
-                            ${
-                              formik.touched.email && formik.errors.email
-                                ? 'border-red-400 focus-within:border-red-500 '
-                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                            }`}
+                            ${formik.touched.email && formik.errors.email
+                  ? 'border-red-400 focus-within:border-red-500 '
+                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                }`}
             >
               <img src="/icons/auth/mail.svg" alt="email" className="w-5 h-5 mr-2 shrink-0" />
               <input
@@ -79,11 +78,10 @@ const LoginPage = () => {
             </label>
             <div
               className={`flex items-center border rounded-lg px-3 py-3 transition
-                            ${
-                              formik.touched.password && formik.errors.password
-                                ? 'border-red-400 focus-within:border-red-500'
-                                : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
-                            }`}
+                            ${formik.touched.password && formik.errors.password
+                  ? 'border-red-400 focus-within:border-red-500'
+                  : 'border-[#DFE6E5] focus-within:border-[#1DAFA1] hover:shadow-[0_0_16px_0_#ED9B0E3D]'
+                }`}
             >
               <img
                 src={formik.values.password ? '/icons/auth/lockOn.svg' : '/icons/auth/lockOff.svg'}
@@ -118,7 +116,13 @@ const LoginPage = () => {
                 type="checkbox"
                 {...formik.getFieldProps('rememberMe')}
                 checked={formik.values.rememberMe}
-                className="accent-[#1DAFA1] w-3.5 h-3.5"
+                className="appearance-none shrink-0 w-[15px] h-[15px] border border-[#DFE6E5] rounded-[4px] bg-white checked:bg-[#1DAFA1] checked:border-[#1DAFA1] bg-center bg-no-repeat transition-colors cursor-pointer"
+                style={{
+                  backgroundImage: formik.values.rememberMe
+                    ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")`
+                    : 'none',
+                  backgroundSize: '100% 100%'
+                }}
               />
               <span className="text-[12px] font-medium text-[#000000]">Remember me</span>
             </label>
@@ -143,7 +147,7 @@ const LoginPage = () => {
 
         {/* Footer */}
         <p className="text-center text-[12px] font-medium text-[#4E616A] mt-6">
-          © 2026 Zipo Ride. All rights reserved.
+          &copy; 2026 Zipo Ride. All rights reserved.
         </p>
       </div>
     </div>

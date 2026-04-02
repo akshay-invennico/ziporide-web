@@ -10,6 +10,23 @@ export interface ApiVehicleCategory {
   categoryIcon: string;
 }
 
+export interface VehicleDatabaseRow {
+  id: string;
+  name: string;
+  year: number;
+  color: string;
+  image: string;
+  category: 'Electric' | 'Standard' | 'XL' | 'Executive (Premium)' | 'Executive XL (Premium)';
+  licencePlate: string;
+  driver: {
+    name: string;
+    phone: string;
+    image: string;
+    countryCode: string;
+  };
+  status: 'Active' | 'Suspended';
+}
+
 export interface VehicleCategory {
   id: string;
   name: string;
@@ -48,6 +65,7 @@ export interface ApiVehicle {
     _id: string;
     name: string;
     phone: string;
+    countryCode: string;
     profilePhotoUrl?: string;
   };
   status: string;

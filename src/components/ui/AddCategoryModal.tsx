@@ -185,7 +185,8 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
     if (!isOpen) {
       formik.resetForm();
     }
-  }, [isOpen, formik]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]); // Removed formik from dependencies to prevent infinite loop
 
   // Derived state to show a preview
   const previewUrl =

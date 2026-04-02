@@ -42,7 +42,7 @@ export default function DashboardPage() {
           title="Total Riders"
           value={summaryData ? formatNumber(summaryData.totalRiders.value) : '0'}
           trend={summaryData?.totalRiders.trend || 'up'}
-          trendValue={summaryData ? `${summaryData.totalRiders.change}%` : '0%'}
+          trendValue={summaryData ? `${Math.abs(summaryData.totalRiders.change)}%` : '0%'}
           trendLabel="This Week"
           icon="/icons/statCard/Riders.svg"
         />
@@ -50,7 +50,7 @@ export default function DashboardPage() {
           title="Active Drivers"
           value={summaryData ? formatNumber(summaryData.activeDrivers.value) : '0'}
           trend={summaryData?.activeDrivers.trend || 'up'}
-          trendValue={summaryData ? `${summaryData.activeDrivers.change}%` : '0%'}
+          trendValue={summaryData ? `${Math.abs(summaryData.activeDrivers.change)}%` : '0%'}
           trendLabel="This Week"
           icon="/icons/statCard/Drivers.svg"
         />
@@ -58,7 +58,7 @@ export default function DashboardPage() {
           title="Total Trips"
           value={summaryData ? formatNumber(summaryData.totalTrips.value) : '0'}
           trend={summaryData?.totalTrips.trend || 'up'}
-          trendValue={summaryData ? `${summaryData.totalTrips.change}%` : '0%'}
+          trendValue={summaryData ? `${Math.abs(summaryData.totalTrips.change)}%` : '0%'}
           trendLabel="This Week"
           icon="/icons/statCard/Trips.svg"
         />
@@ -66,7 +66,7 @@ export default function DashboardPage() {
           title="Revenue"
           value={summaryData ? formatCurrency(summaryData.revenue.value) : '£0'}
           trend={summaryData?.revenue.trend || 'up'}
-          trendValue={summaryData ? `${summaryData.revenue.change}%` : '0%'}
+          trendValue={summaryData ? `${Math.abs(summaryData.revenue.change)}%` : '0%'}
           trendLabel="This Week"
           icon="/icons/statCard/Revenu.svg"
         />

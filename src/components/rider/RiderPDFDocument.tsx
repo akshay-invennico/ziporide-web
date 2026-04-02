@@ -99,7 +99,9 @@ export const RiderPDFDocument = ({ riders }: { riders: Rider[] }) => (
             <Text style={styles.tableCell}>{rider.id}</Text>
             <Text style={styles.tableCell}>{rider.name}</Text>
             <Text style={styles.tableCell}>{rider.email || '-'}</Text>
-            <Text style={styles.tableCell}>{rider.phone}</Text>
+            <Text style={styles.tableCell}>
+              {rider.countryCode || ''} {rider.phone}
+            </Text>
             <Text style={styles.tableCell}>{rider.totalTrips || 0}</Text>
             <Text style={styles.tableCell}>£{(rider.totalSpent || 0).toFixed(2)}</Text>
             <Text style={styles.tableCell}>{(rider.rating || 0).toFixed(1)}</Text>
