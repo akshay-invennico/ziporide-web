@@ -99,7 +99,7 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
             : typeof t.driver.rating === 'number'
               ? t.driver.rating
               : 0.0,
-        vehicle: t.driver.vehicle
+          vehicle: t.driver.vehicle
           ? {
             name:
               `${t.driver.vehicle.make || ''} ${t.driver.vehicle.model || ''}`.trim() ||
@@ -107,12 +107,14 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
             color: 'N/A',
             registrationNumber: t.driver.vehicle.registrationNumber || 'N/A',
             photo: t.driver.vehicle.photo || '',
+            categoryIcon: t.category?.categoryIcon,
           }
           : {
             name: 'Standard',
             color: 'N/A',
             registrationNumber: 'N/A',
             photo: '',
+            categoryIcon: t.category?.categoryIcon,
           },
       }
       : {

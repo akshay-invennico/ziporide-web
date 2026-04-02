@@ -402,11 +402,14 @@ const TripDetailsModal = ({
                       </div>
                     </div>
                     <img
-                      src="/icons/tripDetails/car.svg"
-                      alt="car"
+                      src={trip.driver.vehicle.categoryIcon}
                       className="h-[68px] object-contain"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none';
+                        if (e.currentTarget.src !== '/icons/tripDetails/car.svg') {
+                          e.currentTarget.src = '/icons/tripDetails/car.svg';
+                        } else {
+                          e.currentTarget.style.display = 'none';
+                        }
                       }}
                     />
                   </div>

@@ -286,6 +286,10 @@ export interface RawRideData {
     address: string;
     coordinates: [number, number];
   };
+  category?: {
+    categoryIcon?: string;
+    name?: string;
+  };
   paymentMethod?: {
     card?: {
       last4: string;
@@ -375,6 +379,7 @@ export interface TripRecord {
       color: string;
       registrationNumber: string;
       photo?: string;
+      categoryIcon?: string;
     };
   };
   route: {
