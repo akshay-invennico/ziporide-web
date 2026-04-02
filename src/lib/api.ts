@@ -57,4 +57,7 @@ export const API = {
   OPERATOR_DETAILS: (id: string) => `/v1/operators/${id}`,
   OPERATOR_UPDATE_PERMISSIONS: (id: string) => `/v1/operators/${id}/permissions`,
   OPERATOR_UPDATE_STATUS: (id: string) => `/v1/operators/${id}/status`,
+
+  NOTIFICATIONS: '/v1/notifications',
+  SEND_NOTIFICATION: '/v1/notifications/send',
 } as const;
