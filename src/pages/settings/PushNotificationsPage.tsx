@@ -1,10 +1,8 @@
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import DataTable from '@/components/ui/DataTable';
-import type { Column } from '@/components/ui/DataTable';
 import { useNotifications } from '@/hooks/useNotifications';
-import type { NotificationRecord, TargetAudience } from '@/types/notification.types';
+import type { TargetAudience } from '@/types/notification.types';
 
 const audienceOptions: { label: string; value: TargetAudience }[] = [
   { label: 'Riders', value: 'riders' },
@@ -12,85 +10,10 @@ const audienceOptions: { label: string; value: TargetAudience }[] = [
   { label: 'All', value: 'all' },
 ];
 
-const audienceBadgeColors: Record<TargetAudience, string> = {
-  riders: 'bg-blue-100 text-blue-700',
-  drivers: 'bg-orange-100 text-orange-700',
-  all: 'bg-teal-100 text-teal-700',
-};
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
-const columns: Column<NotificationRecord>[] = [
-  {
-    key: 'title',
-    label: 'Title',
-    render: (row) => <span className="text-[14px] font-medium text-[#101828]">{row.title}</span>,
-  },
-  {
-    key: 'body',
-    label: 'Message',
-    render: (row) => (
-      <span className="text-[14px] text-[#4E616A] max-w-[200px] truncate block">{row.body}</span>
-    ),
-  },
-  {
-    key: 'targetAudience',
-    label: 'Audience',
-    render: (row) => (
-      <span
-        className={`inline-block px-2.5 py-1 rounded-full text-[12px] font-medium capitalize ${audienceBadgeColors[row.targetAudience]}`}
-      >
-        {row.targetAudience}
-      </span>
-    ),
-  },
-  {
-    key: 'sentBy',
-    label: 'Sent By',
-    render: (row) => <span className="text-[14px] text-[#4E616A]">{row.sentBy?.name || '-'}</span>,
-  },
-  {
-    key: 'totalSent',
-    label: 'Delivered',
-    render: (row) => (
-      <span className="text-[14px] font-medium text-green-600">{row.totalSent}</span>
-    ),
-  },
-  {
-    key: 'totalFailed',
-    label: 'Failed',
-    render: (row) => (
-      <span className="text-[14px] font-medium text-red-500">{row.totalFailed}</span>
-    ),
-  },
-  {
-    key: 'createdAt',
-    label: 'Sent At',
-    render: (row) => (
-      <span className="text-[14px] text-[#4E616A]">{formatDate(row.createdAt)}</span>
-    ),
-  },
-];
 
 const PushNotificationsPage = () => {
-  const {
-    notifications,
-    page,
-    totalPages,
-    isLoading,
-    isSending,
-    getNotifications,
-    sendNotification,
-  } = useNotifications();
+  const { isSending, sendNotification } = useNotifications();
 
   const [targetAudience, setTargetAudience] = useState<TargetAudience | ''>('');
   const [title, setTitle] = useState('');
@@ -99,9 +22,7 @@ const PushNotificationsPage = () => {
     {},
   );
 
-  useEffect(() => {
-    getNotifications(1);
-  }, [getNotifications]);
+
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -260,25 +181,6 @@ const PushNotificationsPage = () => {
         </div>
       </div>
 
-      {/* Notification History */}
-      <div className="bg-white border border-[#DFE6E5] rounded-lg">
-        <div className="px-6 py-4 border-b border-[#DFE6E5]">
-          <h2 className="text-[18px] font-inter font-semibold text-[#101828]">
-            Notification History
-          </h2>
-        </div>
-        <DataTable<NotificationRecord>
-          columns={columns}
-          data={notifications}
-          rowKey={(row) => row._id}
-          loading={isLoading}
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={(p) => getNotifications(p)}
-          emptyText="No notifications sent yet"
-          minHeight="300px"
-        />
-      </div>
     </div>
   );
 };
