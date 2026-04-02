@@ -12,6 +12,8 @@ import type {
   TripsOverTimeItem,
 } from '@/types/dashboard.types';
 
+const apiTypeMap: Record<'Year' | 'Month', string> = { Year: 'month', Month: 'daily' };
+
 export const useDashboardSummary = () => {
   const [data, setData] = useState<DashboardSummary['data'] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,7 @@ export const useDashboardSummary = () => {
   return { data, loading, error, refetch: fetchSummary };
 };
 
-export const useRevenueAnalytics = (type: 'Month' | 'Daily') => {
+export const useRevenueAnalytics = (type: 'Year' | 'Month') => {
   const [data, setData] = useState<RevenueAnalyticsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export const useRevenueAnalytics = (type: 'Month' | 'Daily') => {
     setLoading(true);
     try {
       const response = await apiClient.get<RevenueAnalyticsResponse>(API.REVENUE_ANALYTICS, {
-        params: { type: type.toLowerCase() },
+        params: { type: apiTypeMap[type] },
       });
       if (response.data.success) {
         setData(response.data.data);
@@ -72,7 +74,7 @@ export const useRevenueAnalytics = (type: 'Month' | 'Daily') => {
   return { data, loading, error, refetch: fetchRevenue };
 };
 
-export const useRiderDriverReport = (type: 'Month' | 'Daily') => {
+export const useRiderDriverReport = (type: 'Year' | 'Month') => {
   const [data, setData] = useState<RiderDriverReportItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +83,7 @@ export const useRiderDriverReport = (type: 'Month' | 'Daily') => {
     setLoading(true);
     try {
       const response = await apiClient.get<RiderDriverReportResponse>(API.RIDER_DRIVER_REPORT, {
-        params: { type: type.toLowerCase() },
+        params: { type: apiTypeMap[type] },
       });
       if (response.data.success) {
         setData(response.data.data);
@@ -103,7 +105,7 @@ export const useRiderDriverReport = (type: 'Month' | 'Daily') => {
   return { data, loading, error, refetch: fetchReport };
 };
 
-export const useTripsOverTime = (type: 'Month' | 'Daily') => {
+export const useTripsOverTime = (type: 'Year' | 'Month') => {
   const [data, setData] = useState<TripsOverTimeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -112,7 +114,7 @@ export const useTripsOverTime = (type: 'Month' | 'Daily') => {
     setLoading(true);
     try {
       const response = await apiClient.get<TripsOverTimeResponse>(API.TRIPS_OVER_TIME, {
-        params: { type: type.toLowerCase() },
+        params: { type: apiTypeMap[type] },
       });
       if (response.data.success) {
         setData(response.data.data);

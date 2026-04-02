@@ -24,11 +24,22 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
   const dateStr = bookedAt ? new Date(bookedAt).toISOString().split('T')[0] : 'N/A';
   const timeStr = bookedAt
     ? new Date(bookedAt).toLocaleTimeString('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      })
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    })
     : 'N/A';
+
+  const allRatings = [
+    t.rating,
+    t.driverRating,
+    t.riderRating,
+    ...(t.ratings || []),
+  ].filter(r => r != null);
+
+  const riderRatingObj = allRatings.find(r => r?.ratedBy?.toLowerCase() === 'rider');
+  const driverRatingObj = allRatings.find(r => r?.ratedBy?.toLowerCase() === 'driver');
+
 
   return {
     ...t,
@@ -51,81 +62,91 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
     },
     rider: t.rider
       ? {
-          id: t.rider.id || 'N/A',
-          name: t.rider.name || 'Unknown Rider',
-          phone: t.rider.phone || 'N/A',
-          countryCode: t.rider.countryCode || '',
-          avatar: t.rider.avatar || '',
-          initials: t.rider.initials || (t.rider.name ? t.rider.name.charAt(0) : 'U'),
-          rating: typeof t.rider.rating === 'number' ? t.rider.rating : 0,
-        }
+        id: t.rider.id || 'N/A',
+        name: t.rider.name || 'Unknown Rider',
+        phone: t.rider.phone || 'N/A',
+        countryCode: t.rider.countryCode || '',
+        avatar: t.rider.avatar || '',
+        initials: t.rider.initials || (t.rider.name ? t.rider.name.charAt(0) : 'U'),
+        rating: typeof t.rider.rating === 'number' ? t.rider.rating : 0,
+      }
       : {
-          id: 'N|A',
-          name: 'Unknown Rider',
-          phone: 'N/A',
-          avatar: '',
-          initials: 'U',
-          rating: 0,
-        },
+        id: 'N|A',
+        name: 'Unknown Rider',
+        phone: 'N/A',
+        avatar: '',
+        initials: 'U',
+        rating: 0,
+      },
     driver: t.driver
       ? {
-          id: t.driver.id || 'N/A',
-          name: t.driver.name?.trim() || 'Unknown Driver',
-          phone: t.driver.phone || 'N/A',
-          countryCode: t.driver.countryCode || '',
-          avatar: t.driver.profilePhotoUrl || t.driver.avatar || '',
-          initials: t.driver.name
-            ? t.driver.name
-                .split(' ')
-                .map((w: string) => w[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2)
-            : 'D',
-          rating:
-            typeof t.driver.avgRating === 'number'
-              ? t.driver.avgRating
-              : typeof t.driver.rating === 'number'
-                ? t.driver.rating
-                : 0.0,
-          vehicle: t.driver.vehicle
-            ? {
-                name:
-                  `${t.driver.vehicle.make || ''} ${t.driver.vehicle.model || ''}`.trim() ||
-                  'Standard',
-                color: 'N/A',
-                registrationNumber: t.driver.vehicle.registrationNumber || 'N/A',
-                photo: t.driver.vehicle.photo || '',
-              }
-            : {
-                name: 'Standard',
-                color: 'N/A',
-                registrationNumber: 'N/A',
-                photo: '',
-              },
-        }
+        id: t.driver.id || 'N/A',
+        name: t.driver.name?.trim() || 'Unknown Driver',
+        phone: t.driver.phone || 'N/A',
+        countryCode: t.driver.countryCode || '',
+        avatar: t.driver.profilePhotoUrl || t.driver.avatar || '',
+        initials: t.driver.name
+          ? t.driver.name
+            .split(' ')
+            .map((w: string) => w[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
+          : 'D',
+        rating:
+          typeof t.driver.avgRating === 'number'
+            ? t.driver.avgRating
+            : typeof t.driver.rating === 'number'
+              ? t.driver.rating
+              : 0.0,
+        vehicle: t.driver.vehicle
+          ? {
+            name:
+              `${t.driver.vehicle.make || ''} ${t.driver.vehicle.model || ''}`.trim() ||
+              'Standard',
+            color: 'N/A',
+            registrationNumber: t.driver.vehicle.registrationNumber || 'N/A',
+            photo: t.driver.vehicle.photo || '',
+          }
+          : {
+            name: 'Standard',
+            color: 'N/A',
+            registrationNumber: 'N/A',
+            photo: '',
+          },
+      }
       : {
-          id: 'N/A',
-          name: 'No Driver Assigned',
-          phone: 'N/A',
-          avatar: '',
-          initials: 'ND',
-          rating: 0,
-          vehicle: { name: 'Standard', color: 'N/A', registrationNumber: 'N/A', photo: '' },
-        },
+        id: 'N/A',
+        name: 'No Driver Assigned',
+        phone: 'N/A',
+        avatar: '',
+        initials: 'ND',
+        rating: 0,
+        vehicle: { name: 'Standard', color: 'N/A', registrationNumber: 'N/A', photo: '' },
+      },
     cancellationDetails: t.cancellation
       ? {
-          cancelledBy: t.cancellation.cancelledBy || 'rider',
-          reason: t.cancellation.reason || 'N/A',
-          tripStage: 'N/A',
-          fee: t.fare?.cancellationFee || 0,
-          waitingCharge: t.fare?.waitingCharge || 0,
-        }
+        cancelledBy: t.cancellation.cancelledBy || 'rider',
+        reason: t.cancellation.reason || 'N/A',
+        tripStage: 'N/A',
+        fee: t.fare?.cancellationFee || 0,
+        waitingCharge: t.fare?.waitingCharge || 0,
+      }
       : undefined,
     payment: {
       method: t.paymentMethod?.card?.brand || 'Visa',
       last4: t.paymentMethod?.card?.last4 || '4242',
     },
+    riderFeedback: riderRatingObj ? {
+      rating: riderRatingObj.stars || 0,
+      note: riderRatingObj.note || riderRatingObj.feedback || undefined,
+      behaviourTags: riderRatingObj.behaviourTags || [],
+    } : undefined,
+    driverFeedback: driverRatingObj ? {
+      rating: driverRatingObj.stars || 0,
+      note: driverRatingObj.note || driverRatingObj.feedback || undefined,
+      behaviourTags: driverRatingObj.behaviourTags || [],
+    } : undefined,
   };
 };
 

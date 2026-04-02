@@ -120,12 +120,12 @@ const TripDetailsModal = ({
                   <span>
                     {trip.date !== 'N/A'
                       ? new Date(trip.date)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                          })
-                          .replace(' ', ', ')
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                        .replace(' ', ', ')
                       : 'N/A'}
                   </span>
                 </div>
@@ -425,17 +425,31 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.riderFeedback?.rating || 0)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 0)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>
-                    <span className="text-[12px] font-medium text-[#4E616A]">
-                      {trip.riderFeedback?.note || 'N/A'}
-                    </span>
+                    {trip.riderFeedback?.behaviourTags && trip.riderFeedback.behaviourTags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 ">
+                        {trip.riderFeedback.behaviourTags.map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="text-[12px] font-medium text-[#4E616A] "
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {trip.riderFeedback?.note && (
+                      <span className="text-[12px] font-medium text-[#4E616A] mt-1">
+                        {trip.riderFeedback.note}
+                      </span>
+                    )}
+
                   </div>
                 </div>
 
@@ -448,17 +462,31 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${
-                            s <= (trip.driverFeedback?.rating || 0)
-                              ? 'text-[#E9A90A] fill-[#E9A90A]'
-                              : 'text-[#DFE6E5]'
-                          }`}
+                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 0)
+                            ? 'text-[#E9A90A] fill-[#E9A90A]'
+                            : 'text-[#DFE6E5]'
+                            }`}
                         />
                       ))}
                     </div>
-                    <span className="text-[12px] font-medium text-[#4E616A]">
-                      {trip.driverFeedback?.note || 'N/A'}
-                    </span>
+                    {trip.driverFeedback?.behaviourTags && trip.driverFeedback.behaviourTags.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {trip.driverFeedback.behaviourTags.map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="text-[12px] font-medium text-[#4E616A] "
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {trip.driverFeedback?.note && (
+                      <span className="text-[12px] font-medium text-[#4E616A] mt-1">
+                        {trip.driverFeedback.note}
+                      </span>
+                    )}
+
                   </div>
                 </div>
               </div>

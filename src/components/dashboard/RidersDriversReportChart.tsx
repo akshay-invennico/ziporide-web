@@ -4,10 +4,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useRiderDriverReport } from '@/hooks/useDashboard';
 
-type FilterKey = 'Month' | 'Daily';
+type FilterKey = 'Year' | 'Month';
 
 export default function RidersDriversReportChart() {
-  const [filter, setFilter] = useState<FilterKey>('Month');
+  const [filter, setFilter] = useState<FilterKey>('Year');
   const { data: chartData, loading, error } = useRiderDriverReport(filter);
 
   return (
@@ -31,7 +31,7 @@ export default function RidersDriversReportChart() {
 
         {/* Filter tabs */}
         <div className="flex items-center gap-2">
-          {(['Month', 'Daily'] as FilterKey[]).map((item) => (
+          {(['Year', 'Month'] as FilterKey[]).map((item) => (
             <button
               key={item}
               onClick={() => setFilter(item)}
