@@ -12,7 +12,7 @@ import {
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useRevenueAnalytics } from '@/hooks/useDashboard';
 
-type FilterKey = 'Month' | 'Daily';
+type FilterKey = 'Year' | 'Month';
 
 const yTickFormatter = (value: number) => `£${value >= 1000 ? `${value / 1000}K` : value}`;
 
@@ -37,7 +37,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export default function RevenueAnalyticsChart() {
-  const [trendFilter, setTrendFilter] = useState<FilterKey>('Month');
+  const [trendFilter, setTrendFilter] = useState<FilterKey>('Year');
   const { data: activeData, loading, error } = useRevenueAnalytics(trendFilter);
 
   return (
@@ -53,16 +53,15 @@ export default function RevenueAnalyticsChart() {
 
         {/* Filter tabs */}
         <div className="flex items-center gap-2">
-          {(['Month', 'Daily'] as FilterKey[]).map((filter) => (
+          {(['Year', 'Month'] as FilterKey[]).map((filter) => (
             <button
               key={filter}
               onClick={() => setTrendFilter(filter)}
               disabled={loading}
-              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                trendFilter === filter
-                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                  : 'border-[#DFE6E5] text-[#4E616A] '
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
+                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                : 'border-[#DFE6E5] text-[#4E616A] '
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {filter}
             </button>

@@ -286,6 +286,10 @@ export interface RawRideData {
     address: string;
     coordinates: [number, number];
   };
+  category?: {
+    categoryIcon?: string;
+    name?: string;
+  };
   paymentMethod?: {
     card?: {
       last4: string;
@@ -316,6 +320,38 @@ export interface RawRideData {
     reason: string;
     cancelledAt?: string;
   };
+  rating?: {
+    behaviourTags?: string[];
+    ratedBy?: string;
+    stars?: number;
+    id?: string;
+    feedback?: string;
+    note?: string;
+  };
+  driverRating?: {
+    behaviourTags?: string[];
+    ratedBy?: string;
+    stars?: number;
+    id?: string;
+    feedback?: string;
+    note?: string;
+  };
+  riderRating?: {
+    behaviourTags?: string[];
+    ratedBy?: string;
+    stars?: number;
+    id?: string;
+    feedback?: string;
+    note?: string;
+  };
+  ratings?: Array<{
+    behaviourTags?: string[];
+    ratedBy?: string;
+    stars?: number;
+    id?: string;
+    feedback?: string;
+    note?: string;
+  }>;
 }
 
 export interface TripRecord {
@@ -343,6 +379,7 @@ export interface TripRecord {
       color: string;
       registrationNumber: string;
       photo?: string;
+      categoryIcon?: string;
     };
   };
   route: {
@@ -366,11 +403,13 @@ export interface TripRecord {
   };
   riderFeedback?: {
     rating: number;
-    note: string;
+    note?: string;
+    behaviourTags?: string[];
   };
   driverFeedback?: {
     rating: number;
-    note: string;
+    note?: string;
+    behaviourTags?: string[];
   };
   cancellationDetails?: {
     cancelledBy: 'rider' | 'driver' | 'admin';

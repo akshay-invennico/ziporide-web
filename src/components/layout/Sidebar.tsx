@@ -55,7 +55,7 @@ export default function Sidebar() {
         permission: 'drivers.view',
       },
       {
-        name: 'Verification Req',
+        name: 'Verification Request',
         path: routes.VERIFICATION,
         badge: count > 0 ? (count > 99 ? '99+' : count.toString()) : undefined,
         icon: '/icons/sidebar/sidebarIcon4_default.svg',
@@ -195,9 +195,8 @@ export default function Sidebar() {
               <Link
                 to={item.path}
                 onClick={(e) => handleNavClick(item.name, item.path, e, !!item.subItems)}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${
-                  isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
-                }`}
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
+                  }`}
               >
                 <img
                   src={isActive ? item.activeIcon : item.icon}
@@ -209,7 +208,7 @@ export default function Sidebar() {
                 <span className="font-medium text-[#FFFFFF] flex-1 text-[14px]">{item.name}</span>
 
                 {item.badge && (
-                  <span className="bg-[#FF0707] text-white text-[12px] font-semibold px-2 py-1 w-[36px] h-[24px] text-center rounded-[800px] leading-none">
+                  <span className="bg-[#FF0707] text-white text-[12px] font-semibold px-2 py-1 text-center rounded-full leading-none">
                     {item.badge}
                   </span>
                 )}
@@ -236,11 +235,10 @@ export default function Sidebar() {
                       <Link
                         key={subItem.name}
                         to={subItem.path}
-                        className={`relative z-10 flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150 ${
-                          isSubActive
-                            ? 'bg-[#14B8A6] text-white font-medium text-[14px]'
-                            : 'text-[#FFFFFF] font-medium text-[14px]'
-                        }`}
+                        className={`relative z-10 flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150 ${isSubActive
+                          ? 'bg-[#14B8A6] text-white font-medium text-[14px]'
+                          : 'text-[#FFFFFF] font-medium text-[14px]'
+                          }`}
                       >
                         {/* Connecting branch curve connecting to the main stalk */}
                         <div className="absolute left-[-13px] top-[-8px] w-[13px] h-[32px] border-b-2 border-l-2 border-white rounded-bl-[16px] z-[-1] pointer-events-none"></div>

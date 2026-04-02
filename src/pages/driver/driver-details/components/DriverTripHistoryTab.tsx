@@ -1,4 +1,4 @@
-import { Star, ArrowRightIcon } from 'lucide-react';
+import { ArrowRightIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -106,22 +106,6 @@ export default function DriverTripHistoryTab() {
       ),
     },
     {
-      key: 'rating',
-      label: 'RATING',
-      sortable: false,
-      render: (trip) =>
-        trip.rider.rating !== null ? (
-          <div className="flex items-center gap-1">
-            <Star className="w-[14px] h-[14px] fill-[#E9A90A] text-[#E9A90A]" />
-            <span className="text-[14px] font-medium text-[#4E616A]">
-              {trip.rider.rating.toFixed(1)}
-            </span>
-          </div>
-        ) : (
-          <span className="text-[14px] text-[#4E616A]">-</span>
-        ),
-    },
-    {
       key: 'status',
       label: 'STATUS',
       sortable: true,
@@ -192,11 +176,10 @@ export default function DriverTripHistoryTab() {
                     setPeriod(p);
                     setCurrentPage(1);
                   }}
-                  className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                    period === p
-                      ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                      : 'border-[#DFE6E5] text-[#4E616A]'
-                  }`}
+                  className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${period === p
+                    ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                    : 'border-[#DFE6E5] text-[#4E616A]'
+                    }`}
                 >
                   {p}
                 </button>

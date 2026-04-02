@@ -12,10 +12,10 @@ import {
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useTripsOverTime } from '@/hooks/useDashboard';
 
-type FilterKey = 'Month' | 'Daily';
+type FilterKey = 'Year' | 'Month';
 
 export default function TripsChart() {
-  const [filter, setFilter] = useState<FilterKey>('Month');
+  const [filter, setFilter] = useState<FilterKey>('Year');
   const { data: chartData, loading, error } = useTripsOverTime(filter);
 
   return (
@@ -28,7 +28,7 @@ export default function TripsChart() {
 
         {/* Filter tabs */}
         <div className="flex items-center gap-2">
-          {(['Month', 'Daily'] as FilterKey[]).map((item) => (
+          {(['Year', 'Month'] as FilterKey[]).map((item) => (
             <button
               key={item}
               onClick={() => setFilter(item)}
