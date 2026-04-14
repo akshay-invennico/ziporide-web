@@ -19,6 +19,13 @@ export default function StatCard({
   const isNeutral = trendValue === '0%';
   const trendIcon = isPositive ? '/icons/statCard/Up.svg' : '/icons/statCard/Down.svg';
 
+  // Format trendValue to max 2 decimal places to prevent UI overflow
+  const formattedTrendValue = trendValue.replace(/[\d.]+/, (match) => {
+    const num = parseFloat(match);
+    if (isNaN(num)) return match;
+    return Number.isInteger(num) ? num.toString() : num.toFixed(2);
+  });
+
   return (
     <div className="bg-white p-3 lg:p-4 xl:p-5 rounded-lg border border-[#DFE6E5] flex flex-col justify-between h-[110px] lg:h-[120px] w-full">
       {/* Top Section */}
@@ -46,7 +53,7 @@ export default function StatCard({
             }
           >
             {!isNeutral && (isPositive ? '+' : '-')}
-            {trendValue}
+            {formattedTrendValue}
           </span>
           <span className="text-[#4E616A]">{trendLabel}</span>
         </div>

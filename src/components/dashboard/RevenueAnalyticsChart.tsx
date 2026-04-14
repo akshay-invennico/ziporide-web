@@ -12,7 +12,7 @@ import {
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useRevenueAnalytics } from '@/hooks/useDashboard';
 
-type FilterKey = 'Year' | 'Month';
+type FilterKey = 'Daily' | 'Weekly' | 'Month' | 'Year';
 
 const yTickFormatter = (value: number) => `£${value >= 1000 ? `${value / 1000}K` : value}`;
 
@@ -40,6 +40,16 @@ export default function RevenueAnalyticsChart() {
   const [trendFilter, setTrendFilter] = useState<FilterKey>('Year');
   const { data: activeData, loading, error } = useRevenueAnalytics(trendFilter);
 
+  // Pad single data point with empty entries so the area gradient renders
+  const chartData =
+    activeData.length === 1
+      ? [
+          { ...activeData[0], revenue: 0, rides: 0, month: '', day: '', _pad: true },
+          activeData[0],
+          { ...activeData[0], revenue: 0, rides: 0, month: '', day: '', _pad: true },
+        ]
+      : activeData;
+
   return (
     <div className="bg-white h-[418px]  p-5 rounded-lg border border-[#DFE6E5] s col-span-1 lg:col-span-2 xl:col-span-4 transition-all overflow-hidden">
       {/* Header row */}
@@ -53,15 +63,16 @@ export default function RevenueAnalyticsChart() {
 
         {/* Filter tabs */}
         <div className="flex items-center gap-2">
-          {(['Year', 'Month'] as FilterKey[]).map((filter) => (
+          {(['Daily', 'Weekly', 'Month', 'Year'] as FilterKey[]).map((filter) => (
             <button
               key={filter}
               onClick={() => setTrendFilter(filter)}
               disabled={loading}
-              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${trendFilter === filter
-                ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
-                : 'border-[#DFE6E5] text-[#4E616A] '
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
+                trendFilter === filter
+                  ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                  : 'border-[#DFE6E5] text-[#4E616A] '
+              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {filter}
             </button>
@@ -80,13 +91,13 @@ export default function RevenueAnalyticsChart() {
           <div className="flex h-full items-center justify-center text-red-500">
             <p className="text-sm">Failed to load revenue data</p>
           </div>
-        ) : activeData.length === 0 && !loading ? (
+        ) : chartData.length === 0 && !loading ? (
           <div className="flex h-full items-center justify-center text-[#4E616A]">
             <p className="text-sm">No data available for this period</p>
           </div>
         ) : (
           <ResponsiveContainer key={trendFilter} width="100%" height="100%">
-            <AreaChart data={activeData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1CC8B1" stopOpacity={0.12} />

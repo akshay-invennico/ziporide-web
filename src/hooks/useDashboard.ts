@@ -12,7 +12,12 @@ import type {
   TripsOverTimeItem,
 } from '@/types/dashboard.types';
 
-const apiTypeMap: Record<'Year' | 'Month', string> = { Year: 'month', Month: 'daily' };
+const apiTypeMap: Record<'Daily' | 'Weekly' | 'Month' | 'Year', string> = {
+  Daily: 'daily',
+  Weekly: 'weekly',
+  Month: 'month',
+  Year: 'year',
+};
 
 export const useDashboardSummary = () => {
   const [data, setData] = useState<DashboardSummary['data'] | null>(null);
@@ -43,7 +48,7 @@ export const useDashboardSummary = () => {
   return { data, loading, error, refetch: fetchSummary };
 };
 
-export const useRevenueAnalytics = (type: 'Year' | 'Month') => {
+export const useRevenueAnalytics = (type: 'Daily' | 'Weekly' | 'Month' | 'Year') => {
   const [data, setData] = useState<RevenueAnalyticsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +79,7 @@ export const useRevenueAnalytics = (type: 'Year' | 'Month') => {
   return { data, loading, error, refetch: fetchRevenue };
 };
 
-export const useRiderDriverReport = (type: 'Year' | 'Month') => {
+export const useRiderDriverReport = (type: 'Daily' | 'Weekly' | 'Month' | 'Year') => {
   const [data, setData] = useState<RiderDriverReportItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +110,7 @@ export const useRiderDriverReport = (type: 'Year' | 'Month') => {
   return { data, loading, error, refetch: fetchReport };
 };
 
-export const useTripsOverTime = (type: 'Year' | 'Month') => {
+export const useTripsOverTime = (type: 'Daily' | 'Weekly' | 'Month' | 'Year') => {
   const [data, setData] = useState<TripsOverTimeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

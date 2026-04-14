@@ -324,9 +324,9 @@ export const useExportRidersCSV = () => {
           rider.name,
           rider.email || '',
           `${rider.countryCode || ''}${rider.phone}`,
-          rider.totalTrips || 0,
-          (rider.totalSpent || 0).toFixed(2),
-          (rider.rating || 0).toFixed(1),
+          Number(rider.totalTrips || 0),
+          Number(rider.totalSpent || 0).toFixed(2),
+          Number(rider.rating || rider.avgRating || 0).toFixed(1),
           rider.status,
         ]);
 
