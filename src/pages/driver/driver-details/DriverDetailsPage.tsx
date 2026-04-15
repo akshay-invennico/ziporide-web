@@ -104,7 +104,7 @@ export default function DriverDetailsPage() {
         {activeTab === 'subscription' && <DriverSubscriptionTab />}
         {activeTab === 'earning' && <DriverEarningTab />}
         {activeTab === 'trip-history' && <DriverTripHistoryTab />}
-        {activeTab === 'audit-log' && <DriverAuditLogTab />}
+        {activeTab === 'audit-log' && <DriverAuditLogTab driverId={id!} />}
       </div>
 
       {/* Status Update Button */}

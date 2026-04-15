@@ -6,10 +6,10 @@ import { useToast } from '@/context/useToast';
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
 import type {
-  AdminProfileData,
-  AdminProfileResponse,
+  OperatorProfile,
+  OperatorProfileResponse,
+  UpdateOperatorProfilePayload,
   UpdatePasswordPayload,
-  UpdateProfilePayload,
 } from '@/types/user.types';
 
 interface ApiError {
@@ -17,7 +17,7 @@ interface ApiError {
 }
 
 export const useAdminProfile = () => {
-  const [profile, setProfile] = useState<AdminProfileData | null>(null);
+  const [profile, setProfile] = useState<OperatorProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { updateAuth } = useAuth();
   const { showToast } = useToast();
@@ -29,11 +29,12 @@ export const useAdminProfile = () => {
     isFetchingRef.current = true;
     setIsLoading(true);
     try {
-      const { data } = await apiClient.get<AdminProfileResponse>(API.ADMIN_ME);
-      setProfile(data.data);
+      const { data } = await apiClient.get<OperatorProfileResponse>(API.OPERATOR_ME);
+      const operator = data.data.operator;
+      setProfile(operator);
       updateAuth({
-        name: data.data.user.name,
-        profile: data.data.user.profile,
+        name: operator.name,
+        profile: operator.profilePhotoUrl,
       });
     } catch (err) {
       const error = err as AxiosError<ApiError>;
@@ -46,16 +47,16 @@ export const useAdminProfile = () => {
   }, [showToast, updateAuth]);
 
   const updateProfile = useCallback(
-    async (payload: UpdateProfilePayload) => {
+    async (payload: UpdateOperatorProfilePayload) => {
       setIsLoading(true);
       try {
-        await apiClient.patch(API.UPDATE_PROFILE, payload);
+        await apiClient.patch(API.OPERATOR_ME, payload);
         showToast('Profile updated successfully!', 'success');
         updateAuth({
           name: payload.name,
-          profile: payload.profile,
+          profile: payload.profilePhotoUrl,
         });
-        await getProfile(); // Refresh profile data
+        await getProfile();
       } catch (err) {
         const error = err as AxiosError<ApiError>;
         const message = error.response?.data?.message || 'Failed to update profile.';

@@ -42,6 +42,7 @@ export const API = {
   UPDATE_TICKET_STATUS: (id: string) => `/v1/support/ticket/${id}`,
 
   UPLOAD_IMAGE: '/v1/image/upload',
+  UPLOAD_IMAGES: '/v1/image/upload',
   ADMIN_ME: '/v1/users/me',
   UPDATE_PROFILE: '/v1/users',
   UPDATE_PASSWORD: '/v1/users/password',
@@ -57,6 +58,9 @@ export const API = {
   OPERATOR_DETAILS: (id: string) => `/v1/operators/${id}`,
   OPERATOR_UPDATE_PERMISSIONS: (id: string) => `/v1/operators/${id}/permissions`,
   OPERATOR_UPDATE_STATUS: (id: string) => `/v1/operators/${id}/status`,
+
+  RIDER_ACTIVITIES: (riderId: string) => `/v1/activities/rider/${riderId}`,
+  DRIVER_ACTIVITIES: (driverId: string) => `/v1/activities/driver/${driverId}`,
 
   NOTIFICATIONS: '/v1/notifications',
   SEND_NOTIFICATION: '/v1/notifications/send',

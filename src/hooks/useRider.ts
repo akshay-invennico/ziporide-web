@@ -77,7 +77,11 @@ export const useRiders = (
       const data = response.data;
 
       if (data && data.success) {
-        setRiders(data.data.results || []);
+        const results = (data.data.results || []).map((r) => ({
+          ...r,
+          id: r.id || r._id || '',
+        }));
+        setRiders(results);
         setTotalPages(data.data.totalPages || 0);
         setTotalResults(data.data.totalResults || 0);
       } else {
@@ -142,7 +146,8 @@ export const useRiderDetails = (id: string | undefined) => {
     try {
       const response = await apiClient.get<RiderDetailsResponse>(API.RIDER_DETAILS(id));
       if (response.data?.success && response.data?.data?.user) {
-        setRider(response.data.data.user);
+        const user = response.data.data.user;
+        setRider({ ...user, id: user.id || user._id || '' });
       } else {
         setError(response.data?.message || 'Failed to fetch rider details.');
       }
@@ -299,7 +304,10 @@ export const useExportRidersCSV = () => {
 
         const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
         if (response.data && response.data.success) {
-          const results = response.data.data.results || [];
+          const results = (response.data.data.results || []).map((r) => ({
+            ...r,
+            id: r.id || r._id || '',
+          }));
           allRiders = [...allRiders, ...results];
           totalPages = response.data.data.totalPages || 1;
           currentPage++;
@@ -390,7 +398,10 @@ export const useExportRidersPDF = () => {
 
         const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
         if (response.data && response.data.success) {
-          const results = response.data.data.results || [];
+          const results = (response.data.data.results || []).map((r) => ({
+            ...r,
+            id: r.id || r._id || '',
+          }));
           allRiders = [...allRiders, ...results];
           totalPages = response.data.data.totalPages || 1;
           currentPage++;

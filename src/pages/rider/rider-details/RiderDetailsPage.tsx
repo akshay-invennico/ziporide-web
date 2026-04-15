@@ -78,7 +78,7 @@ export default function RiderDetailsPage() {
       >
         {activeTab === 'info' && <RiderInfoTab rider={rider} />}
         {activeTab === 'history' && <SpentTripHistoryTab rider={rider} />}
-        {activeTab === 'timeline' && <ActivityTimelineTab />}
+        {activeTab === 'timeline' && <ActivityTimelineTab riderId={rider.id} />}
       </div>
 
       {activeTab === 'info' && (

@@ -13,7 +13,7 @@ const MyProfilePage = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    profileImage: '',
+    profilePhotoUrl: '',
   });
 
   const [previewUrl, setPreviewUrl] = useState<string>('');
@@ -25,13 +25,13 @@ const MyProfilePage = () => {
   }, [getProfile]);
 
   useEffect(() => {
-    if (profile && profile.user) {
+    if (profile) {
       setFormData({
-        fullName: profile.user.name || '',
-        email: profile.user.email || '',
-        profileImage: profile.user.profile || '',
+        fullName: profile.name || '',
+        email: profile.email || '',
+        profilePhotoUrl: profile.profilePhotoUrl || '',
       });
-      setPreviewUrl(profile.user.profile || '');
+      setPreviewUrl(profile.profilePhotoUrl || '');
     }
   }, [profile]);
 
@@ -43,9 +43,10 @@ const MyProfilePage = () => {
 
       try {
         const imageUrl = await uploadImage(file);
-        setFormData((prev) => ({ ...prev, profileImage: imageUrl }));
+        setFormData((prev) => ({ ...prev, profilePhotoUrl: imageUrl }));
       } catch (error) {
         console.error('Failed to upload image:', error);
+        setPreviewUrl(profile?.profilePhotoUrl || '');
       }
     }
   };
@@ -53,7 +54,8 @@ const MyProfilePage = () => {
   const handleUpdateProfile = async () => {
     await updateProfile({
       name: formData.fullName,
-      profile: formData.profileImage,
+      email: formData.email,
+      profilePhotoUrl: formData.profilePhotoUrl || undefined,
     });
   };
 

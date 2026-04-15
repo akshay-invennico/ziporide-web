@@ -13,6 +13,7 @@ export interface Address {
 
 export interface Rider {
   id: string;
+  _id?: string;
   riderId?: string; // Some parts of mock used this
   name: string;
   email: string | null;
