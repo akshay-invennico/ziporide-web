@@ -4,12 +4,28 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { usePricing } from '@/hooks/usePricing';
 import type { PricingData } from '@/types/pricing.types';
 
+const defaultPricing: PricingData = {
+  minimumFare: null,
+  cancellationFee: null,
+  airportParkingCharge: null,
+  waitingCharge: null,
+  freeWaitingTime: null,
+  maxPaidWaitingTime: null,
+  surgePricing: { enabled: false, multiplier: null },
+};
+
 const PricingLogicPage = () => {
   const { pricing, isLoading, getPricing, updatePricing, setPricing } = usePricing();
 
   useEffect(() => {
-    getPricing();
-  }, [getPricing]);
+    const fetchPricing = async () => {
+      const result = await getPricing();
+      if (!result) {
+        setPricing(defaultPricing);
+      }
+    };
+    fetchPricing();
+  }, [getPricing, setPricing]);
 
   const handleUpdate = async () => {
     if (pricing) {
@@ -280,13 +296,8 @@ const NumberInput = ({
   const [localValue, setLocalValue] = useState<string>(value?.toString() ?? '');
 
   useEffect(() => {
-    const normalizedValue = value?.toString() ?? '';
-    if (normalizedValue !== localValue && (value !== null || localValue !== '')) {
-      if (Number(normalizedValue) !== Number(localValue)) {
-        setLocalValue(normalizedValue);
-      }
-    }
-  }, [value, localValue]);
+    setLocalValue(value?.toString() ?? '');
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;

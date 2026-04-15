@@ -20,10 +20,12 @@ export const usePricing = () => {
     try {
       const { data } = await apiClient.get<PricingResponse>(API.PRICING);
       setPricing(data.data.pricing);
+      return true;
     } catch (err) {
       const error = err as AxiosError<ApiError>;
       const message = error.response?.data?.message || 'Failed to fetch pricing.';
       showToast(message, 'error');
+      return false;
     } finally {
       setIsLoading(false);
     }
