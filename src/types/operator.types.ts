@@ -50,7 +50,6 @@ export interface CreateOperatorPayload {
 export interface UpdateOperatorPayload {
   name?: string;
   email?: string;
-  password?: string;
   role?: 'admin' | 'manager' | 'operator';
   permissions?: string[];
 }

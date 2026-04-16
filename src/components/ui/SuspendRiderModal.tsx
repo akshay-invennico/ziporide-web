@@ -48,10 +48,10 @@ export default function SuspendRiderModal({
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedReason(reasons[0]);
+      setSelectedReason('');
       setNote('');
     }
-  }, [isOpen, mode, userType, reasons]); // Reset when opening or changing mode/type
+  }, [isOpen, mode, userType]);
 
   if (!isOpen) return null;
 
@@ -140,7 +140,10 @@ export default function SuspendRiderModal({
               const reason = selectedReason === 'Other' ? note : selectedReason;
               onConfirm(reason);
             }}
-            disabled={loading}
+            disabled={
+              loading ||
+              (isSuspend && (!selectedReason || (selectedReason === 'Other' && !note.trim())))
+            }
             className={`px-6 py-2.5 ${isSuspend ? 'bg-[#FF0707]' : 'bg-[#00A63E]'} cursor-pointer text-white rounded-sm text-[14px] font-medium disabled:opacity-50 flex items-center justify-center min-w-[150px]`}
           >
             {loading ? <LoadingSpinner size={20} className="text-white" /> : confirmBtnText}

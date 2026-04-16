@@ -24,6 +24,7 @@ export const useVehicles = (
       const params: Record<string, string | number> = {
         page,
         limit,
+        sortBy: 'createdAt',
       };
 
       const response = await apiClient.get<VehiclesResponse>(API.VEHICLES, { params });

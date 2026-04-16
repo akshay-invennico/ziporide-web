@@ -183,7 +183,7 @@ const ApplicationDetailsPage = () => {
                 <button
                   onClick={() => handleOverallStatusUpdate('approve')}
                   disabled={isVerifying}
-                  className="flex items-center gap-1 px-6 py-2 rounded-[500px] bg-[#EAFFF2]  text-[#00A63E] font-medium text-[14px] disabled:opacity-50"
+                  className="flex cursor-pointer items-center gap-1 px-6 py-2 rounded-[500px] bg-[#EAFFF2]  text-[#00A63E] font-medium text-[14px] disabled:opacity-50"
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   Approve
@@ -595,68 +595,85 @@ const ApplicationDetailsPage = () => {
       </div>
 
       {/* Background Check */}
-      <div className="bg-white rounded-lg p-4 border h-[130px] border-[#DFE6E5] flex flex-row justify-between gap-6">
-        <div className="flex gap-2 items-center">
-          <div className="w-[80px] h-[60px]  rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-            <img
-              src="/icons/verification/backgroundCheck.svg"
-              alt="pdf"
-              className="w-[80px] h-[60px]"
-            />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[14px] font-medium text-[#101828] mb-1">Background Check</span>
-            <span className="text-[12px] font-semibold text-[#4E616A] mb-2">
-              Criminal & driving record verification
-            </span>
-            <div className="flex items-center gap-3">
-              {request.backgroundCheck?.rejectedReason ? (
-                <>
-                  <div className="px-3 py-1 rounded-full bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
-                    Rejected
+      <div className="bg-white rounded-lg p-4 border border-[#DFE6E5] flex flex-col gap-4">
+        <div className="flex flex-row justify-between gap-6">
+          <div className="flex gap-2 items-center">
+            <div className="w-[80px] h-[60px]  rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
+              <img
+                src="/icons/verification/backgroundCheck.svg"
+                alt="pdf"
+                className="w-[80px] h-[60px]"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[14px] font-medium text-[#101828] mb-1">Background Check</span>
+              <span className="text-[12px] font-semibold text-[#4E616A] mb-2">
+                Criminal & driving record verification
+              </span>
+              <div className="flex items-center gap-3">
+                {request.backgroundCheck?.rejectedReason ? (
+                  <>
+                    <div className="px-3 py-1 rounded-full bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
+                      Rejected
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-[#F9F9F9] rounded-[400px] px-2 py-1">
+                      <img
+                        src="/icons/verification/info.svg"
+                        alt="info"
+                        className="w-[15px] h-[15px]"
+                      />
+                      <span className="text-[12px] font-medium text-[#4E616A]">
+                        {request.backgroundCheck.rejectedReason}
+                      </span>
+                    </div>
+                  </>
+                ) : request.backgroundCheck?.isVerified ? (
+                  <div className="px-3 py-1 rounded-full bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
+                    Verified
                   </div>
-                  <div className="flex items-center gap-1.5 bg-[#F9F9F9] rounded-[400px] px-2 py-1">
-                    <img
-                      src="/icons/verification/info.svg"
-                      alt="info"
-                      className="w-[15px] h-[15px]"
-                    />
-                    <span className="text-[12px] font-medium text-[#4E616A]">
-                      {request.backgroundCheck.rejectedReason}
-                    </span>
+                ) : (
+                  <div className="px-3 py-1 rounded-full bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">
+                    Pending Verification
                   </div>
-                </>
-              ) : request.backgroundCheck?.isVerified ? (
-                <div className="px-3 py-1 rounded-full bg-[#EAFFF2] text-[#00A63E] text-[12px] font-medium">
-                  Verified
-                </div>
-              ) : (
-                <div className="px-3 py-1 rounded-full bg-[#FFF3D4] text-[#F6921E] text-[12px] font-medium">
-                  Pending Verification
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
+
+          {!request.backgroundCheck?.isVerified && !request.backgroundCheck?.rejectedReason && (
+            <div className="flex items-center gap-2 ">
+              <button
+                onClick={() => handleOpenRejectModal('Background Check', 'backgroundCheck')}
+                disabled={isVerifying}
+                className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
+              >
+                <X className="w-5 h-5 font-bold" />
+              </button>
+              <button
+                onClick={() => handleVerifyDocument('backgroundCheck', true)}
+                disabled={isVerifying}
+                className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
+              >
+                <Check className="w-5 h-5 font-bold" />
+              </button>
+            </div>
+          )}
         </div>
 
-        {!request.backgroundCheck?.isVerified && !request.backgroundCheck?.rejectedReason && (
-          <div className="flex items-center gap-2 ">
-            <button
-              onClick={() => handleOpenRejectModal('Background Check', 'backgroundCheck')}
-              disabled={isVerifying}
-              className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
-            >
-              <X className="w-5 h-5 font-bold" />
-            </button>
-            <button
-              onClick={() => handleVerifyDocument('backgroundCheck', true)}
-              disabled={isVerifying}
-              className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
-            >
-              <Check className="w-5 h-5 font-bold" />
-            </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[14px] font-medium text-[#4E616A]">DBS Certificate Number</span>
+            <span className="text-[14px] font-medium text-[#000000]">
+              {request.vehicle?.dbsCertificateNumber || '-'}
+            </span>
           </div>
-        )}
+          <div className="flex justify-between items-center">
+            <span className="text-[14px] font-medium text-[#4E616A]">DBS Share Code</span>
+            <span className="text-[14px] font-medium text-[#000000]">
+              {request.vehicle?.dbsShareCode || '-'}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Warning Alert */}

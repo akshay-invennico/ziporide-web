@@ -59,6 +59,8 @@ export interface Driver {
     colour?: string;
     color?: string;
     vehicleType?: string; // some parts of UI use this
+    dbsCertificateNumber?: string;
+    dbsShareCode?: string;
     insuranceCertificateUrl?: string; // New from API
     motCertificateUrl?: string; // New from API
     insurance?: {

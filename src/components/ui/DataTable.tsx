@@ -28,6 +28,7 @@ export interface DataTableProps<T> {
   onSort?: (sort: SortState) => void;
   currentPage?: number;
   totalPages?: number;
+  pageSize?: number;
   onPageChange?: (page: number) => void;
   selectable?: boolean;
   selectedKeys?: string[];
@@ -52,9 +53,10 @@ function DataTable<T extends object>({
   columns,
   data,
   rowKey,
-  currentPage,
-  totalPages,
-  onPageChange,
+  currentPage: controlledPage,
+  totalPages: controlledTotalPages,
+  pageSize = 10,
+  onPageChange: controlledOnPageChange,
   selectable = false,
   selectedKeys = [],
   onSelectionChange,
@@ -68,6 +70,13 @@ function DataTable<T extends object>({
   const tableId = useId();
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [isSorted, setIsSorted] = useState<boolean>(false);
+
+  // Pagination: controlled (server-side) vs uncontrolled (client-side)
+  const isControlledPagination =
+    controlledPage !== undefined &&
+    controlledTotalPages !== undefined &&
+    controlledOnPageChange !== undefined;
+  const [internalPage, setInternalPage] = useState(1);
 
   const sortedData = useMemo(() => {
     if (!isSorted || !sortKey) return data;
@@ -113,6 +122,31 @@ function DataTable<T extends object>({
       }
     });
   }, [data, isSorted, sortKey, columns]);
+
+  // Resolve pagination values
+  const currentPage = isControlledPagination ? controlledPage : internalPage;
+  const totalPages = isControlledPagination
+    ? controlledTotalPages
+    : Math.max(1, Math.ceil(sortedData.length / pageSize));
+  const onPageChange = isControlledPagination ? controlledOnPageChange : setInternalPage;
+
+  // For client-side pagination, slice the data for the current page
+  const paginatedData = useMemo(() => {
+    if (isControlledPagination) return sortedData;
+    const start = (currentPage - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [isControlledPagination, sortedData, currentPage, pageSize]);
+
+  // Reset to page 1 when data changes in client-side pagination mode
+  React.useEffect(() => {
+    if (
+      !isControlledPagination &&
+      currentPage > 1 &&
+      (currentPage - 1) * pageSize >= sortedData.length
+    ) {
+      setInternalPage(1);
+    }
+  }, [sortedData.length, isControlledPagination, currentPage, pageSize]);
 
   const getRowKey = useCallback(
     (row: T, index: number): string => {
@@ -161,7 +195,7 @@ function DataTable<T extends object>({
 
   return (
     <div className={className}>
-      <div className="overflow-x-auto" style={{ minHeight }}>
+      <div className="overflow-x-auto scrollbar-thin" style={{ minHeight }}>
         <table className="w-full text-left border-collapse" aria-label="Data table">
           <thead>
             <tr className="bg-[#F9F9F9] border-b border-[#DFE6E5] text-[14px] font-medium uppercase text-[#4E616A]">
@@ -205,14 +239,14 @@ function DataTable<T extends object>({
                   </div>
                 </td>
               </tr>
-            ) : sortedData.length === 0 ? (
+            ) : paginatedData.length === 0 ? (
               <tr>
                 <td colSpan={totalCols} className="px-6 py-16 text-center">
                   {emptyElement || <span className="text-[14px] text-[#939999]">{emptyText}</span>}
                 </td>
               </tr>
             ) : (
-              sortedData.map((row: T, rowIndex: number) => {
+              paginatedData.map((row: T, rowIndex: number) => {
                 const key = getRowKey(row, rowIndex);
                 const isSelected = selectedKeys.includes(key);
                 return (
@@ -251,9 +285,7 @@ function DataTable<T extends object>({
         </table>
       </div>
 
-      {currentPage !== undefined && totalPages !== undefined && onPageChange && (
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
-      )}
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
     </div>
   );
 }

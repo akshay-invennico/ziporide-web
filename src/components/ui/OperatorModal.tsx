@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { X } from 'lucide-react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import * as Yup from 'yup';
 
 import { usePermissionConfig } from '@/hooks/useOperatorData';
@@ -166,14 +166,11 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
       }))
     : PERMISSION_CATEGORIES;
 
-  const roleDefaults = useMemo(() => config?.roleDefaults || {}, [config?.roleDefaults]);
-
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full name is required'),
     email: Yup.string().email('Invalid email').required('Email is required'),
-    password: isEdit
-      ? Yup.string().min(8, 'Password must be at least 8 characters')
-      : isView
+    password:
+      isEdit || isView
         ? Yup.string()
         : Yup.string()
             .min(8, 'Password must be at least 8 characters')
@@ -210,9 +207,6 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
           role: values.role as 'admin' | 'manager' | 'operator',
           permissions: values.permissions,
         };
-        if (values.password) {
-          payload.password = values.password;
-        }
         onConfirm(payload);
       }
     },
@@ -220,11 +214,10 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
 
   useEffect(() => {
     if (isView || !formik.values.role) return;
-    const defaults = roleDefaults[formik.values.role.toLowerCase()];
-    if (defaults && mode === 'add') {
-      formik.setFieldValue('permissions', [...defaults]);
+    if (mode === 'add') {
+      formik.setFieldValue('permissions', []);
     }
-  }, [formik, isView, roleDefaults, mode]);
+  }, [formik.values.role, isView, mode]);
 
   const togglePermission = (permId: string) => {
     if (isView) return;
@@ -367,29 +360,31 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                     </>
                   )}
                 </div>
-                <div>
-                  <label className="block text-[14px] font-medium text-[#4E616A] mb-2">
-                    Password
-                  </label>
-                  {isView ? (
-                    <p className="text-[14px] font-semibold text-[#000000]">********</p>
-                  ) : (
-                    <>
-                      <input
-                        type="password"
-                        name="password"
-                        placeholder={isEdit ? 'Leave blank to keep current' : '********'}
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium  hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-all placeholder:text-[#939999]"
-                      />
-                      {formik.touched.password && formik.errors.password && (
-                        <p className="mt-1 text-xs text-red-500">{formik.errors.password}</p>
-                      )}
-                    </>
-                  )}
-                </div>
+                {!isEdit && (
+                  <div>
+                    <label className="block text-[14px] font-medium text-[#4E616A] mb-2">
+                      Password
+                    </label>
+                    {isView ? (
+                      <p className="text-[14px] font-semibold text-[#000000]">********</p>
+                    ) : (
+                      <>
+                        <input
+                          type="password"
+                          name="password"
+                          placeholder="********"
+                          value={formik.values.password}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium  hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-all placeholder:text-[#939999]"
+                        />
+                        {formik.touched.password && formik.errors.password && (
+                          <p className="mt-1 text-xs text-red-500">{formik.errors.password}</p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
                 <div>
                   {isView ? (
                     <>

@@ -370,6 +370,49 @@ export default function DriverInfoTab({ driver }: Props) {
           </div>
         </div>
 
+        {/* Background Check */}
+        <div className="border border-[#DFE6E5] rounded-lg overflow-hidden mb-4">
+          <div className="p-5">
+            <h3 className="text-[12px] font-medium text-[#4E616A] mb-4">Background Check</h3>
+            <div className="flex flex-col gap-4 max-w-md">
+              <div className="flex items-center justify-between">
+                <span className="text-[14px] text-[#4E616A] font-medium">
+                  DBS Certificate Number
+                </span>
+                <span className="text-[14px] font-medium text-[#000000]">
+                  {(driver.vehicle?.dbsCertificateNumber || '-') as string}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[14px] text-[#4E616A] font-medium">DBS Share Code</span>
+                <span className="text-[14px] font-medium text-[#000000]">
+                  {(driver.vehicle?.dbsShareCode || '-') as string}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[14px] text-[#4E616A] font-medium">Verification Status</span>
+                {driver.backgroundCheck?.isVerified ? (
+                  <span className="text-[12px] font-medium text-[#00A63E] bg-[#EAFFF2] px-3 py-1 rounded-[500px]">
+                    Verified
+                  </span>
+                ) : (
+                  <span className="text-[12px] font-medium text-[#E9A90A] bg-[#FEFCE8] px-3 py-1 rounded-[500px]">
+                    Pending
+                  </span>
+                )}
+              </div>
+              {driver.backgroundCheck?.verifiedAt && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] text-[#4E616A] font-medium">Verified At</span>
+                  <span className="text-[14px] font-medium text-[#000000]">
+                    {formatDate(driver.backgroundCheck.verifiedAt)}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Legal Agreements */}
         <div className="border border-[#DFE6E5] rounded-xl overflow-hidden mb-4">
           <div className="p-5">

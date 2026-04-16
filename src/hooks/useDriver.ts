@@ -57,7 +57,9 @@ export const useDrivers = (
         (initialFilters.maxTrips && initialFilters.maxTrips < 500) ||
         (initialFilters.rating && initialFilters.rating !== 'All');
 
-      const params: Record<string, string | number> = {};
+      const params: Record<string, string | number> = {
+        sortBy: 'createdAt',
+      };
 
       if (!hasAppliedFilters) {
         params.page = page;

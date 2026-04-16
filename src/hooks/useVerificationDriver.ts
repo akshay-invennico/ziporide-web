@@ -34,6 +34,7 @@ export const useDrivers = (
         const params: Record<string, string | number> = {
           page,
           limit,
+          sortBy: 'createdAt',
         };
         if (status && status !== 'All') {
           params.status = status.toLowerCase();

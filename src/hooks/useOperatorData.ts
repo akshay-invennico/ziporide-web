@@ -28,7 +28,7 @@ export const useOperators = (page: number = 1, limit: number = 10, searchQuery: 
     setLoading(true);
     setError(null);
     try {
-      const params: Record<string, string | number> = { page, limit };
+      const params: Record<string, string | number> = { page, limit, sortBy: 'createdAt' };
       const response = await apiClient.get<OperatorListResponse>(API.OPERATORS, { params });
       if (response.data?.success) {
         setOperators(response.data.data.results || []);

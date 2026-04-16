@@ -14,13 +14,13 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
   className = '',
 }) => {
-  if (totalPages <= 1) return null;
+  const safeTotalPages = Math.max(totalPages, 1);
 
   const getPages = (): (number | '...')[] => {
     const pages: (number | '...')[] = [];
 
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    if (safeTotalPages <= 5) {
+      for (let i = 1; i <= safeTotalPages; i++) pages.push(i);
       return pages;
     }
 
@@ -31,25 +31,29 @@ const Pagination: React.FC<PaginationProps> = ({
     }
 
     const start = Math.max(2, currentPage - 1);
-    const end = Math.min(totalPages - 1, currentPage + 1);
+    const end = Math.min(safeTotalPages - 1, currentPage + 1);
 
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
 
-    if (currentPage < totalPages - 2) {
+    if (currentPage < safeTotalPages - 2) {
       pages.push('...');
     }
 
-    pages.push(totalPages);
+    pages.push(safeTotalPages);
 
     return pages;
   };
 
   return (
     <div
-      className={`p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-4 ${className}`}
+      className={`p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 ${className}`}
     >
+      <span className="text-[13px] text-[#939999]">
+        Page {currentPage} of {safeTotalPages}
+      </span>
+
       <div className="flex items-center gap-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
@@ -89,7 +93,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
         <button
           onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === safeTotalPages}
           aria-label="Next page"
           className="p-1.5 rounded-full border border-gray-200 text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
