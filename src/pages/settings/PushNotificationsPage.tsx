@@ -1,6 +1,6 @@
-import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
+import Dropdown from '@/components/ui/Dropdown';
 import { useNotifications } from '@/hooks/useNotifications';
 import type { TargetAudience } from '@/types/notification.types';
 
@@ -9,8 +9,6 @@ const audienceOptions: { label: string; value: TargetAudience }[] = [
   { label: 'Drivers', value: 'drivers' },
   { label: 'All', value: 'all' },
 ];
-
-
 
 const PushNotificationsPage = () => {
   const { isSending, sendNotification } = useNotifications();
@@ -21,8 +19,6 @@ const PushNotificationsPage = () => {
   const [errors, setErrors] = useState<{ targetAudience?: string; title?: string; body?: string }>(
     {},
   );
-
-
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -69,39 +65,18 @@ const PushNotificationsPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-8 font-inter">
             {/* Target Audience */}
-            <div>
-              <label className="block text-[14px] font-medium text-[#000000] mb-2">
-                Target Audience
-              </label>
-              <div className="relative">
-                <select
-                  value={targetAudience}
-                  onChange={(e) => {
-                    setTargetAudience(e.target.value as TargetAudience | '');
-                    if (errors.targetAudience)
-                      setErrors((prev) => ({ ...prev, targetAudience: undefined }));
-                  }}
-                  className={`w-full appearance-none bg-white cursor-pointer border rounded-md px-4 py-3 pr-10 text-[#000000] text-[14px] font-medium outline-none transition-colors ${
-                    errors.targetAudience
-                      ? 'border-red-500'
-                      : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
-                  }`}
-                >
-                  <option value="">Select Audience</option>
-                  {audienceOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <ChevronDown className="w-5 h-5 text-[#000000]" />
-                </div>
-              </div>
-              {errors.targetAudience && (
-                <p className="mt-1 text-[12px] text-red-500">{errors.targetAudience}</p>
-              )}
-            </div>
+            <Dropdown
+              label="Target Audience"
+              placeholder="Select Audience"
+              options={audienceOptions}
+              value={targetAudience}
+              onChange={(val) => {
+                setTargetAudience(val as TargetAudience);
+                if (errors.targetAudience)
+                  setErrors((prev) => ({ ...prev, targetAudience: undefined }));
+              }}
+              error={errors.targetAudience}
+            />
 
             {/* Notification Title */}
             <div>
@@ -180,7 +155,6 @@ const PushNotificationsPage = () => {
           </form>
         </div>
       </div>
-
     </div>
   );
 };
