@@ -2,6 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { useAdminNotifications } from '@/context/useAdminNotifications';
 import { useAuth } from '@/context/useAuth';
 import { useAdminProfile } from '@/hooks/useAdminProfile';
 import { routes } from '@/routes/routes';
@@ -75,6 +76,7 @@ export default function Header() {
   const location = useLocation();
   const { logout, user } = useAuth();
   const { getProfile } = useAdminProfile();
+  const { unreadCount } = useAdminNotifications();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -133,7 +135,15 @@ export default function Header() {
             className="w-[44px] h-[44px] cursor-pointer"
             onClick={() => setIsNotificationOpen(!isNotificationOpen)}
           />
-          <NotificationDropdown isOpen={isNotificationOpen} />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#FF5A5A] text-white text-[10px] font-semibold flex items-center justify-center pointer-events-none">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+          <NotificationDropdown
+            isOpen={isNotificationOpen}
+            onClose={() => setIsNotificationOpen(false)}
+          />
         </div>
 
         <div className="border-r border-[#DFE6E5] h-10"></div>

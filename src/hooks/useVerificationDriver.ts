@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 
+import { useAuth } from '@/context/useAuth';
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
+import { connectAdminSocket } from '@/lib/socket';
 import type { Driver, DriverResponse } from '@/types/driver.types';
+import type { AdminNotification } from '@/types/notification.types';
 
 interface DriverDetailsResponse {
   success: boolean;
@@ -182,7 +185,14 @@ export const useVerifyDriverDocument = (driverId: string | undefined) => {
   };
 };
 
+const LIVE_COUNT_TRIGGER_TYPES = new Set([
+  'driver_verification_submitted',
+  'driver_approved',
+  'new_driver_registration',
+]);
+
 export const usePendingDriverCount = () => {
+  const { isAuthenticated, token } = useAuth();
   const [count, setCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -205,6 +215,21 @@ export const usePendingDriverCount = () => {
   useEffect(() => {
     fetchCount();
   }, [fetchCount]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !token) return;
+
+    const socket = connectAdminSocket(token);
+    const handleNotification = ({ notification }: { notification: AdminNotification }) => {
+      if (LIVE_COUNT_TRIGGER_TYPES.has(notification.type)) {
+        fetchCount();
+      }
+    };
+    socket.on('admin:notification', handleNotification);
+    return () => {
+      socket.off('admin:notification', handleNotification);
+    };
+  }, [isAuthenticated, token, fetchCount]);
 
   return { count, loading, refetch: fetchCount };
 };

@@ -34,7 +34,12 @@ export const usePricing = () => {
   const updatePricing = async (payload: PricingData) => {
     setIsLoading(true);
     try {
-      const { id: _id, ...dataToUpdate } = payload;
+      const {
+        id: _id,
+        createdAt: _createdAt,
+        updatedAt: _updatedAt,
+        ...dataToUpdate
+      } = payload as PricingData & { createdAt?: string; updatedAt?: string };
       await apiClient.put(API.PRICING, dataToUpdate);
       showToast('Pricing updated successfully!', 'success');
       await getPricing(); // Refresh data

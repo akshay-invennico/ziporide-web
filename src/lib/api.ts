@@ -64,4 +64,9 @@ export const API = {
 
   NOTIFICATIONS: '/v1/notifications',
   SEND_NOTIFICATION: '/v1/notifications/send',
+
+  ADMIN_NOTIFICATIONS: '/v1/admin/notifications',
+  ADMIN_NOTIFICATIONS_UNREAD_COUNT: '/v1/admin/notifications/unread/count',
+  ADMIN_NOTIFICATION_MARK_READ: (id: string) => `/v1/admin/notifications/${id}/read`,
+  ADMIN_NOTIFICATIONS_MARK_ALL_READ: '/v1/admin/notifications/read/all',
 } as const;
