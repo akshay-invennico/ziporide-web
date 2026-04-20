@@ -75,23 +75,35 @@ export default function DriverInfoTab({ driver }: Props) {
             {/* Avatar + Name + Status */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-[64px] h-[64px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-xl font-bold shrink-0 overflow-hidden">
-                  {driver.avatar || driver.profilePhotoUrl ? (
+                {driver.avatar || driver.profilePhotoUrl ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleView(
+                        driver.name || driver.driverName || 'Profile Photo',
+                        (driver.avatar || driver.profilePhotoUrl) as string,
+                      )
+                    }
+                    className="w-[64px] h-[64px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-xl font-bold shrink-0 overflow-hidden p-0 border-none cursor-pointer"
+                    aria-label="View profile photo"
+                  >
                     <img
                       src={(driver.avatar || driver.profilePhotoUrl) as string}
                       alt={driver.name || driver.driverName}
                       className="w-full h-full object-cover"
                     />
-                  ) : (
-                    (driver.name || driver.driverName || 'D')
+                  </button>
+                ) : (
+                  <div className="w-[64px] h-[64px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-xl font-bold shrink-0 overflow-hidden">
+                    {(driver.name || driver.driverName || 'D')
                       .trim()
                       .split(/\s+/)
                       .map((n) => n[0])
                       .join('')
                       .toUpperCase()
-                      .slice(0, 2)
-                  )}
-                </div>
+                      .slice(0, 2)}
+                  </div>
+                )}
                 <div className="flex flex-col justify-center gap-0.5">
                   <h2 className="text-[20px] font-semibold text-[#101828]">
                     {driver.name || driver.driverName}
