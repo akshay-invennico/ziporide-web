@@ -10,6 +10,33 @@ import RejectDocumentModal from '../../components/ui/RejectDocumentModal';
 import RejectVerificationModal from '../../components/ui/RejectVerificationModal';
 import { useDriverDetails, useVerifyDriverDocument } from '../../hooks/useVerificationDriver';
 
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'avif', 'heic'];
+
+const isImageUrl = (url?: string): boolean => {
+  if (!url) return false;
+  if (url.startsWith('data:image/')) return true;
+  let pathname = url;
+  try {
+    pathname = new URL(url, window.location.origin).pathname;
+  } catch {
+    // ignore — use raw url
+  }
+  const ext = pathname.split('.').pop()?.toLowerCase();
+  return !!ext && IMAGE_EXTENSIONS.includes(ext);
+};
+
+const DocumentThumbnail = ({ url, alt }: { url?: string; alt: string }) => {
+  if (url && isImageUrl(url)) {
+    return <img src={url} alt={alt} className="w-full h-full object-cover" />;
+  }
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-[#FFF6F6] gap-0.5">
+      <img src="/icons/pdf.svg" alt={url ? 'PDF document' : 'No document'} className="w-6 h-6" />
+      <span className="text-[9px] font-semibold text-[#FF0707]">{url ? 'PDF' : 'N/A'}</span>
+    </div>
+  );
+};
+
 const ApplicationDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -331,15 +358,7 @@ const ApplicationDetailsPage = () => {
           <div className="border border-dashed border-[#DFE6E5] rounded-lg p-4 flex justify-between items-center bg-white">
             <div className="flex gap-4 items-center">
               <div className="w-[80px] h-[60px] bg-gray-200 rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-                {request.licence?.document?.url ? (
-                  <img
-                    src={request.licence.document.url}
-                    alt="License"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
-                )}
+                <DocumentThumbnail url={request.licence?.document?.url} alt="License" />
               </div>
               <div className="flex flex-col gap-1 items-start">
                 <span className="text-[14px] font-medium text-[#000000]">license.pdf</span>
@@ -447,15 +466,7 @@ const ApplicationDetailsPage = () => {
             <div className="border border-dashed border-[#DFE6E5] rounded-lg p-4 flex justify-between items-center bg-white">
               <div className="flex gap-4 items-center">
                 <div className="w-[80px] h-[60px] bg-gray-200 rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-                  {request.vehicle?.insurance?.url ? (
-                    <img
-                      src={request.vehicle.insurance.url}
-                      alt="Insurance"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
-                  )}
+                  <DocumentThumbnail url={request.vehicle?.insurance?.url} alt="Insurance" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <span className="text-[14px] font-medium text-[#000000]">
@@ -523,15 +534,7 @@ const ApplicationDetailsPage = () => {
             <div className="border border-dashed border-[#DFE6E5] rounded-lg p-4 flex justify-between items-center bg-white">
               <div className="flex gap-4 items-center">
                 <div className="w-[80px] h-[60px] bg-gray-200 rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-                  {request.vehicle?.mot?.url ? (
-                    <img
-                      src={request.vehicle.mot.url}
-                      alt="MOT"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <img src="/icons/rider/export.svg" alt="pdf" className="w-[24px] h-[24px]" />
-                  )}
+                  <DocumentThumbnail url={request.vehicle?.mot?.url} alt="MOT" />
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <span className="text-[14px] font-medium text-[#000000]">MOT Certificate</span>
@@ -595,22 +598,38 @@ const ApplicationDetailsPage = () => {
       </div>
 
       {/* Background Check */}
-      <div className="bg-white rounded-lg p-4 border border-[#DFE6E5] flex flex-col gap-4">
-        <div className="flex flex-row justify-between gap-6">
-          <div className="flex gap-2 items-center">
-            <div className="w-[80px] h-[60px]  rounded shrink-0 overflow-hidden flex items-center justify-center text-[#1DAFA1] text-[10px] font-bold">
-              <img
-                src="/icons/verification/backgroundCheck.svg"
-                alt="pdf"
-                className="w-[80px] h-[60px]"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-medium text-[#101828] mb-1">Background Check</span>
-              <span className="text-[12px] font-semibold text-[#4E616A] mb-2">
-                Criminal & driving record verification
-              </span>
-              <div className="flex items-center gap-3">
+      <div className="bg-white rounded-lg p-4 border border-[#DFE6E5]">
+        <div className="flex flex-row items-center justify-between gap-6 flex-wrap">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <img
+              src="/icons/verification/backgroundCheck.svg"
+              alt="background check"
+              className="w-[88px] h-[88px]"
+            />
+            <div className="flex flex-col gap-2 min-w-0 flex-1">
+              <span className="text-[16px] font-semibold text-[#101828]">Background Check</span>
+              <div className="flex items-center gap-x-8 gap-y-1 flex-wrap">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[13px] font-medium text-[#4E616A] shrink-0">
+                    Certificate Number:
+                  </span>
+                  <span
+                    className="text-[13px] font-medium text-[#1DAFA1] truncate"
+                    title={request.vehicle?.dbsCertificateNumber || ''}
+                  >
+                    {request.vehicle?.dbsCertificateNumber
+                      ? `#${request.vehicle.dbsCertificateNumber}`
+                      : '-'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] font-medium text-[#4E616A]">Code:</span>
+                  <span className="text-[13px] font-semibold text-[#1DAFA1]">
+                    {request.vehicle?.dbsShareCode || '-'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 flex-wrap">
                 {request.backgroundCheck?.rejectedReason ? (
                   <>
                     <div className="px-3 py-1 rounded-full bg-[#FFF6F6] text-[#FF0707] text-[12px] font-medium">
@@ -641,7 +660,7 @@ const ApplicationDetailsPage = () => {
           </div>
 
           {!request.backgroundCheck?.isVerified && !request.backgroundCheck?.rejectedReason && (
-            <div className="flex items-center gap-2 ">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => handleOpenRejectModal('Background Check', 'backgroundCheck')}
                 disabled={isVerifying}
@@ -658,21 +677,6 @@ const ApplicationDetailsPage = () => {
               </button>
             </div>
           )}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2">
-          <div className="flex justify-between items-center">
-            <span className="text-[14px] font-medium text-[#4E616A]">DBS Certificate Number</span>
-            <span className="text-[14px] font-medium text-[#000000]">
-              {request.vehicle?.dbsCertificateNumber || '-'}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-[14px] font-medium text-[#4E616A]">DBS Share Code</span>
-            <span className="text-[14px] font-medium text-[#000000]">
-              {request.vehicle?.dbsShareCode || '-'}
-            </span>
-          </div>
         </div>
       </div>
 
