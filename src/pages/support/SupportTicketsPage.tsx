@@ -5,6 +5,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import DataTable, { type Column } from '@/components/ui/DataTable';
 
 import SupportPDFDocument from '../../components/support/SupportPDFDocument';
+import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TicketDetailsModal from '../../components/ui/TicketDetailsModal';
 import {
@@ -21,7 +22,21 @@ const SupportTicketsPage: React.FC = () => {
     limit: 10,
     status: 'All',
     search: '',
+    startDate: '',
+    endDate: '',
   });
+  const dateRange: DateRange = {
+    startDate: params.startDate || '',
+    endDate: params.endDate || '',
+  };
+  const handleDateRangeChange = (range: DateRange) => {
+    setParams((prev) => ({
+      ...prev,
+      page: 1,
+      startDate: range.startDate || undefined,
+      endDate: range.endDate || undefined,
+    }));
+  };
 
   const { tickets, loading, pagination, updateTicketStatus } = useSupportTickets(params);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
@@ -244,6 +259,8 @@ const SupportTicketsPage: React.FC = () => {
                 </button>
               ))}
             </div>
+
+            <DateRangePicker value={dateRange} onChange={handleDateRangeChange} />
 
             <div className="relative" ref={exportRef}>
               <button

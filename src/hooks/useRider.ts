@@ -19,6 +19,8 @@ interface RiderFilters {
   minTrips?: number;
   maxTrips?: number;
   rating?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export const useRiders = (
@@ -74,6 +76,9 @@ export const useRiders = (
         }
       }
 
+      if (initialFilters.startDate) params.startDate = initialFilters.startDate;
+      if (initialFilters.endDate) params.endDate = initialFilters.endDate;
+
       const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
       const data = response.data;
 
@@ -103,6 +108,8 @@ export const useRiders = (
     initialFilters.minTrips,
     initialFilters.maxTrips,
     initialFilters.rating,
+    initialFilters.startDate,
+    initialFilters.endDate,
   ]);
 
   useEffect(() => {
@@ -302,6 +309,8 @@ export const useExportRidersCSV = () => {
         if (filters.rating && filters.rating !== 'All') {
           params.rating = filters.rating;
         }
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
 
         const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
         if (response.data && response.data.success) {
@@ -396,6 +405,8 @@ export const useExportRidersPDF = () => {
         if (filters.rating && filters.rating !== 'All') {
           params.rating = filters.rating;
         }
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
 
         const response = await apiClient.get<RiderResponse>(API.RIDERS, { params });
         if (response.data && response.data.success) {

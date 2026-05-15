@@ -5,6 +5,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import DataTable, { type Column } from '@/components/ui/DataTable';
 
 import TransactionPDFDocument from '../../components/transactions/TransactionPDFDocument';
+import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TransactionDetailsModal from '../../components/ui/TransactionDetailsModal';
 import {
@@ -20,8 +21,23 @@ const TransactionsPage: React.FC = () => {
     page: 1,
     limit: 12,
     search: '',
+    startDate: '',
+    endDate: '',
   });
   const [activeFilter, setActiveFilter] = useState<'All' | 'Pay-in' | 'Payout' | 'Refund'>('All');
+
+  const dateRange: DateRange = {
+    startDate: params.startDate || '',
+    endDate: params.endDate || '',
+  };
+  const handleDateRangeChange = (range: DateRange) => {
+    setParams((prev) => ({
+      ...prev,
+      page: 1,
+      startDate: range.startDate || undefined,
+      endDate: range.endDate || undefined,
+    }));
+  };
 
   const { transactions, loading, pagination } = useTransactions(params);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -242,6 +258,8 @@ const TransactionsPage: React.FC = () => {
                 </button>
               ))}
             </div>
+            <DateRangePicker value={dateRange} onChange={handleDateRangeChange} />
+
             <div className="relative" ref={exportRef}>
               <button
                 onClick={() => setIsExportOpen((prev) => !prev)}

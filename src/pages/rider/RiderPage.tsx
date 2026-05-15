@@ -14,6 +14,7 @@ import type { Rider } from '@/types/rider.types';
 
 import RiderPDFDocument from '../../components/rider/RiderPDFDocument';
 import BulkExportBar from '../../components/ui/BulkExportBar';
+import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
@@ -49,9 +50,15 @@ const RiderPage = () => {
     maxTrips: 500,
     rating: 'All',
   });
+  const [dateRange, setDateRange] = useState<DateRange>({ startDate: '', endDate: '' });
+
+  const ridersFilters = useMemo(
+    () => ({ ...filters, startDate: dateRange.startDate, endDate: dateRange.endDate }),
+    [filters, dateRange.startDate, dateRange.endDate],
+  );
 
   const { riders, loading, totalPages, refetch } = useRiders(
-    filters,
+    ridersFilters,
     currentPage,
     itemsPerPage,
     searchQuery,
@@ -59,7 +66,7 @@ const RiderPage = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters]);
+  }, [filters, dateRange.startDate, dateRange.endDate]);
 
   const [selectedRiderIds, setSelectedRiderIds] = useState<string[]>([]);
   const [suspendedRiderId, setSuspendedRiderId] = useState<string | null>(null);
@@ -70,13 +77,13 @@ const RiderPage = () => {
   const { fetchAllRiders, setIsExporting: setIsExportingPDF } = useExportRidersPDF();
 
   const handleExportCSV = async () => {
-    await exportCSV(filters);
+    await exportCSV(ridersFilters);
   };
 
   const handleExportPDF = async () => {
     setIsExportingPDF(true);
     try {
-      const allRiders = await fetchAllRiders(filters);
+      const allRiders = await fetchAllRiders(ridersFilters);
       if (allRiders && allRiders.length > 0) {
         const blob = await pdf(<RiderPDFDocument riders={allRiders} />).toBlob();
         const url = URL.createObjectURL(blob);
@@ -279,6 +286,7 @@ const RiderPage = () => {
                 setFilters={setFilters}
               />
             </div>
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
             <div className="relative" ref={exportRef}>
               <button
                 onClick={() => {

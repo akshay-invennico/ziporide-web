@@ -14,6 +14,7 @@ import type { Driver } from '@/types/driver.types';
 
 import DriverPDFDocument from '../../components/driver/DriverPDFDocument';
 import BulkExportBar from '../../components/ui/BulkExportBar';
+import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
@@ -49,9 +50,15 @@ const DriverPage = () => {
     maxTrips: 500,
     rating: 'All',
   });
+  const [dateRange, setDateRange] = useState<DateRange>({ startDate: '', endDate: '' });
+
+  const driversFilters = useMemo(
+    () => ({ ...filters, startDate: dateRange.startDate, endDate: dateRange.endDate }),
+    [filters, dateRange.startDate, dateRange.endDate],
+  );
 
   const { drivers, loading, totalPages, refetch } = useDrivers(
-    filters,
+    driversFilters,
     currentPage,
     itemsPerPage,
     searchQuery,
@@ -59,7 +66,7 @@ const DriverPage = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters]);
+  }, [filters, dateRange.startDate, dateRange.endDate]);
 
   const [selectedDriverIds, setSelectedDriverIds] = useState<string[]>([]);
   const [suspendedDriverId, setSuspendedDriverId] = useState<string | null>(null);
@@ -69,13 +76,13 @@ const DriverPage = () => {
   const { fetchAllDrivers, setIsExporting: setIsExportingPDF } = useExportDriversPDF();
 
   const handleExportCSV = async () => {
-    await exportCSV(filters);
+    await exportCSV(driversFilters);
   };
 
   const handleExportPDF = async () => {
     setIsExportingPDF(true);
     try {
-      const allDrivers = await fetchAllDrivers(filters);
+      const allDrivers = await fetchAllDrivers(driversFilters);
       if (allDrivers && allDrivers.length > 0) {
         const blob = await pdf(<DriverPDFDocument drivers={allDrivers} />).toBlob();
         const url = URL.createObjectURL(blob);
@@ -287,6 +294,7 @@ const DriverPage = () => {
                 userType="driver"
               />
             </div>
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
             <div className="relative" ref={exportRef}>
               <button
                 onClick={() => {

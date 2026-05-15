@@ -9,6 +9,8 @@ export interface UseTransactionsParams {
   page: number;
   limit: number;
   search: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 const mapType = (type: string) => {
@@ -62,6 +64,8 @@ export const useTransactions = (
       if (params.search) {
         queryParams.append('search', params.search);
       }
+      if (params.startDate) queryParams.append('startDate', params.startDate);
+      if (params.endDate) queryParams.append('endDate', params.endDate);
 
       const response = await apiClient.get<TransactionResponse>(
         `${API.TRANSACTIONS}?${queryParams.toString()}`,
@@ -117,8 +121,17 @@ export const useTransactions = (
       page: initialParams.page,
       limit: initialParams.limit,
       search: initialParams.search,
+      startDate: initialParams.startDate,
+      endDate: initialParams.endDate,
     });
-  }, [fetchTransactions, initialParams.page, initialParams.limit, initialParams.search]);
+  }, [
+    fetchTransactions,
+    initialParams.page,
+    initialParams.limit,
+    initialParams.search,
+    initialParams.startDate,
+    initialParams.endDate,
+  ]);
 
   return {
     transactions,
@@ -147,6 +160,8 @@ export const useExportTransactionsCSV = () => {
         if (params.search) {
           queryParams.append('search', params.search);
         }
+        if (params.startDate) queryParams.append('startDate', params.startDate);
+        if (params.endDate) queryParams.append('endDate', params.endDate);
 
         const response = await apiClient.get<TransactionResponse>(
           `${API.TRANSACTIONS}?${queryParams.toString()}`,
@@ -231,6 +246,8 @@ export const useExportTransactionsPDF = () => {
         if (params.search) {
           queryParams.append('search', params.search);
         }
+        if (params.startDate) queryParams.append('startDate', params.startDate);
+        if (params.endDate) queryParams.append('endDate', params.endDate);
 
         const response = await apiClient.get<TransactionResponse>(
           `${API.TRANSACTIONS}?${queryParams.toString()}`,

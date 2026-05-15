@@ -8,6 +8,7 @@ import { type TripStatus, type TripRecord } from '@/types/driver.types';
 
 import TripPDFDocument from '../../components/trips/TripPDFDocument';
 import CancelRideModal from '../../components/ui/CancelRideModal';
+import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TripDetailsModal from '../../components/ui/TripDetailsModal';
 
@@ -40,6 +41,7 @@ export default function TripHistoryPage() {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
   const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
+  const [dateRange, setDateRange] = useState<DateRange>({ startDate: '', endDate: '' });
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -53,19 +55,23 @@ export default function TripHistoryPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const { trips, loading, totalPages, refetch } = useTrips(activeTab, currentPage, 10);
+  const { trips, loading, totalPages, refetch } = useTrips(activeTab, currentPage, 10, dateRange);
   const { cancelTrip, isCancelling } = useCancelTrip();
   const { exportCSV } = useExportTripsCSV();
   const { fetchAllTrips, setIsExporting: setIsExportingPDF } = useExportTripsPDF();
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [dateRange.startDate, dateRange.endDate]);
+
   const handleExportCSV = async () => {
-    await exportCSV(activeTab);
+    await exportCSV(activeTab, dateRange);
   };
 
   const handleExportPDF = async () => {
     setIsExportingPDF(true);
     try {
-      const allTrips = await fetchAllTrips(activeTab);
+      const allTrips = await fetchAllTrips(activeTab, dateRange);
       if (allTrips && allTrips.length > 0) {
         const blob = await pdf(<TripPDFDocument trips={allTrips} />).toBlob();
         const url = URL.createObjectURL(blob);
@@ -302,6 +308,8 @@ export default function TripHistoryPage() {
                 </button>
               ))}
             </div>
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
+
             <div className="relative" ref={exportRef}>
               <button
                 onClick={() => setIsExportDropdownOpen((prev) => !prev)}

@@ -46,3 +46,74 @@
     background-color: #9ca3af;
   }
 }
+
+.rdp-ziporide .rdp-root {
+  font-size: 13px;
+  color: #1f2937;
+  --rdp-month-width: 268px;
+}
+.rdp-ziporide .rdp-months {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 24px;
+  justify-content: center;
+}
+.rdp-ziporide .rdp-month {
+  flex: 0 0 auto;
+}
+.rdp-ziporide .rdp-month_grid {
+  width: 100%;
+}
+.rdp-ziporide .rdp-month_caption {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 4px 8px;
+}
+.rdp-ziporide .rdp-weekday {
+  font-size: 11px;
+  font-weight: 600;
+  color: #939999;
+  text-transform: uppercase;
+}
+.rdp-ziporide .rdp-day {
+  font-size: 13px;
+}
+.rdp-ziporide .rdp-day_button {
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+.rdp-ziporide .rdp-day_button:hover:not([disabled]) {
+  background-color: #eefffd;
+  color: #1dafa1;
+}
+.rdp-ziporide .rdp-outside .rdp-day_button {
+  color: #c4cdd5;
+}
+.rdp-ziporide .rdp-today:not(.rdp-selected) .rdp-day_button {
+  font-weight: 700;
+}
+.rdp-ziporide .rdp-range_middle .rdp-day_button {
+  border-radius: 0;
+}
+.rdp-ziporide .rdp-range_start:not(.rdp-range_end) .rdp-day_button,
+.rdp-ziporide .rdp-range_end:not(.rdp-range_start) .rdp-day_button {
+  border-radius: 8px;
+}
+.rdp-ziporide .rdp-button_previous,
+.rdp-ziporide .rdp-button_next {
+  cursor: pointer;
+  border-radius: 6px;
+}
+.rdp-ziporide .rdp-button_previous:hover,
+.rdp-ziporide .rdp-button_next:hover {
+  background-color: #eefffd;
+}
+.rdp-ziporide .rdp-chevron {
+  fill: #4e616a;
+}
+.rdp-ziporide .rdp-day_button:focus-visible {
+  outline: 2px solid #1dafa1;
+  outline-offset: 2px;
+}

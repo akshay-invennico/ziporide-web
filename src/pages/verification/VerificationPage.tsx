@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import DataTable, { type Column } from '@/components/ui/DataTable';
 import type { Driver } from '@/types/driver.types';
 
+import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import VerificationPDFDocument from '../../components/verification/VerificationPDFDocument';
 import {
@@ -37,6 +38,7 @@ const VerificationPage = () => {
   );
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange>({ startDate: '', endDate: '' });
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -65,19 +67,24 @@ const VerificationPage = () => {
     currentPage,
     itemsPerPage,
     debouncedSearchQuery,
+    dateRange,
   );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [dateRange.startDate, dateRange.endDate]);
 
   const { exportCSV } = useExportVerificationCSV();
   const { fetchAllDrivers, setIsExporting: setIsExportingPDF } = useExportVerificationPDF();
 
   const handleExportCSV = async () => {
-    await exportCSV(filterStatus);
+    await exportCSV(filterStatus, dateRange);
   };
 
   const handleExportPDF = async () => {
     setIsExportingPDF(true);
     try {
-      const allDrivers = await fetchAllDrivers(filterStatus);
+      const allDrivers = await fetchAllDrivers(filterStatus, dateRange);
       if (allDrivers && allDrivers.length > 0) {
         const blob = await pdf(<VerificationPDFDocument drivers={allDrivers} />).toBlob();
         const url = URL.createObjectURL(blob);
@@ -309,6 +316,8 @@ const VerificationPage = () => {
                 {status}
               </button>
             ))}
+
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
 
             <div className="relative" ref={exportRef}>
               <button

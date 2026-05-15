@@ -152,12 +152,20 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
   };
 };
 
-export const useTrips = (status?: string, page: number = 1, limit: number = 10) => {
+export const useTrips = (
+  status?: string,
+  page: number = 1,
+  limit: number = 10,
+  dateRange?: { startDate?: string; endDate?: string },
+) => {
   const [trips, setTrips] = useState<TripRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalResults, setTotalResults] = useState<number>(0);
+
+  const startDate = dateRange?.startDate;
+  const endDate = dateRange?.endDate;
 
   const fetchTrips = useCallback(async () => {
     setLoading(true);
@@ -173,6 +181,9 @@ export const useTrips = (status?: string, page: number = 1, limit: number = 10) 
         params.status =
           status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
       }
+
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
 
       const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
 
@@ -190,7 +201,7 @@ export const useTrips = (status?: string, page: number = 1, limit: number = 10) 
     } finally {
       setLoading(false);
     }
-  }, [status, page, limit]);
+  }, [status, page, limit, startDate, endDate]);
 
   useEffect(() => {
     fetchTrips();
@@ -355,7 +366,10 @@ export const useCancelRide = useCancelTrip;
 export const useExportTripsCSV = () => {
   const [isExporting, setIsExporting] = useState(false);
 
-  const exportCSV = async (status?: string) => {
+  const exportCSV = async (
+    status?: string,
+    dateRange?: { startDate?: string; endDate?: string },
+  ) => {
     setIsExporting(true);
     try {
       let allMappedTrips: TripRecord[] = [];
@@ -372,6 +386,9 @@ export const useExportTripsCSV = () => {
           params.status =
             status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
         }
+
+        if (dateRange?.startDate) params.startDate = dateRange.startDate;
+        if (dateRange?.endDate) params.endDate = dateRange.endDate;
 
         const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
         if (response.data?.success) {
@@ -442,7 +459,10 @@ export const useExportTripsCSV = () => {
 export const useExportTripsPDF = () => {
   const [isExporting, setIsExporting] = useState(false);
 
-  const fetchAllTrips = async (status?: string) => {
+  const fetchAllTrips = async (
+    status?: string,
+    dateRange?: { startDate?: string; endDate?: string },
+  ) => {
     try {
       let allMappedTrips: TripRecord[] = [];
       let currentPage = 1;
@@ -458,6 +478,9 @@ export const useExportTripsPDF = () => {
           params.status =
             status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
         }
+
+        if (dateRange?.startDate) params.startDate = dateRange.startDate;
+        if (dateRange?.endDate) params.endDate = dateRange.endDate;
 
         const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
         if (response.data?.success) {

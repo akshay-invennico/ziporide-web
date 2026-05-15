@@ -21,6 +21,8 @@ interface DriverFilters {
   maxTrips?: number;
   rating?: string;
   status?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface DriverDetailsResponse {
@@ -96,6 +98,9 @@ export const useDrivers = (
           params.rating = `${initialFilters.rating}_and_above`;
         }
       }
+
+      if (initialFilters.startDate) params.startDate = initialFilters.startDate;
+      if (initialFilters.endDate) params.endDate = initialFilters.endDate;
 
       const response = await apiClient.get<DriverResponse>(endpoint, { params });
       const data = response.data;
@@ -560,6 +565,9 @@ export const useExportDriversCSV = () => {
           params.limit = 20;
         }
 
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
+
         const response = await apiClient.get<DriverResponse>(API.DRIVER, { params });
         if (response.data && response.data.success) {
           const results = response.data.data.results || [];
@@ -663,6 +671,9 @@ export const useExportDriversPDF = () => {
           params.page = currentPage;
           params.limit = 20;
         }
+
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
 
         const response = await apiClient.get<DriverResponse>(API.DRIVER, { params });
         if (response.data && response.data.success) {

@@ -14,6 +14,8 @@ export interface UseSupportTicketsParams {
   limit: number;
   status: 'All' | 'Open' | 'Checking' | 'Resolved';
   search: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export const useSupportTickets = (
@@ -36,6 +38,8 @@ export const useSupportTickets = (
       queryParams.append('sortBy', 'createdAt');
       if (params.status !== 'All') queryParams.append('status', params.status.toLowerCase());
       if (params.search) queryParams.append('search', params.search);
+      if (params.startDate) queryParams.append('startDate', params.startDate);
+      if (params.endDate) queryParams.append('endDate', params.endDate);
 
       const response = await apiClient.get<SupportTicketResponse>(
         `${API.SUPPORT_TICKETS}?${queryParams.toString()}`,
@@ -92,6 +96,8 @@ export const useSupportTickets = (
       limit: initialParams.limit,
       status: initialParams.status,
       search: initialParams.search,
+      startDate: initialParams.startDate,
+      endDate: initialParams.endDate,
     });
   }, [
     fetchTickets,
@@ -99,6 +105,8 @@ export const useSupportTickets = (
     initialParams.limit,
     initialParams.status,
     initialParams.search,
+    initialParams.startDate,
+    initialParams.endDate,
   ]);
 
   return {
@@ -128,6 +136,8 @@ export const useExportSupportCSV = () => {
 
         if (params.status !== 'All') queryParams.append('status', params.status.toLowerCase());
         if (params.search) queryParams.append('search', params.search);
+        if (params.startDate) queryParams.append('startDate', params.startDate);
+        if (params.endDate) queryParams.append('endDate', params.endDate);
 
         const response = await apiClient.get<SupportTicketResponse>(
           `${API.SUPPORT_TICKETS}?${queryParams.toString()}`,
@@ -194,6 +204,8 @@ export const useExportSupportPDF = () => {
 
         if (params.status !== 'All') queryParams.append('status', params.status.toLowerCase());
         if (params.search) queryParams.append('search', params.search);
+        if (params.startDate) queryParams.append('startDate', params.startDate);
+        if (params.endDate) queryParams.append('endDate', params.endDate);
 
         const response = await apiClient.get<SupportTicketResponse>(
           `${API.SUPPORT_TICKETS}?${queryParams.toString()}`,
