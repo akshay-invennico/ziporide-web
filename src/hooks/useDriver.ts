@@ -216,6 +216,37 @@ export const useUpdateDriverStatus = () => {
 
   return { updateStatus, isUpdating, error };
 };
+
+export const useUpdateDriverProfilePhoto = () => {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateProfilePhoto = async (driverId: string, profilePhotoUrl: string) => {
+    setIsUpdating(true);
+    setError(null);
+    try {
+      const response = await apiClient.patch(API.DRIVER_PROFILE_PHOTO(driverId), {
+        profilePhotoUrl,
+      });
+      if (response.data?.success) {
+        return true;
+      }
+      setError(response.data?.message || 'Failed to update profile photo');
+      return false;
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg =
+        error.response?.data?.message || error.message || 'Failed to update profile photo';
+      setError(msg);
+      throw new Error(msg);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return { updateProfilePhoto, isUpdating, error };
+};
+
 export const useDriverSubscriptions = (id: string | undefined) => {
   const [data, setData] = useState<DriverSubscriptionsResponse['data'] | null>(null);
   const [loading, setLoading] = useState(true);

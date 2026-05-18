@@ -100,7 +100,7 @@ export default function DriverDetailsPage() {
 
       {/* Tab Content */}
       <div className="bg-white w-full">
-        {activeTab === 'info' && <DriverInfoTab driver={driver} />}
+        {activeTab === 'info' && <DriverInfoTab driver={driver} onProfileUpdated={refetch} />}
         {activeTab === 'subscription' && <DriverSubscriptionTab />}
         {activeTab === 'earning' && <DriverEarningTab />}
         {activeTab === 'trip-history' && <DriverTripHistoryTab />}

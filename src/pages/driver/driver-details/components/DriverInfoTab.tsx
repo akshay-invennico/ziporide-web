@@ -1,12 +1,16 @@
 import { Star } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import { useToast } from '@/context/useToast';
+import { useUpdateDriverProfilePhoto } from '@/hooks/useDriver';
+import { useFileUpload } from '@/hooks/useFileUpload';
 import type { Driver } from '@/types/driver.types';
 
 import DocumentViewerModal from '../../../../components/ui/DocumentViewerModal';
 
 interface Props {
   driver: Driver;
+  onProfileUpdated?: () => void;
 }
 
 interface DocumentCardProps {
@@ -43,13 +47,66 @@ function DocumentCard({ name, src, onView }: DocumentCardProps) {
   );
 }
 
-export default function DriverInfoTab({ driver }: Props) {
+export default function DriverInfoTab({ driver, onProfileUpdated }: Props) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerDoc, setViewerDoc] = useState<{ name: string; src?: string }>({ name: '' });
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { showToast } = useToast();
+  const { uploadImage, isUploading } = useFileUpload();
+  const { updateProfilePhoto, isUpdating } = useUpdateDriverProfilePhoto();
+  const isPhotoBusy = isUploading || isUpdating;
 
   const handleView = (name: string, src?: string) => {
     setViewerDoc({ name, src });
     setViewerOpen(true);
+  };
+
+  const driverId = (driver.id || driver._id) as string | undefined;
+  const currentPhoto = driver.avatar || driver.profilePhotoUrl;
+  const displayPhoto = photoPreview || currentPhoto;
+
+  useEffect(() => {
+    setPhotoPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  }, [currentPhoto]);
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !driverId) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file.', 'error');
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setPhotoPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return objectUrl;
+    });
+
+    try {
+      const uploadedUrl = await uploadImage(file);
+      const ok = await updateProfilePhoto(driverId, uploadedUrl);
+      if (ok) {
+        showToast('Profile photo updated successfully.', 'success');
+        onProfileUpdated?.();
+      } else {
+        URL.revokeObjectURL(objectUrl);
+        setPhotoPreview(null);
+        showToast('Failed to update profile photo.', 'error');
+      }
+    } catch (err) {
+      URL.revokeObjectURL(objectUrl);
+      setPhotoPreview(null);
+      const msg = err instanceof Error ? err.message : 'Failed to update profile photo.';
+      showToast(msg, 'error');
+    }
   };
 
   const formatDate = (dateStr?: string) => {
@@ -75,35 +132,59 @@ export default function DriverInfoTab({ driver }: Props) {
             {/* Avatar + Name + Status */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div className="flex items-center gap-4">
-                {driver.avatar || driver.profilePhotoUrl ? (
+                <div className="relative w-[64px] h-[64px] shrink-0">
+                  {displayPhoto ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleView(
+                          driver.name || driver.driverName || 'Profile Photo',
+                          displayPhoto as string,
+                        )
+                      }
+                      className="w-full h-full rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-xl font-bold overflow-hidden p-0 border-none cursor-pointer"
+                      aria-label="View profile photo"
+                    >
+                      <img
+                        src={displayPhoto as string}
+                        alt={driver.name || driver.driverName}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-xl font-bold overflow-hidden">
+                      {(driver.name || driver.driverName || 'D')
+                        .trim()
+                        .split(/\s+/)
+                        .map((n) => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2)}
+                    </div>
+                  )}
                   <button
                     type="button"
-                    onClick={() =>
-                      handleView(
-                        driver.name || driver.driverName || 'Profile Photo',
-                        (driver.avatar || driver.profilePhotoUrl) as string,
-                      )
-                    }
-                    className="w-[64px] h-[64px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-xl font-bold shrink-0 overflow-hidden p-0 border-none cursor-pointer"
-                    aria-label="View profile photo"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isPhotoBusy || !driverId}
+                    className="absolute -bottom-0.5 -right-0.5 w-[24px] h-[24px] bg-[#1DAFA1] rounded-full flex items-center justify-center cursor-pointer border-2 border-white disabled:opacity-60 disabled:cursor-not-allowed"
+                    aria-label="Update profile photo"
                   >
-                    <img
-                      src={(driver.avatar || driver.profilePhotoUrl) as string}
-                      alt={driver.name || driver.driverName}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src="/icons/camera.svg" alt="camera" className="w-[14px] h-[14px]" />
                   </button>
-                ) : (
-                  <div className="w-[64px] h-[64px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white text-xl font-bold shrink-0 overflow-hidden">
-                    {(driver.name || driver.driverName || 'D')
-                      .trim()
-                      .split(/\s+/)
-                      .map((n) => n[0])
-                      .join('')
-                      .toUpperCase()
-                      .slice(0, 2)}
-                  </div>
-                )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoChange}
+                    disabled={isPhotoBusy || !driverId}
+                  />
+                  {isPhotoBusy && (
+                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center rounded-full">
+                      <div className="w-5 h-5 border-2 border-[#1DAFA1] border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                </div>
                 <div className="flex flex-col justify-center gap-0.5">
                   <h2 className="text-[20px] font-semibold text-[#101828]">
                     {driver.name || driver.driverName}
