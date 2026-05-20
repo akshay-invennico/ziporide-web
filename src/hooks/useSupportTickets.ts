@@ -35,6 +35,8 @@ export const useSupportTickets = (
     setError(null);
     try {
       const queryParams = new URLSearchParams();
+      queryParams.append('page', params.page.toString());
+      queryParams.append('limit', params.limit.toString());
       queryParams.append('sortBy', 'createdAt');
       if (params.status !== 'All') queryParams.append('status', params.status.toLowerCase());
       if (params.search) queryParams.append('search', params.search);

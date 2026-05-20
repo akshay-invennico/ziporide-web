@@ -25,6 +25,8 @@ const SupportTicketsPage: React.FC = () => {
     startDate: '',
     endDate: '',
   });
+  const [searchInput, setSearchInput] = useState('');
+
   const dateRange: DateRange = {
     startDate: params.startDate || '',
     endDate: params.endDate || '',
@@ -39,6 +41,21 @@ const SupportTicketsPage: React.FC = () => {
   };
 
   const { tickets, loading, pagination, updateTicketStatus } = useSupportTickets(params);
+
+  const filteredTickets = useMemo(() => {
+    const q = searchInput.trim().toLowerCase();
+    if (!q) return tickets;
+    return tickets.filter((t) => {
+      const fields = [
+        t.ticketId,
+        t.cause,
+        t.status,
+        t.driver?.name,
+        t.driver?.phone,
+      ];
+      return fields.some((f) => f?.toLowerCase().includes(q));
+    });
+  }, [tickets, searchInput]);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -234,10 +251,8 @@ const SupportTicketsPage: React.FC = () => {
               type="text"
               placeholder="Search here..."
               className="pl-10 pr-4 py-2 w-full border border-[#DFE6E5] rounded-lg text-[14px] focus:outline-none focus:ring-1 focus:ring-[#1DAFA1] focus:border-[#1DAFA1]"
-              value={params.search}
-              onChange={(e) => {
-                setParams((prev) => ({ ...prev, search: e.target.value, page: 1 }));
-              }}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
           </div>
 
@@ -282,7 +297,7 @@ const SupportTicketsPage: React.FC = () => {
 
         <DataTable<SupportTicket>
           columns={columns}
-          data={tickets}
+          data={filteredTickets}
           rowKey={(t) => t.id}
           loading={loading}
           currentPage={pagination.currentPage}
