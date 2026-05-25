@@ -18,8 +18,10 @@ interface AddCategoryModalProps {
     vehicleType: string;
     seatCapacity: string;
     categoryIcon: File | string | null;
+    order: string;
   }) => void;
   initialData?: VehicleCategory | null;
+  existingCategories?: VehicleCategory[];
   isLoading?: boolean;
 }
 
@@ -133,13 +135,33 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
   onClose,
   onConfirm,
   initialData,
+  existingCategories = [],
   isLoading = false,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isEditing = !!initialData;
+  const nextAvailableOrder =
+    Array.from({ length: 7 }, (_, index) => index + 1).find(
+      (order) => !existingCategories.some((category) => category.order === order),
+    ) ?? null;
 
   const validationSchema = Yup.object({
     categoryName: Yup.string().required('Required'),
+    order: Yup.string()
+      .required('Required')
+      .matches(/^\d+$/, 'Must be an integer')
+      .test('range', 'Must be between 1 and 7', (value) => {
+        if (!value || !/^\d+$/.test(value)) return false;
+        const order = Number(value);
+        return order >= 1 && order <= 7;
+      })
+      .test('unique', 'This display order is already used by another category.', (value) => {
+        if (!value || !/^\d+$/.test(value)) return true;
+        const order = Number(value);
+        return !existingCategories.some(
+          (category) => category.order === order && category.id !== initialData?.id,
+        );
+      }),
     baseFare: Yup.number()
       .typeError('Must be a number')
       .positive('Must be positive')
@@ -166,6 +188,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
       vehicleType: initialData?.vehicleType || '',
       seatCapacity: initialData?.seats ? `${initialData.seats} Seats` : '',
       categoryIcon: initialData?.categoryIcon || (null as File | string | null),
+      order: initialData?.order?.toString() || nextAvailableOrder?.toString() || '',
     },
     enableReinitialize: true,
     validationSchema,
@@ -242,6 +265,38 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
                 onBlur={formik.handleBlur}
                 className={`w-full border ${
                   formik.errors.categoryName ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
+                } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
+              />
+            </InputWrapper>
+
+            <InputWrapper
+              label="Display Order"
+              required
+              infoText="1 appears first. Maximum 7 categories are supported."
+              error={formik.errors.order as string}
+            >
+              <input
+                type="number"
+                name="order"
+                min={1}
+                max={7}
+                step={1}
+                placeholder="1"
+                value={formik.values.order}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  if (value === '' || /^\d+$/.test(value)) {
+                    formik.setFieldValue('order', value);
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (['e', 'E', '+', '-', '.'].includes(event.key)) {
+                    event.preventDefault();
+                  }
+                }}
+                onBlur={formik.handleBlur}
+                className={`w-full border ${
+                  formik.errors.order ? 'border-[#FF0707]' : 'border-[#DFE6E5]'
                 } rounded-md p-3 text-[14px] text-[#000000] font-medium placeholder-[#939999] focus:outline-none focus:border-[#1DAFA1] focus:ring-1 focus:ring-[#1DAFA1] transition-all`}
               />
             </InputWrapper>

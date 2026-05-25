@@ -1,8 +1,46 @@
+import axios, { type AxiosError } from 'axios';
 import { useState, useEffect, useCallback } from 'react';
 
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
 import type { VehicleCategory, VehicleCategoryResponse } from '@/types/vehicle.types';
+
+interface ApiErrorResponse {
+  message?: string;
+}
+
+const getCategoryErrorMessage = (err: unknown, fallback: string) => {
+  const error = err as AxiosError<ApiErrorResponse>;
+  const message = axios.isAxiosError(error)
+    ? error.response?.data?.message || error.message
+    : err instanceof Error
+      ? err.message
+      : '';
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes('order') && normalized.includes('duplicate')) {
+    return 'This display order is already used by another category.';
+  }
+
+  if (
+    normalized.includes('order') &&
+    (normalized.includes('already') || normalized.includes('unique') || normalized.includes('used'))
+  ) {
+    return 'This display order is already used by another category.';
+  }
+
+  if (
+    normalized.includes('7') &&
+    (normalized.includes('max') ||
+      normalized.includes('maximum') ||
+      normalized.includes('limit') ||
+      normalized.includes('allowed'))
+  ) {
+    return 'Only 7 vehicle categories are allowed.';
+  }
+
+  return message || fallback;
+};
 
 export const useVehicleCategories = () => {
   const [categories, setCategories] = useState<VehicleCategory[]>([]);
@@ -28,6 +66,7 @@ export const useVehicleCategories = () => {
           pricePerMile: item.pricePerMile,
           pricePerMinute: item.pricePerMinute,
           vehicleType: item.vehicleType,
+          order: item.order,
         }));
         setCategories(mapped);
       } else if (data && data.success && !Array.isArray(data.data?.results)) {
@@ -38,8 +77,7 @@ export const useVehicleCategories = () => {
         setError(data?.message || 'Failed to fetch categories.');
       }
     } catch (err: unknown) {
-      const error = err as Error;
-      setError(error.message || 'Failed to fetch categories');
+      setError(getCategoryErrorMessage(err, 'Failed to fetch categories'));
     } finally {
       setLoading(false);
     }
@@ -57,12 +95,14 @@ export const useVehicleCategories = () => {
           ...(payload.seats !== undefined && { seatCapacity: payload.seats }),
           ...(payload.categoryIcon !== undefined && { categoryIcon: payload.categoryIcon }),
           ...(payload.vehicleType !== undefined && { vehicleType: payload.vehicleType }),
+          ...(payload.order !== undefined && { order: payload.order }),
         };
         await apiClient.patch(API.UPDATE_CATEGORY(id), apiPayload);
         fetchCategories();
       } catch (err: unknown) {
-        const error = err as Error;
-        setError(error.message || 'Failed to update category');
+        const message = getCategoryErrorMessage(err, 'Failed to update category');
+        setError(message);
+        throw new Error(message);
       } finally {
         setIsUpdating(false);
       }
@@ -82,13 +122,14 @@ export const useVehicleCategories = () => {
           ...(payload.seats !== undefined && { seatCapacity: payload.seats }),
           ...(payload.categoryIcon !== undefined && { categoryIcon: payload.categoryIcon }),
           ...(payload.vehicleType !== undefined && { vehicleType: payload.vehicleType }),
+          ...(payload.order !== undefined && { order: payload.order }),
         };
         await apiClient.post(API.CREATE_CATEGORY, apiPayload);
         fetchCategories();
       } catch (err: unknown) {
-        const error = err as Error;
-        setError(error.message || 'Failed to create category');
-        throw error;
+        const message = getCategoryErrorMessage(err, 'Failed to create category');
+        setError(message);
+        throw new Error(message);
       } finally {
         setIsCreating(false);
       }

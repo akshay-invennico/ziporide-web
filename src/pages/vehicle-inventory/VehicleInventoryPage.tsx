@@ -198,6 +198,10 @@ const VehicleInventoryPage: React.FC = () => {
             <h2 className="text-[20px] font-semibold text-[#000000]">Vehicle Categories</h2>
             <button
               onClick={() => {
+                if (vehicleCategories.length >= 7) {
+                  showToast('Only 7 vehicle categories are allowed.', 'error');
+                  return;
+                }
                 setCategoryToEdit(null);
                 setIsAddModalOpen(true);
               }}
@@ -235,6 +239,16 @@ const VehicleInventoryPage: React.FC = () => {
 
                       <div className="flex flex-col gap-2">
                         <div className="grid grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[12px] text-[#4E616A] font-medium">
+                              Display Order
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="flex h-[22px] min-w-[22px] items-center justify-center rounded-full bg-[#EEFFFD] px-2 text-[12px] font-semibold text-[#1DAFA1]">
+                                {cat.order}
+                              </span>
+                            </div>
+                          </div>
                           <div className="flex flex-col gap-1">
                             <span className="text-[12px] text-[#4E616A] font-medium">Seats</span>
                             <div className="flex items-center gap-2">
@@ -353,6 +367,7 @@ const VehicleInventoryPage: React.FC = () => {
           setCategoryToEdit(null);
         }}
         initialData={categoryToEdit}
+        existingCategories={vehicleCategories}
         isLoading={categoryToEdit ? isUpdating : isCreating}
         onConfirm={async (values) => {
           let iconString = values.categoryIcon;
@@ -377,20 +392,30 @@ const VehicleInventoryPage: React.FC = () => {
             pricePerMinute: parseFloat(values.pricePerMinute),
             seats: parseInt(values.seatCapacity.split(' ')[0]),
             vehicleType: values.vehicleType,
+            order: parseInt(values.order, 10),
           };
 
           if (iconString) {
             payload.categoryIcon = iconString as string;
           }
 
-          if (categoryToEdit) {
-            await updateCategory(categoryToEdit.id, payload);
-          } else {
-            await createCategory(payload);
-          }
+          try {
+            if (categoryToEdit) {
+              await updateCategory(categoryToEdit.id, payload);
+              showToast('Category updated successfully', 'success');
+            } else {
+              await createCategory(payload);
+              showToast('Category created successfully', 'success');
+            }
 
-          setIsAddModalOpen(false);
-          setCategoryToEdit(null);
+            setIsAddModalOpen(false);
+            setCategoryToEdit(null);
+          } catch (error) {
+            showToast(
+              error instanceof Error ? error.message : 'Failed to save category. Please try again.',
+              'error',
+            );
+          }
         }}
       />
     </div>

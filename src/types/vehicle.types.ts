@@ -8,6 +8,7 @@ export interface ApiVehicleCategory {
   vehicleType: string;
   seatCapacity: number;
   categoryIcon: string;
+  order: number;
 }
 
 export interface VehicleDatabaseRow {
@@ -36,6 +37,7 @@ export interface VehicleCategory {
   pricePerMile: number;
   pricePerMinute: number;
   vehicleType: string;
+  order: number;
 }
 
 export interface VehicleCategoryResponse {
