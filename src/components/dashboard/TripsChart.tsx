@@ -11,12 +11,39 @@ import {
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useTripsOverTime } from '@/hooks/useDashboard';
+import type { DashboardChartFilters, DashboardChartFilterType } from '@/types/dashboard.types';
 
-type FilterKey = 'Year' | 'Month';
+const filterOptions: Array<{ label: string; value: DashboardChartFilterType }> = [
+  { label: 'Daily', value: 'daily' },
+  { label: 'Week', value: 'weekly' },
+  { label: 'Month', value: 'monthly' },
+  { label: 'Year', value: 'yearly' },
+];
+
+const getIsoWeek = (date: Date) => {
+  const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNumber = target.getUTCDay() || 7;
+  target.setUTCDate(target.getUTCDate() + 4 - dayNumber);
+  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+
+  return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+};
+
+const getInitialFilters = (): DashboardChartFilters => {
+  const today = new Date();
+
+  return {
+    type: 'yearly',
+    year: today.getFullYear(),
+    month: today.getMonth() + 1,
+    week: getIsoWeek(today),
+  };
+};
 
 export default function TripsChart() {
-  const [filter, setFilter] = useState<FilterKey>('Year');
-  const { data: chartData, loading, error } = useTripsOverTime(filter);
+  const [filters, setFilters] = useState<DashboardChartFilters>(getInitialFilters);
+  const { data: chartData, loading, error } = useTripsOverTime(filters);
+  const labelKey = filters.type === 'daily' || filters.type === 'weekly' ? 'day' : 'month';
 
   return (
     <div className="bg-white p-5 lg:p-6 rounded-lg border border-[#DFE6E5]  col-span-1 lg:col-span-2 transition-all overflow-hidden">
@@ -28,18 +55,18 @@ export default function TripsChart() {
 
         {/* Filter tabs */}
         <div className="flex items-center gap-2">
-          {(['Year', 'Month'] as FilterKey[]).map((item) => (
+          {filterOptions.map((filter) => (
             <button
-              key={item}
-              onClick={() => setFilter(item)}
+              key={filter.value}
+              onClick={() => setFilters((current) => ({ ...current, type: filter.value }))}
               disabled={loading}
               className={`px-5 py-1.5 text-[13px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                filter === item
+                filters.type === filter.value
                   ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                   : 'border-[#DFE6E5] text-[#4E616A] bg-white'
               } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {item}
+              {filter.label}
             </button>
           ))}
         </div>
@@ -71,7 +98,7 @@ export default function TripsChart() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
               <XAxis
-                dataKey={(item) => item.month || item.day || 'N/A'}
+                dataKey={(item) => item[labelKey] || 'N/A'}
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}

@@ -10,6 +10,7 @@ import type {
   RevenueAnalyticsItem,
   RiderDriverReportItem,
   TripsOverTimeItem,
+  DashboardChartFilters,
 } from '@/types/dashboard.types';
 
 const apiTypeMap: Record<'Daily' | 'Weekly' | 'Month' | 'Year', string> = {
@@ -18,6 +19,13 @@ const apiTypeMap: Record<'Daily' | 'Weekly' | 'Month' | 'Year', string> = {
   Month: 'month',
   Year: 'year',
 };
+
+const getDashboardChartParams = (filters: DashboardChartFilters) => ({
+  type: filters.type,
+  year: filters.year,
+  ...(filters.type === 'daily' && filters.month ? { month: filters.month } : {}),
+  ...(filters.type === 'weekly' && filters.week ? { week: filters.week } : {}),
+});
 
 export const useDashboardSummary = () => {
   const [data, setData] = useState<DashboardSummary['data'] | null>(null);
@@ -79,16 +87,17 @@ export const useRevenueAnalytics = (type: 'Daily' | 'Weekly' | 'Month' | 'Year')
   return { data, loading, error, refetch: fetchRevenue };
 };
 
-export const useRiderDriverReport = (type: 'Daily' | 'Weekly' | 'Month' | 'Year') => {
+export const useRiderDriverReport = (filters: DashboardChartFilters) => {
   const [data, setData] = useState<RiderDriverReportItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchReport = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await apiClient.get<RiderDriverReportResponse>(API.RIDER_DRIVER_REPORT, {
-        params: { type: apiTypeMap[type] },
+        params: getDashboardChartParams(filters),
       });
       if (response.data.success) {
         setData(response.data.data);
@@ -101,7 +110,7 @@ export const useRiderDriverReport = (type: 'Daily' | 'Weekly' | 'Month' | 'Year'
     } finally {
       setLoading(false);
     }
-  }, [type]);
+  }, [filters]);
 
   useEffect(() => {
     fetchReport();
@@ -110,16 +119,17 @@ export const useRiderDriverReport = (type: 'Daily' | 'Weekly' | 'Month' | 'Year'
   return { data, loading, error, refetch: fetchReport };
 };
 
-export const useTripsOverTime = (type: 'Daily' | 'Weekly' | 'Month' | 'Year') => {
+export const useTripsOverTime = (filters: DashboardChartFilters) => {
   const [data, setData] = useState<TripsOverTimeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTrips = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await apiClient.get<TripsOverTimeResponse>(API.TRIPS_OVER_TIME, {
-        params: { type: apiTypeMap[type] },
+        params: getDashboardChartParams(filters),
       });
       if (response.data.success) {
         setData(response.data.data);
@@ -132,7 +142,7 @@ export const useTripsOverTime = (type: 'Daily' | 'Weekly' | 'Month' | 'Year') =>
     } finally {
       setLoading(false);
     }
-  }, [type]);
+  }, [filters]);
 
   useEffect(() => {
     fetchTrips();

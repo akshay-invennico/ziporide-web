@@ -26,6 +26,15 @@ export interface DashboardSummary {
   };
 }
 
+export type DashboardChartFilterType = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export interface DashboardChartFilters {
+  type: DashboardChartFilterType;
+  year: number;
+  month?: number;
+  week?: number;
+}
+
 export interface RevenueAnalyticsItem {
   month?: string;
   day?: string;
