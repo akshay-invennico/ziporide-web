@@ -72,7 +72,7 @@ export const DriverPDFDocument = ({ drivers }: { drivers: Driver[] }) => (
     <Page size="A4" style={styles.page} orientation="landscape">
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Ziporide - Driver List Report</Text>
+          <Text style={styles.title}>Zipo - Driver List Report</Text>
           <Text style={styles.date}>Generated on: {new Date().toLocaleString()}</Text>
         </View>
         <View>

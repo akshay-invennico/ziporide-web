@@ -99,7 +99,6 @@ function DataTable<T extends object>({
           return numA - numB;
         }
         case 'date': {
-          // Join date and time if available (Ziporide pattern)
           const recA = a as Record<string, unknown>;
           const recB = b as Record<string, unknown>;
           const dateStrA = recA.date && recA.time ? `${recA.date} ${recA.time}` : String(valA);

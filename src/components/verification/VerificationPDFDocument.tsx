@@ -76,7 +76,7 @@ export const VerificationPDFDocument = ({ drivers }: { drivers: Driver[] }) => (
     <Page size="A4" style={styles.page} orientation="landscape">
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Ziporide - Driver Verification Report</Text>
+          <Text style={styles.title}>Zipo - Driver Verification Report</Text>
           <Text style={styles.date}>Generated on: {new Date().toLocaleString()}</Text>
         </View>
         <View>

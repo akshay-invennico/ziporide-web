@@ -173,7 +173,7 @@ export default function Sidebar() {
     <div className="w-[250px] bg-[#2D2D2D] text-white flex flex-col h-screen fixed top-0 left-0 overflow-y-auto z-50">
       {/* Logo */}
       <Link to={routes.DASHBOARD} className="flex items-center gap-3 px-6 py-5 mb-1 cursor-pointer">
-        <img src="/logo.svg" alt="ZipoRide" className="h-[30px] w-[30px]" />
+        <img src="/logo.svg" alt="Zipo" className="h-[30px] w-[30px]" />
         <span className="text-[24px] font-semibold tracking-wide text-white">Zipo</span>
       </Link>
 
@@ -195,8 +195,9 @@ export default function Sidebar() {
               <Link
                 to={item.path}
                 onClick={(e) => handleNavClick(item.name, item.path, e, !!item.subItems)}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
-                  }`}
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-md transition-all duration-150 group ${
+                  isActive && !item.subItems ? 'bg-[#14B8A6] text-white  ' : 'text-[#FFFFFF]'
+                }`}
               >
                 <img
                   src={isActive ? item.activeIcon : item.icon}
@@ -235,10 +236,11 @@ export default function Sidebar() {
                       <Link
                         key={subItem.name}
                         to={subItem.path}
-                        className={`relative z-10 flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150 ${isSubActive
-                          ? 'bg-[#14B8A6] text-white font-medium text-[14px]'
-                          : 'text-[#FFFFFF] font-medium text-[14px]'
-                          }`}
+                        className={`relative z-10 flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-150 ${
+                          isSubActive
+                            ? 'bg-[#14B8A6] text-white font-medium text-[14px]'
+                            : 'text-[#FFFFFF] font-medium text-[14px]'
+                        }`}
                       >
                         {/* Connecting branch curve connecting to the main stalk */}
                         <div className="absolute left-[-13px] top-[-8px] w-[13px] h-[32px] border-b-2 border-l-2 border-white rounded-bl-[16px] z-[-1] pointer-events-none"></div>

@@ -76,7 +76,7 @@ export const SupportPDFDocument = ({ tickets }: { tickets: SupportTicket[] }) =>
     <Page size="A4" style={styles.page} orientation="landscape">
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Ziporide - Support Tickets Report</Text>
+          <Text style={styles.title}>Zipo - Support Tickets Report</Text>
           <Text style={styles.date}>Generated on: {new Date().toLocaleString()}</Text>
         </View>
         <View>

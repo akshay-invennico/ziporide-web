@@ -174,7 +174,7 @@ export const useTrips = (
       const params: Record<string, string | number> = {
         page,
         limit,
-        sortBy: 'createdAt',
+        sortBy: 'createdAt:desc',
       };
 
       if (status && status !== 'All') {
@@ -380,6 +380,7 @@ export const useExportTripsCSV = () => {
         const params: Record<string, string | number> = {
           page: currentPage,
           limit: 20,
+          sortBy: 'createdAt:desc',
         };
 
         if (status && status !== 'All') {
@@ -472,6 +473,7 @@ export const useExportTripsPDF = () => {
         const params: Record<string, string | number> = {
           page: currentPage,
           limit: 20,
+          sortBy: 'createdAt:desc',
         };
 
         if (status && status !== 'All') {

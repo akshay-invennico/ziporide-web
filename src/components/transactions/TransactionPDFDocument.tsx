@@ -72,7 +72,7 @@ export const TransactionPDFDocument = ({ transactions }: { transactions: Transac
     <Page size="A4" style={styles.page} orientation="landscape">
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Ziporide - Transaction Report</Text>
+          <Text style={styles.title}>Zipo - Transaction Report</Text>
           <Text style={styles.date}>Generated on: {new Date().toLocaleString()}</Text>
         </View>
         <View>

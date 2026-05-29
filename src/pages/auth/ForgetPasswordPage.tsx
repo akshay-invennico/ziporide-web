@@ -27,8 +27,8 @@ const ForgetPasswordPage = () => {
       <div className="bg-white shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] rounded-xl w-full max-w-[560px] max-h-[600px] overflow-auto px-5 sm:px-10 py-8 sm:py-10 my-auto">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-6">
-          <img src="/logo.svg" alt="ZipoRide" className="h-[32px] w-[32px]" />
-          <h3 className="font-semibold text-[24px] text-[#000000] font-inter">ZipoRide</h3>
+          <img src="/logo.svg" alt="Zipo" className="h-[32px] w-[32px]" />
+          <h3 className="font-semibold text-[24px] text-[#000000] font-inter">Zipo</h3>
         </div>
 
         {/* Heading */}

@@ -136,7 +136,7 @@ const MyProfilePage = () => {
                   <input
                     type="email"
                     value={formData.email}
-                    placeholder="e.g. ziporideadmin@gmail.com"
+                    placeholder="e.g. zipoadmin@gmail.com"
                     readOnly
                     className="w-full border border-[#DFE6E5] bg-gray-50 rounded-md p-3 text-[14px] font-medium text-[#4E616A] focus:outline-none transition-colors placeholder:text-[#939999] cursor-not-allowed"
                   />

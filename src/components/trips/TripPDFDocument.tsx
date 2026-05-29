@@ -83,7 +83,7 @@ export const TripPDFDocument = ({ trips }: { trips: TripRecord[] }) => (
     <Page size="A4" style={styles.page} orientation="landscape">
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Ziporide - Trip History Report</Text>
+          <Text style={styles.title}>Zipo - Trip History Report</Text>
           <Text style={styles.date}>Generated on: {new Date().toLocaleString()}</Text>
         </View>
         <View>

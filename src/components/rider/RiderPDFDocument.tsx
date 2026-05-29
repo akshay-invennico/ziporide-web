@@ -72,7 +72,7 @@ export const RiderPDFDocument = ({ riders }: { riders: Rider[] }) => (
     <Page size="A4" style={styles.page} orientation="landscape">
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Ziporide - Rider List Report</Text>
+          <Text style={styles.title}>Zipo - Rider List Report</Text>
           <Text style={styles.date}>Generated on: {new Date().toLocaleString()}</Text>
         </View>
         <View>
