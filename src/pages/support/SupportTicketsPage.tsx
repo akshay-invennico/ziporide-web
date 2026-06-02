@@ -46,13 +46,7 @@ const SupportTicketsPage: React.FC = () => {
     const q = searchInput.trim().toLowerCase();
     if (!q) return tickets;
     return tickets.filter((t) => {
-      const fields = [
-        t.ticketId,
-        t.cause,
-        t.status,
-        t.driver?.name,
-        t.driver?.phone,
-      ];
+      const fields = [t.ticketId, t.cause, t.status, t.driver?.name, t.driver?.phone];
       return fields.some((f) => f?.toLowerCase().includes(q));
     });
   }, [tickets, searchInput]);
@@ -145,7 +139,7 @@ const SupportTicketsPage: React.FC = () => {
       {
         key: 'ticketId',
         label: 'TICKET ID',
-        sortable: true,
+        sortable: false,
         render: (ticket) => (
           <span className="text-[14px] font-medium text-[#1DAFA1] cursor-pointer">
             {ticket.ticketId}
@@ -204,7 +198,7 @@ const SupportTicketsPage: React.FC = () => {
       {
         key: 'createdAt',
         label: 'RAISED ON',
-        sortable: true,
+        sortable: false,
         render: (ticket) => (
           <span className="text-[14px] font-medium text-[#4E616A]">
             {new Date(ticket.createdAt).toISOString().split('T')[0]}
@@ -214,7 +208,7 @@ const SupportTicketsPage: React.FC = () => {
       {
         key: 'status',
         label: 'STATUS',
-        sortable: true,
+        sortable: false,
         render: (ticket) => <div className="flex items-start">{getStatusBadge(ticket.status)}</div>,
       },
       {

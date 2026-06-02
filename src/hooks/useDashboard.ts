@@ -11,6 +11,7 @@ import type {
   RiderDriverReportItem,
   TripsOverTimeItem,
   DashboardChartFilters,
+  DashboardChartFilterType,
 } from '@/types/dashboard.types';
 
 const apiTypeMap: Record<'Daily' | 'Weekly' | 'Month' | 'Year', string> = {
@@ -22,12 +23,40 @@ const apiTypeMap: Record<'Daily' | 'Weekly' | 'Month' | 'Year', string> = {
 
 const getDashboardChartParams = (filters: DashboardChartFilters) => ({
   type: filters.type,
-  year: filters.year,
-  ...(filters.type === 'daily' && filters.month ? { month: filters.month } : {}),
-  ...(filters.type === 'weekly' && filters.week ? { week: filters.week } : {}),
 });
 
-export const useDashboardSummary = () => {
+const getExpectedLabels = (type: DashboardChartFilterType) => {
+  if (type === 'daily') {
+    return Array.from({ length: 24 }, (_, hour) => `${hour.toString().padStart(2, '0')}:00`);
+  }
+
+  if (type === 'week') {
+    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  }
+
+  if (type === 'month') {
+    const today = new Date();
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+
+    return Array.from({ length: lastDay }, (_, day) => String(day + 1));
+  }
+
+  return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+};
+
+const normalizeChartData = <T extends { label: string }>(
+  type: DashboardChartFilterType,
+  data: T[],
+  emptyItem: Omit<T, 'label'>,
+) => {
+  const dataByLabel = new Map(data.map((item) => [item.label, item]));
+
+  return getExpectedLabels(type).map(
+    (label) => dataByLabel.get(label) ?? ({ label, ...emptyItem } as T),
+  );
+};
+
+export const useDashboardSummary = (type: DashboardChartFilterType = 'week') => {
   const [data, setData] = useState<DashboardSummary['data'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +64,9 @@ export const useDashboardSummary = () => {
   const fetchSummary = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await apiClient.get<DashboardSummary>(API.DASHBOARD_SUMMARY);
+      const response = await apiClient.get<DashboardSummary>(API.DASHBOARD_SUMMARY, {
+        params: { type },
+      });
       if (response.data.success) {
         setData(response.data.data);
       } else {
@@ -47,7 +78,7 @@ export const useDashboardSummary = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     fetchSummary();
@@ -100,7 +131,7 @@ export const useRiderDriverReport = (filters: DashboardChartFilters) => {
         params: getDashboardChartParams(filters),
       });
       if (response.data.success) {
-        setData(response.data.data);
+        setData(normalizeChartData(filters.type, response.data.data, { riders: 0, drivers: 0 }));
       } else {
         setError(response.data.message || 'Failed to fetch rider driver report');
       }
@@ -132,7 +163,7 @@ export const useTripsOverTime = (filters: DashboardChartFilters) => {
         params: getDashboardChartParams(filters),
       });
       if (response.data.success) {
-        setData(response.data.data);
+        setData(normalizeChartData(filters.type, response.data.data, { trips: 0 }));
       } else {
         setError(response.data.message || 'Failed to fetch trips over time');
       }

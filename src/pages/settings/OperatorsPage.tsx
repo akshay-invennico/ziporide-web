@@ -112,7 +112,7 @@ const OperatorsPage = () => {
       {
         key: 'operatorId',
         label: 'ID',
-        sortable: true,
+        sortable: false,
         render: (row) => (
           <span className="text-[14px] font-medium text-[#1DAFA1] text-nowrap">
             {row.operatorId}
@@ -155,7 +155,7 @@ const OperatorsPage = () => {
       {
         key: 'createdAt',
         label: 'CREATED ON',
-        sortable: true,
+        sortable: false,
         headerClassName: 'min-w-[160px]',
         render: (row) => (
           <span className="text-[14px] text-nowrap font-medium text-[#4E616A]">
@@ -166,7 +166,7 @@ const OperatorsPage = () => {
       {
         key: 'status',
         label: 'STATUS',
-        sortable: true,
+        sortable: false,
         headerClassName: 'min-w-[140px]',
         render: (row) => {
           const style = STATUS_STYLES[row.status] || STATUS_STYLES.inactive;

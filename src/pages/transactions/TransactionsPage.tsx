@@ -136,7 +136,7 @@ const TransactionsPage: React.FC = () => {
         key: 'id',
         label: 'TRANSACTION ID',
         type: 'string',
-        sortable: true,
+        sortable: false,
         render: (txn) => (
           <span
             onClick={() => handleOpenDetails(txn)}
@@ -180,7 +180,7 @@ const TransactionsPage: React.FC = () => {
         key: 'status',
         label: 'STATUS',
         type: 'string',
-        sortable: true,
+        sortable: false,
         render: (txn) => getStatusBadge(txn.status),
       },
       {

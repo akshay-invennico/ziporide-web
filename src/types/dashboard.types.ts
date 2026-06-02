@@ -3,6 +3,14 @@ export interface DashboardSummary {
   statusCode: number;
   message?: string;
   data: {
+    dateRange?:
+      | string
+      | {
+          startDate?: string;
+          endDate?: string;
+          previousStartDate?: string;
+          previousEndDate?: string;
+        };
     totalRiders: {
       value: number;
       change: number;
@@ -26,18 +34,14 @@ export interface DashboardSummary {
   };
 }
 
-export type DashboardChartFilterType = 'daily' | 'weekly' | 'monthly' | 'yearly';
+export type DashboardChartFilterType = 'daily' | 'week' | 'month' | 'year';
 
 export interface DashboardChartFilters {
   type: DashboardChartFilterType;
-  year: number;
-  month?: number;
-  week?: number;
 }
 
 export interface RevenueAnalyticsItem {
-  month?: string;
-  day?: string;
+  label: string;
   revenue: number;
   rides: number;
 }
@@ -50,8 +54,7 @@ export interface RevenueAnalyticsResponse {
 }
 
 export interface RiderDriverReportItem {
-  month?: string;
-  day?: string;
+  label: string;
   riders: number;
   drivers: number;
 }
@@ -64,8 +67,7 @@ export interface RiderDriverReportResponse {
 }
 
 export interface TripsOverTimeItem {
-  month?: string;
-  day?: string;
+  label: string;
   trips: number;
 }
 

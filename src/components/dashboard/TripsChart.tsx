@@ -15,35 +15,20 @@ import type { DashboardChartFilters, DashboardChartFilterType } from '@/types/da
 
 const filterOptions: Array<{ label: string; value: DashboardChartFilterType }> = [
   { label: 'Daily', value: 'daily' },
-  { label: 'Week', value: 'weekly' },
-  { label: 'Month', value: 'monthly' },
-  { label: 'Year', value: 'yearly' },
+  { label: 'Week', value: 'week' },
+  { label: 'Month', value: 'month' },
+  { label: 'Year', value: 'year' },
 ];
 
-const getIsoWeek = (date: Date) => {
-  const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNumber = target.getUTCDay() || 7;
-  target.setUTCDate(target.getUTCDate() + 4 - dayNumber);
-  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
-
-  return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-};
-
 const getInitialFilters = (): DashboardChartFilters => {
-  const today = new Date();
-
   return {
-    type: 'yearly',
-    year: today.getFullYear(),
-    month: today.getMonth() + 1,
-    week: getIsoWeek(today),
+    type: 'year',
   };
 };
 
 export default function TripsChart() {
   const [filters, setFilters] = useState<DashboardChartFilters>(getInitialFilters);
   const { data: chartData, loading, error } = useTripsOverTime(filters);
-  const labelKey = filters.type === 'daily' || filters.type === 'weekly' ? 'day' : 'month';
 
   return (
     <div className="bg-white p-5 lg:p-6 rounded-lg border border-[#DFE6E5]  col-span-1 lg:col-span-2 transition-all overflow-hidden">
@@ -98,7 +83,7 @@ export default function TripsChart() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
               <XAxis
-                dataKey={(item) => item[labelKey] || 'N/A'}
+                dataKey="label"
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}
