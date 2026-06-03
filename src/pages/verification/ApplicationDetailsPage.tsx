@@ -455,8 +455,9 @@ const ApplicationDetailsPage = () => {
             <div className="flex justify-between items-center">
               <span className="text-[14px] font-medium text-[#4E616A]">Vehicle Type</span>
               <span className="text-[14px] font-medium text-[#000000]">
-                {request.vehicle?.type
-                  ? request.vehicle.type.charAt(0).toUpperCase() + request.vehicle.type.slice(1)
+                {request.vehicle?.category?.name
+                  ? request.vehicle?.category?.name.charAt(0).toUpperCase() +
+                    request.vehicle?.category?.name.slice(1)
                   : '-'}
               </span>
             </div>

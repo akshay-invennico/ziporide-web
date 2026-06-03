@@ -154,7 +154,7 @@ const RiderPage = () => {
         key: 'totalTrips',
         label: 'TOTAL TRIPS',
         type: 'number',
-        sortable: false,
+        sortable: true,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">{rider.totalTrips || 0}</span>
         ),
@@ -163,7 +163,7 @@ const RiderPage = () => {
         key: 'totalSpent',
         label: 'TOTAL SPENT',
         type: 'number',
-        sortable: false,
+        sortable: true,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
             £{Number(rider.totalSpent || 0).toFixed(2)}
@@ -174,7 +174,8 @@ const RiderPage = () => {
         key: 'rating',
         label: 'RATINGS',
         type: 'number',
-        sortable: false,
+        sortable: true,
+        sortValue: (rider) => rider.rating ?? rider.avgRating ?? 0,
         render: (rider) => (
           <div className="flex items-center gap-1.5">
             <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
@@ -323,7 +324,6 @@ const RiderPage = () => {
         />
       </div>
 
-      {/* Suspend Rider Modal */}
       <SuspendRiderModal
         isOpen={!!suspendedRiderId}
         onClose={() => setSuspendedRiderId(null)}

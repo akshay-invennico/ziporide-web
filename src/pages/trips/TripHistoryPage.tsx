@@ -193,7 +193,7 @@ export default function TripHistoryPage() {
         key: 'amount',
         label: 'AMOUNT',
         type: 'number',
-        sortable: false,
+        sortable: true,
         render: (trip) => (
           <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap">
             £{trip.amount.toFixed(2)}
@@ -204,7 +204,7 @@ export default function TripHistoryPage() {
         key: 'date',
         label: 'TIME & DATE',
         type: 'date',
-        sortable: false,
+        sortable: true,
         render: (trip) => (
           <span className="text-[14px] font-medium text-[#4E616A] whitespace-nowrap flex items-center gap-2">
             {trip.date}

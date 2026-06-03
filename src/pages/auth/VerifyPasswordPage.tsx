@@ -171,7 +171,7 @@ const VerifyPasswordPage = () => {
 
         {/* Footer */}
         <p className="text-center text-[12px] font-medium text-[#4E616A] mt-6">
-          © 2026 Zipo Ride. All rights reserved.
+          © 2026 Zipo. All rights reserved.
         </p>
       </div>
     </div>

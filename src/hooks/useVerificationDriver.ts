@@ -41,13 +41,16 @@ export const useDrivers = (
       setLoading(true);
       setError(null);
       try {
-        const params: Record<string, string | number> = {
+        const params: Record<string, string | number | boolean> = {
           page,
           limit,
           sortBy: 'createdAt',
         };
         if (status && status !== 'All') {
           params.status = status.toLowerCase();
+        }
+        if (status?.toLowerCase() === 'pending') {
+          params.isProfileCompleted = true;
         }
         if (search) {
           params.search = search;
@@ -211,7 +214,7 @@ export const usePendingDriverCount = () => {
   const fetchCount = useCallback(async () => {
     try {
       const response = await apiClient.get<DriverResponse>(API.DRIVER, {
-        params: { status: 'pending' },
+        params: { status: 'pending', isProfileCompleted: true },
       });
       if (response.data?.success) {
         const drivers = response.data.data?.results || response.data.data || [];
@@ -258,12 +261,15 @@ export const useExportVerificationCSV = () => {
         let totalPages = 1;
 
         do {
-          const params: Record<string, string | number> = {
+          const params: Record<string, string | number | boolean> = {
             page: currentPage,
             limit: 20,
           };
           if (statusFilter && statusFilter !== 'All') {
             params.status = statusFilter.toLowerCase();
+          }
+          if (statusFilter?.toLowerCase() === 'pending') {
+            params.isProfileCompleted = true;
           }
           if (dateRange?.startDate) params.startDate = dateRange.startDate;
           if (dateRange?.endDate) params.endDate = dateRange.endDate;
@@ -330,12 +336,15 @@ export const useExportVerificationPDF = () => {
         let totalPages = 1;
 
         do {
-          const params: Record<string, string | number> = {
+          const params: Record<string, string | number | boolean> = {
             page: currentPage,
             limit: 20,
           };
           if (statusFilter && statusFilter !== 'All') {
             params.status = statusFilter.toLowerCase();
+          }
+          if (statusFilter?.toLowerCase() === 'pending') {
+            params.isProfileCompleted = true;
           }
           if (dateRange?.startDate) params.startDate = dateRange.startDate;
           if (dateRange?.endDate) params.endDate = dateRange.endDate;

@@ -418,15 +418,9 @@ export default function DriverInfoTab({ driver, onProfileUpdated }: Props) {
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[14px] text-[#4E616A] font-medium">Color</span>
-                      <span className="text-[14px] font-medium text-[#000000]">
-                        {(driver.vehicle.color || driver.vehicle.colour || '-') as string}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
                       <span className="text-[14px] text-[#4E616A] font-medium">Vehicle Type</span>
                       <span className="text-[14px] font-medium text-[#000000]">
-                        {(driver.vehicle.vehicleType || driver.vehicle.type || '-') as string}
+                        {driver.vehicle.category?.name ? driver.vehicle.category.name : '-'}
                       </span>
                     </div>
                   </>

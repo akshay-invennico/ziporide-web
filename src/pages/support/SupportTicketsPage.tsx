@@ -198,7 +198,8 @@ const SupportTicketsPage: React.FC = () => {
       {
         key: 'createdAt',
         label: 'RAISED ON',
-        sortable: false,
+        type: 'date',
+        sortable: true,
         render: (ticket) => (
           <span className="text-[14px] font-medium text-[#4E616A]">
             {new Date(ticket.createdAt).toISOString().split('T')[0]}

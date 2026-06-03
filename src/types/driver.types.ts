@@ -63,6 +63,9 @@ export interface Driver {
     dbsShareCode?: string;
     insuranceCertificateUrl?: string; // New from API
     motCertificateUrl?: string; // New from API
+    category?: {
+      name?: string;
+    };
     insurance?: {
       isVerified?: boolean;
       url?: string;
@@ -248,6 +251,7 @@ export type TripStatus = 'Assigned' | 'In Progress' | 'Completed' | 'Cancelled';
 export interface RawRideData {
   id: string;
   rideNumber?: string;
+  transactionId?: string;
   status: string;
   paymentStatus: string;
   tipAmount: number;
@@ -403,6 +407,7 @@ export interface TripRecord {
     method: string;
     last4: string;
   };
+  transactionId: string;
   riderFeedback?: {
     rating: number;
     note?: string;

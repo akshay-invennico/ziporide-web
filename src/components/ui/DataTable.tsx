@@ -13,8 +13,9 @@ export interface SortState {
 export interface Column<T> {
   key: string;
   label: string;
-  type?: 'string' | 'number' | 'date'; // Added for smart sorting
+  type?: 'string' | 'number' | 'date';
   sortable?: boolean;
+  sortValue?: (row: T) => unknown;
   render?: (row: T, index: number) => React.ReactNode;
   headerClassName?: string;
   cellClassName?: string;
@@ -85,8 +86,8 @@ function DataTable<T extends object>({
     if (!column) return data;
 
     return [...data].sort((a, b) => {
-      const valA = (a as Record<string, unknown>)[sortKey];
-      const valB = (b as Record<string, unknown>)[sortKey];
+      const valA = column.sortValue ? column.sortValue(a) : (a as Record<string, unknown>)[sortKey];
+      const valB = column.sortValue ? column.sortValue(b) : (b as Record<string, unknown>)[sortKey];
 
       if (valA === valB) return 0;
       if (valA === null || valA === undefined) return 1;
@@ -122,21 +123,18 @@ function DataTable<T extends object>({
     });
   }, [data, isSorted, sortKey, columns]);
 
-  // Resolve pagination values
   const currentPage = isControlledPagination ? controlledPage : internalPage;
   const totalPages = isControlledPagination
     ? controlledTotalPages
     : Math.max(1, Math.ceil(sortedData.length / pageSize));
   const onPageChange = isControlledPagination ? controlledOnPageChange : setInternalPage;
 
-  // For client-side pagination, slice the data for the current page
   const paginatedData = useMemo(() => {
     if (isControlledPagination) return sortedData;
     const start = (currentPage - 1) * pageSize;
     return sortedData.slice(start, start + pageSize);
   }, [isControlledPagination, sortedData, currentPage, pageSize]);
 
-  // Reset to page 1 when data changes in client-side pagination mode
   React.useEffect(() => {
     if (
       !isControlledPagination &&
@@ -158,11 +156,9 @@ function DataTable<T extends object>({
 
   const handleSort = (columnKey: string) => {
     if (sortKey === columnKey) {
-      // 2nd click: Reset
       setSortKey(null);
       setIsSorted(false);
     } else {
-      // 1st click: Ascending
       setSortKey(columnKey);
       setIsSorted(true);
     }

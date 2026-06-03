@@ -30,6 +30,7 @@ const TripDetailsModal = ({
     isOpen ? initialTrip?.rideId || initialTrip?.id : undefined,
   );
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [copiedField, setCopiedField] = useState<'tripId' | 'transactionId' | null>(null);
   const { cancelTrip: cancelRide, isCancelling } = useCancelRide();
 
   const trip = detailedTrip || initialTrip;
@@ -62,8 +63,33 @@ const TripDetailsModal = ({
   const isCancelled = trip.status === 'Cancelled';
   const hasCancellationInfo = isCancelled && !!trip.cancellationDetails;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(trip.id);
+  const copyToClipboard = async (text: string) => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  };
+
+  const handleCopy = async (text: string, field: 'tripId' | 'transactionId') => {
+    try {
+      await copyToClipboard(text);
+      setCopiedField(field);
+      window.setTimeout(() => {
+        setCopiedField((currentField) => (currentField === field ? null : currentField));
+      }, 1500);
+    } catch (error) {
+      console.error('Failed to copy text:', error);
+    }
   };
 
   return (
@@ -101,12 +127,42 @@ const TripDetailsModal = ({
               <span className="text-[14px] font-medium text-[#4E616A]">Overview</span>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-medium text-[#4E616A]">Trip ID:</span>
-                  <span className="text-[14px] font-semibold text-[#1DAFA1]">{trip.id}</span>
-                  <button onClick={handleCopy} className="cursor-pointer">
-                    <Copy className="w-[14px] h-[14px] text-[#1DAFA1]" />
-                  </button>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[14px] font-medium text-[#4E616A]">Trip ID:</span>
+                    <span className="text-[14px] font-semibold text-[#1DAFA1]">{trip.id}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(trip.id, 'tripId')}
+                      className="cursor-pointer"
+                      aria-label="Copy trip ID"
+                      title={copiedField === 'tripId' ? 'Copied' : 'Copy trip ID'}
+                    >
+                      <Copy className="w-[14px] h-[14px] text-[#1DAFA1]" />
+                    </button>
+                    {copiedField === 'tripId' && (
+                      <span className="text-[12px] font-medium text-[#1DAFA1]">Copied</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-[14px] font-medium text-[#4E616A]">Transaction ID:</span>
+                    <span className="text-[14px] font-semibold text-[#1DAFA1]">
+                      {trip.transactionId}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(trip.transactionId, 'transactionId')}
+                      className="cursor-pointer"
+                      aria-label="Copy transaction ID"
+                      title={copiedField === 'transactionId' ? 'Copied' : 'Copy transaction ID'}
+                    >
+                      <Copy className="w-[14px] h-[14px] text-[#1DAFA1]" />
+                    </button>
+                    {copiedField === 'transactionId' && (
+                      <span className="text-[12px] font-medium text-[#1DAFA1]">Copied</span>
+                    )}
+                  </div>
                 </div>
                 <div className={`flex items-center ${badge.bg} rounded-[500px] px-4 py-2 gap-1.5`}>
                   <div className={`w-[6px] h-[6px] rounded-full ${badge.dot}`} />
@@ -120,12 +176,12 @@ const TripDetailsModal = ({
                   <span>
                     {trip.date !== 'N/A'
                       ? new Date(trip.date)
-                        .toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        })
-                        .replace(' ', ', ')
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })
+                          .replace(' ', ', ')
                       : 'N/A'}
                   </span>
                 </div>
@@ -428,31 +484,29 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.riderFeedback?.rating || 0)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.riderFeedback?.rating || 0)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>
-                    {trip.riderFeedback?.behaviourTags && trip.riderFeedback.behaviourTags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 ">
-                        {trip.riderFeedback.behaviourTags.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="text-[12px] font-medium text-[#4E616A] "
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {trip.riderFeedback?.behaviourTags &&
+                      trip.riderFeedback.behaviourTags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 ">
+                          {trip.riderFeedback.behaviourTags.map((tag, idx) => (
+                            <span key={idx} className="text-[12px] font-medium text-[#4E616A] ">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     {trip.riderFeedback?.note && (
                       <span className="text-[12px] font-medium text-[#4E616A] mt-1">
                         {trip.riderFeedback.note}
                       </span>
                     )}
-
                   </div>
                 </div>
 
@@ -465,31 +519,29 @@ const TripDetailsModal = ({
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
-                          className={`w-5 h-5 ${s <= (trip.driverFeedback?.rating || 0)
-                            ? 'text-[#E9A90A] fill-[#E9A90A]'
-                            : 'text-[#DFE6E5]'
-                            }`}
+                          className={`w-5 h-5 ${
+                            s <= (trip.driverFeedback?.rating || 0)
+                              ? 'text-[#E9A90A] fill-[#E9A90A]'
+                              : 'text-[#DFE6E5]'
+                          }`}
                         />
                       ))}
                     </div>
-                    {trip.driverFeedback?.behaviourTags && trip.driverFeedback.behaviourTags.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {trip.driverFeedback.behaviourTags.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="text-[12px] font-medium text-[#4E616A] "
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {trip.driverFeedback?.behaviourTags &&
+                      trip.driverFeedback.behaviourTags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {trip.driverFeedback.behaviourTags.map((tag, idx) => (
+                            <span key={idx} className="text-[12px] font-medium text-[#4E616A] ">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     {trip.driverFeedback?.note && (
                       <span className="text-[12px] font-medium text-[#4E616A] mt-1">
                         {trip.driverFeedback.note}
                       </span>
                     )}
-
                   </div>
                 </div>
               </div>

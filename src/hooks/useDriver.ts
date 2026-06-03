@@ -355,6 +355,7 @@ export const mapBackendTripToFrontend = (t: RawRideData): TripRecord => {
     ...t,
     id: t.rideNumber || t.id,
     rideId: t.id,
+    transactionId: t.transactionId || t.rideNumber || t.id,
     status: statusLabel,
     date: dateStr,
     time: timeStr,

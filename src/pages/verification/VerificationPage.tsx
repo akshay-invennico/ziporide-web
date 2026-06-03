@@ -122,7 +122,7 @@ const VerificationPage = () => {
       {
         key: 'driver',
         label: 'DRIVER',
-        sortable: false,
+        sortable: true,
         render: (request) => (
           <div className="flex items-center gap-3">
             <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[16px] shrink-0 overflow-hidden">
@@ -162,7 +162,7 @@ const VerificationPage = () => {
       {
         key: 'email',
         label: 'EMAIL',
-        sortable: false,
+        sortable: true,
         render: (request) => (
           <span className="text-[#1DAFA1] font-medium text-[14px]">{request.email || '-'}</span>
         ),
@@ -170,7 +170,7 @@ const VerificationPage = () => {
       {
         key: 'appliedOn',
         label: 'APPLIED ON',
-        sortable: false,
+        sortable: true,
         render: (request) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
             {request.appliedOn || request.consents?.acceptedAt || request.createdAt

@@ -164,7 +164,7 @@ const DriverPage = () => {
       {
         key: 'totalTrips',
         label: 'TOTAL TRIPS',
-        sortable: false,
+        sortable: true,
         render: (driver) => (
           <span className="text-[#4E616A] text-[14px] font-medium">{driver.totalTrips || 0}</span>
         ),
@@ -172,7 +172,7 @@ const DriverPage = () => {
       {
         key: 'totalEarnings',
         label: 'TOTAL EARN',
-        sortable: false,
+        sortable: true,
         render: (driver) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
             £{Number(driver.totalEarnings || driver.totalEarned || 0).toFixed(2)}
@@ -182,7 +182,7 @@ const DriverPage = () => {
       {
         key: 'rating',
         label: 'RATINGS',
-        sortable: false,
+        sortable: true,
         render: (driver) => (
           <div className="flex items-center gap-1.5">
             <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />
