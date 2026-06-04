@@ -163,7 +163,7 @@ export const usePermissionConfig = () => {
         setConfig(response.data.data);
       }
     } catch {
-      // Silently fail — fall back to hardcoded permissions
+      // Silently fail and let the modal use local module defaults.
     } finally {
       setLoading(false);
     }

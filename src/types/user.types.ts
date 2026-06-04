@@ -1,3 +1,5 @@
+import type { ModuleAccess } from './operator.types';
+
 export interface AdminUser {
   id: string;
   name: string;
@@ -34,6 +36,7 @@ export interface OperatorProfile {
   countryCode?: string;
   profilePhotoUrl: string | null;
   role?: string;
+  moduleAccess?: ModuleAccess;
   permissions?: string[];
   status?: string;
 }

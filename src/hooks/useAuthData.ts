@@ -37,6 +37,7 @@ export const useAuthData = () => {
           email: operator.email,
           name: operator.name,
           role: operator.role,
+          moduleAccess: operator.moduleAccess,
           permissions: operator.permissions,
           status: operator.status,
           profile: operator.profile,

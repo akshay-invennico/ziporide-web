@@ -1,12 +1,16 @@
 import { useFormik } from 'formik';
 import { X } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import * as Yup from 'yup';
 
 import { usePermissionConfig } from '@/hooks/useOperatorData';
 import type {
-  Operator,
   CreateOperatorPayload,
+  ModuleAccess,
+  ModuleAccessLevel,
+  Operator,
+  OperatorModuleKey,
+  OperatorRole,
   UpdateOperatorPayload,
 } from '@/types/operator.types';
 
@@ -21,126 +25,115 @@ interface OperatorModalProps {
   isSubmitting?: boolean;
 }
 
-const PERMISSION_CATEGORIES = [
+const DEFAULT_MODULES: Array<{
+  key: OperatorModuleKey;
+  label: string;
+  accessLevels: ModuleAccessLevel[];
+  defaultAccess: ModuleAccessLevel;
+}> = [
   {
-    id: 'dashboard',
+    key: 'dashboard',
     label: 'Dashboard',
-    permissions: [
-      { id: 'dashboard.view_analytics', label: 'View Dashboard Analytics' },
-      { id: 'dashboard.view_revenue', label: 'View Revenue Insights' },
-    ],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
+  { key: 'riders', label: 'Riders', accessLevels: ['view', 'edit', 'hide'], defaultAccess: 'view' },
   {
-    id: 'riders',
-    label: 'Riders',
-    permissions: [
-      { id: 'riders.view', label: 'View Riders' },
-      { id: 'riders.view_details', label: 'View Rider Details' },
-      { id: 'riders.suspend', label: 'Suspend / Reactivate Rider' },
-    ],
-  },
-  {
-    id: 'drivers',
+    key: 'drivers',
     label: 'Drivers',
-    permissions: [
-      { id: 'drivers.view', label: 'View Drivers' },
-      { id: 'drivers.view_details', label: 'View Driver Details' },
-      { id: 'drivers.approve_reject', label: 'Approve / Reject Drivers' },
-      { id: 'drivers.suspend', label: 'Suspend / Activate Driver' },
-    ],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
   {
-    id: 'verification',
+    key: 'verification',
     label: 'Verification Requests',
-    permissions: [
-      { id: 'verification.view', label: 'View Verification Requests' },
-      { id: 'verification.review_documents', label: 'Review Documents' },
-      { id: 'verification.approve_reject', label: 'Approve / Reject' },
-    ],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
+  { key: 'trips', label: 'Trips', accessLevels: ['view', 'edit', 'hide'], defaultAccess: 'view' },
   {
-    id: 'trips',
-    label: 'Trips',
-    permissions: [
-      { id: 'trips.view', label: 'View All Trips' },
-      { id: 'trips.view_details', label: 'View Trip Details' },
-      { id: 'trips.cancel_ride', label: 'Cancel Ride (Pre-start)' },
-      { id: 'trips.force_end_ride', label: 'Force End Ride' },
-    ],
-  },
-  {
-    id: 'inventory',
+    key: 'inventory',
     label: 'Vehicle Inventory',
-    permissions: [
-      { id: 'inventory.view', label: 'View Categories' },
-      { id: 'inventory.create', label: 'Create Category' },
-      { id: 'inventory.edit', label: 'Edit Category' },
-      { id: 'inventory.delete', label: 'Delete Category' },
-    ],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
   {
-    id: 'support',
+    key: 'support',
     label: 'Support Tickets',
-    permissions: [
-      { id: 'support.view', label: 'View Tickets' },
-      { id: 'support.respond', label: 'Respond to Tickets' },
-      { id: 'support.close', label: 'Close Tickets' },
-    ],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
   {
-    id: 'pricing',
+    key: 'pricing',
     label: 'Pricing & Settings',
-    permissions: [
-      { id: 'pricing.view', label: 'View Pricing' },
-      { id: 'pricing.edit', label: 'Edit Pricing Logic' },
-    ],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
   {
-    id: 'notifications',
+    key: 'notifications',
     label: 'Push Notifications',
-    permissions: [{ id: 'notifications.send', label: 'Send Notifications' }],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
   {
-    id: 'operators',
+    key: 'operators',
     label: 'Operators Management',
-    permissions: [
-      { id: 'operators.view', label: 'View Operators' },
-      { id: 'operators.manage', label: 'Add / Edit / Operator' },
-      { id: 'operators.remove', label: 'Remove Operator' },
-    ],
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
   },
 ];
 
-const PERMISSION_LABELS: Record<string, string> = {
-  'dashboard.view_analytics': 'View Dashboard Analytics',
-  'dashboard.view_revenue': 'View Revenue Insights',
-  'riders.view': 'View Riders',
-  'riders.view_details': 'View Rider Details',
-  'riders.suspend': 'Suspend / Reactivate Rider',
-  'drivers.view': 'View Drivers',
-  'drivers.view_details': 'View Driver Details',
-  'drivers.approve_reject': 'Approve / Reject Drivers',
-  'drivers.suspend': 'Suspend / Activate Driver',
-  'verification.view': 'View Verification Requests',
-  'verification.review_documents': 'Review Documents',
-  'verification.approve_reject': 'Approve / Reject',
-  'trips.view': 'View All Trips',
-  'trips.view_details': 'View Trip Details',
-  'trips.cancel_ride': 'Cancel Ride (Pre-start)',
-  'trips.force_end_ride': 'Force End Ride',
-  'inventory.view': 'View Categories',
-  'inventory.create': 'Create Category',
-  'inventory.edit': 'Edit Category',
-  'inventory.delete': 'Delete Category',
-  'support.view': 'View Tickets',
-  'support.respond': 'Respond to Tickets',
-  'support.close': 'Close Tickets',
-  'pricing.view': 'View Pricing',
-  'pricing.edit': 'Edit Pricing Logic',
-  'notifications.send': 'Send Notifications',
-  'operators.view': 'View Operators',
-  'operators.manage': 'Add / Edit / Operator',
-  'operators.remove': 'Remove Operator',
+const ACCESS_OPTIONS: Array<{ label: string; value: ModuleAccessLevel; description: string }> = [
+  { label: 'View', value: 'view', description: 'Can open and inspect this module.' },
+  { label: 'Edit', value: 'edit', description: 'Includes View and allows changes.' },
+  { label: 'Hide', value: 'hide', description: 'Module is hidden and disabled.' },
+];
+
+const ROLE_OPTIONS = [
+  { label: 'Admin', value: 'admin' },
+  { label: 'Manager', value: 'manager' },
+  { label: 'Operator', value: 'operator' },
+];
+
+const STATUS_OPTIONS = [
+  { label: 'Active', value: 'active' },
+  { label: 'Inactive', value: 'inactive' },
+  { label: 'Suspended', value: 'suspended' },
+];
+
+const buildDefaultModuleAccess = (
+  modules: typeof DEFAULT_MODULES,
+  overrides?: Partial<ModuleAccess>,
+): ModuleAccess =>
+  modules.reduce((acc, mod) => {
+    acc[mod.key] = overrides?.[mod.key] || mod.defaultAccess || 'view';
+    return acc;
+  }, {} as ModuleAccess);
+
+const getRoleDisplayName = (role: string) => {
+  switch (role) {
+    case 'admin':
+      return 'Admin';
+    case 'manager':
+      return 'Manager';
+    case 'operator':
+      return 'Operator';
+    default:
+      return role || '-';
+  }
+};
+
+const getStatusDisplayName = (status: string) => {
+  switch (status) {
+    case 'active':
+      return 'Active';
+    case 'inactive':
+      return 'Inactive';
+    case 'suspended':
+      return 'Suspended';
+    default:
+      return status || '-';
+  }
 };
 
 const OperatorModal: React.FC<OperatorModalProps> = ({
@@ -155,16 +148,15 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
   const isEdit = mode === 'edit';
   const { config } = usePermissionConfig();
 
-  const permissionCategories = config
-    ? Object.entries(config.modules).map(([key, mod]) => ({
-        id: key,
-        label: mod.label,
-        permissions: mod.permissions.map((p) => ({
-          id: p,
-          label: PERMISSION_LABELS[p] || p,
-        })),
-      }))
-    : PERMISSION_CATEGORIES;
+  const modules = useMemo(
+    () =>
+      (config?.modules?.length ? config.modules : DEFAULT_MODULES).map((mod) => ({
+        ...mod,
+        accessLevels: ['view', 'edit', 'hide'] as ModuleAccessLevel[],
+        defaultAccess: mod.defaultAccess || 'view',
+      })),
+    [config?.modules],
+  );
 
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Full name is required'),
@@ -176,7 +168,13 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
             .min(8, 'Password must be at least 8 characters')
             .required('Password is required'),
     role: Yup.string().required('Role is required'),
+    status: Yup.string().required('Status is required'),
   });
+
+  const initialModuleAccess = useMemo(
+    () => buildDefaultModuleAccess(modules, initialData?.moduleAccess),
+    [modules, initialData?.moduleAccess],
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -184,7 +182,8 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
       email: initialData?.email || '',
       password: '',
       role: initialData?.role || '',
-      permissions: initialData?.permissions || [],
+      status: initialData?.status || 'active',
+      moduleAccess: initialModuleAccess,
     },
     enableReinitialize: true,
     validationSchema,
@@ -196,60 +195,36 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
           name: values.fullName,
           email: values.email,
           password: values.password,
-          role: values.role as 'admin' | 'manager' | 'operator',
-          permissions: values.permissions,
+          role: values.role as OperatorRole,
+          status: values.status as Operator['status'],
+          moduleAccess: values.moduleAccess,
         };
         onConfirm(payload);
       } else if (mode === 'edit') {
         const payload: UpdateOperatorPayload = {
           name: values.fullName,
           email: values.email,
-          role: values.role as 'admin' | 'manager' | 'operator',
-          permissions: values.permissions,
+          role: values.role as OperatorRole,
+          status: values.status as Operator['status'],
+          moduleAccess: values.moduleAccess,
         };
         onConfirm(payload);
       }
     },
   });
 
-  useEffect(() => {
-    if (isView || !formik.values.role) return;
-    if (mode === 'add') {
-      formik.setFieldValue('permissions', []);
-    }
-  }, [formik.values.role, isView, mode]);
-
-  const togglePermission = (permId: string) => {
-    if (isView) return;
-    const currentPerms = [...formik.values.permissions];
-    if (currentPerms.includes(permId)) {
-      formik.setFieldValue(
-        'permissions',
-        currentPerms.filter((id) => id !== permId),
-      );
-    } else {
-      formik.setFieldValue('permissions', [...currentPerms, permId]);
-    }
+  const applyRoleDefaults = (role: string) => {
+    const roleDefaults = config?.roleDefaults?.[role as OperatorRole];
+    formik.setFieldValue('role', role);
+    formik.setFieldValue('moduleAccess', buildDefaultModuleAccess(modules, roleDefaults));
   };
 
-  const toggleCategory = (catId: string) => {
+  const setModuleAccess = (moduleKey: OperatorModuleKey, access: ModuleAccessLevel) => {
     if (isView) return;
-    const category = permissionCategories.find((c) => c.id === catId);
-    if (!category) return;
-
-    const catPermIds = category.permissions.map((p) => p.id);
-    const currentPerms = [...formik.values.permissions];
-    const allSelected = catPermIds.every((id) => currentPerms.includes(id));
-
-    if (allSelected) {
-      formik.setFieldValue(
-        'permissions',
-        currentPerms.filter((id) => !catPermIds.includes(id)),
-      );
-    } else {
-      const newPerms = Array.from(new Set([...currentPerms, ...catPermIds]));
-      formik.setFieldValue('permissions', newPerms);
-    }
+    formik.setFieldValue('moduleAccess', {
+      ...formik.values.moduleAccess,
+      [moduleKey]: access,
+    });
   };
 
   if (!isOpen) return null;
@@ -261,28 +236,14 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
   };
 
   const getSubtitle = () => {
-    if (isView) return 'Operator details & Permissions';
-    if (isEdit) return 'Update operator details, role, and permissions.';
+    if (isView) return 'Operator details & module access';
+    if (isEdit) return 'Update operator details, role, and module access.';
     return 'Create a new operator account';
-  };
-
-  const getRoleDisplayName = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return 'Admin';
-      case 'manager':
-        return 'Manager';
-      case 'operator':
-        return 'Operator';
-      default:
-        return role;
-    }
   };
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-end bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] w-[800px] max-h-[92vh] flex flex-col overflow-hidden">
-        {/* Header */}
+      <div className="bg-white rounded-xl shadow-[0_0_16px_0_rgba(237,155,14,0.2)] border border-[#DFE6E5] w-[860px] max-h-[92vh] flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#DFE6E5] shrink-0">
           <div className="flex items-center gap-4">
             <div className="w-[48px] h-[48px] bg-[#EEFFFD] rounded-full flex items-center justify-center overflow-hidden">
@@ -299,16 +260,14 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 cursor-pointer text-[#4E616A]  rounded-full transition-colors"
+            className="p-1 cursor-pointer text-[#4E616A] rounded-full transition-colors"
           >
             <X size={22} />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="p-6 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="p-6 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
           <div className="space-y-8">
-            {/* Basic Information */}
             <div>
               <h3 className="text-[16px] font-semibold text-[#000000] mb-6">Basic Information</h3>
               <div className="grid grid-cols-2 gap-6">
@@ -337,6 +296,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                     </>
                   )}
                 </div>
+
                 <div>
                   <label className="block text-[14px] font-medium text-[#4E616A] mb-2">Email</label>
                   {isView ? (
@@ -352,7 +312,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium  hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-all placeholder:text-[#939999]"
+                        className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-all placeholder:text-[#939999]"
                       />
                       {formik.touched.email && formik.errors.email && (
                         <p className="mt-1 text-xs text-red-500">{formik.errors.email}</p>
@@ -360,6 +320,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                     </>
                   )}
                 </div>
+
                 {!isEdit && (
                   <div>
                     <label className="block text-[14px] font-medium text-[#4E616A] mb-2">
@@ -376,7 +337,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                           value={formik.values.password}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium  hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-all placeholder:text-[#939999]"
+                          className="w-full border border-[#DFE6E5] rounded-md p-3 text-[14px] font-medium hover:shadow-[0_0_16px_0_rgba(237,155,14,0.2)] focus:outline-none focus:border-[#1DAFA1] transition-all placeholder:text-[#939999]"
                         />
                         {formik.touched.password && formik.errors.password && (
                           <p className="mt-1 text-xs text-red-500">{formik.errors.password}</p>
@@ -385,6 +346,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                     )}
                   </div>
                 )}
+
                 <div>
                   {isView ? (
                     <>
@@ -401,14 +363,37 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
                       name="role"
                       placeholder="Select Role"
                       value={formik.values.role}
-                      onChange={(val) => formik.setFieldValue('role', val)}
-                      options={[
-                        { label: 'Admin', value: 'admin' },
-                        { label: 'Manager', value: 'manager' },
-                        { label: 'Operator', value: 'operator' },
-                      ]}
+                      onChange={applyRoleDefaults}
+                      options={ROLE_OPTIONS}
                       error={
                         formik.touched.role && formik.errors.role ? formik.errors.role : undefined
+                      }
+                    />
+                  )}
+                </div>
+
+                <div>
+                  {isView ? (
+                    <>
+                      <label className="block text-[14px] font-medium text-[#4E616A] mb-2">
+                        Status
+                      </label>
+                      <p className="text-[14px] font-semibold text-[#000000]">
+                        {getStatusDisplayName(formik.values.status)}
+                      </p>
+                    </>
+                  ) : (
+                    <Dropdown
+                      label="Status"
+                      name="status"
+                      placeholder="Select Status"
+                      value={formik.values.status}
+                      onChange={(value) => formik.setFieldValue('status', value)}
+                      options={STATUS_OPTIONS}
+                      error={
+                        formik.touched.status && formik.errors.status
+                          ? formik.errors.status
+                          : undefined
                       }
                     />
                   )}
@@ -416,75 +401,48 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
               </div>
             </div>
 
-            {/* Permissions */}
             <div>
-              <h3 className="text-[16px] font-semibold text-[#000000] mb-6">Permissions</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {permissionCategories.map((category) => {
-                  const catPermIds = category.permissions.map((p) => p.id);
-                  const isCatSelected = catPermIds.every((id) =>
-                    formik.values.permissions.includes(id),
-                  );
-                  const isCatPartial =
-                    catPermIds.some((id) => formik.values.permissions.includes(id)) &&
-                    !isCatSelected;
+              <h3 className="text-[16px] font-semibold text-[#000000] mb-6">Module Access</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {modules.map((module) => {
+                  const selectedAccess = formik.values.moduleAccess[module.key] || 'view';
 
                   return (
                     <div
-                      key={category.id}
-                      className="border w-[240px] min-h-[182px] border-[#DFE6E5] rounded-lg p-4 space-y-4"
+                      key={module.key}
+                      className="border border-[#DFE6E5] rounded-lg p-4 flex flex-col gap-4"
                     >
-                      <div className="flex items-center gap-3">
-                        <div
-                          onClick={() => toggleCategory(category.id)}
-                          className={`w-5 h-5 rounded border ${isCatSelected ? 'bg-[#1DAFA1] border-[#1DAFA1]' : 'border-[#DFE6E5]'} flex items-center justify-center cursor-pointer transition-colors`}
-                        >
-                          {isCatSelected && (
-                            <svg
-                              className="w-3.5 h-3.5 text-white"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          )}
-                          {isCatPartial && <div className="w-2.5 h-0.5 bg-[#1DAFA1]" />}
-                        </div>
+                      <div className="flex items-center justify-between gap-3">
                         <span className="text-[14px] font-semibold text-[#000000]">
-                          {category.label}
+                          {module.label}
                         </span>
+                        {selectedAccess === 'edit' && (
+                          <span className="text-[11px] font-semibold text-[#1DAFA1] bg-[#EEFFFD] px-2 py-1 rounded-sm">
+                            View included
+                          </span>
+                        )}
                       </div>
-                      <div className="space-y-4">
-                        {category.permissions.map((permission) => {
-                          const isSelected = formik.values.permissions.includes(permission.id);
+
+                      <div className="grid grid-cols-3 gap-2">
+                        {ACCESS_OPTIONS.map((option) => {
+                          const isSelected = selectedAccess === option.value;
                           return (
-                            <div key={permission.id} className="flex items-center gap-3">
-                              <div
-                                onClick={() => togglePermission(permission.id)}
-                                className={`w-5 h-5 rounded border ${isSelected ? 'bg-[#1DAFA1] border-[#1DAFA1]' : 'border-[#DFE6E5]'} flex items-center justify-center cursor-pointer transition-colors`}
-                              >
-                                {isSelected && (
-                                  <svg
-                                    className="w-3.5 h-3.5 text-white"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  >
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                )}
-                              </div>
-                              <span className="text-[14px] font-medium text-[#4E616A]">
-                                {permission.label}
-                              </span>
-                            </div>
+                            <button
+                              key={`${module.key}-${option.value}`}
+                              type="button"
+                              disabled={isView}
+                              onClick={() => setModuleAccess(module.key, option.value)}
+                              title={option.description}
+                              className={`px-3 py-2 rounded-sm border text-[13px] font-semibold transition-colors ${
+                                isSelected
+                                  ? option.value === 'hide'
+                                    ? 'border-[#FF0707] text-[#FF0707] bg-[#FFF6F6]'
+                                    : 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
+                                  : 'border-[#DFE6E5] text-[#4E616A] bg-white'
+                              } ${isView ? 'cursor-default opacity-80' : 'cursor-pointer'}`}
+                            >
+                              {option.label}
+                            </button>
                           );
                         })}
                       </div>
@@ -496,14 +454,13 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
           </div>
         </div>
 
-        {/* Footer */}
         {!isView && (
           <div className="px-6 py-5 border-t border-[#DFE6E5] flex justify-end gap-4 shrink-0">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-md text-[14px] font-medium text-[#000000] bg-white  cursor-pointer"
+              className="px-6 py-2.5 rounded-md text-[14px] font-medium text-[#000000] bg-white cursor-pointer"
             >
               Cancel
             </button>
@@ -511,7 +468,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
               type="button"
               onClick={() => formik.handleSubmit()}
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-md text-[14px] font-medium text-white bg-[#1DAFA1]  cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 rounded-md text-[14px] font-medium text-white bg-[#1DAFA1] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSubmitting
                 ? isEdit

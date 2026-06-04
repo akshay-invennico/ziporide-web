@@ -1,3 +1,5 @@
+import type { ModuleAccess } from './operator.types';
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -9,6 +11,7 @@ export interface AuthUser {
   email: string;
   name: string;
   role: string;
+  moduleAccess?: ModuleAccess;
   permissions?: string[];
   status?: string;
   profile?: string | null;
