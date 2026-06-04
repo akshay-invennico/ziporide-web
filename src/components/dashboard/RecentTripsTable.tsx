@@ -44,7 +44,6 @@ export default function RecentTripsTable() {
                   <th key={col} className="px-4 py-3.5 cursor-pointer">
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-[14px] text-[#4E616A]">{col}</span>
-                      <img src="/icons/rider/updown.svg" alt="sort" className="w-[18px] h-[18px]" />
                     </div>
                   </th>
                 ),

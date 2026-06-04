@@ -70,7 +70,7 @@ function DataTable<T extends object>({
 }: DataTableProps<T>) {
   const tableId = useId();
   const [sortKey, setSortKey] = useState<string | null>(null);
-  const [isSorted, setIsSorted] = useState<boolean>(false);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
   // Pagination: controlled (server-side) vs uncontrolled (client-side)
   const isControlledPagination =
@@ -80,12 +80,12 @@ function DataTable<T extends object>({
   const [internalPage, setInternalPage] = useState(1);
 
   const sortedData = useMemo(() => {
-    if (!isSorted || !sortKey) return data;
+    if (!sortDirection || !sortKey) return data;
 
     const column = columns.find((c) => c.key === sortKey);
     if (!column) return data;
 
-    return [...data].sort((a, b) => {
+    const sorted = [...data].sort((a, b) => {
       const valA = column.sortValue ? column.sortValue(a) : (a as Record<string, unknown>)[sortKey];
       const valB = column.sortValue ? column.sortValue(b) : (b as Record<string, unknown>)[sortKey];
 
@@ -121,7 +121,9 @@ function DataTable<T extends object>({
         }
       }
     });
-  }, [data, isSorted, sortKey, columns]);
+
+    return sortDirection === 'desc' ? sorted.reverse() : sorted;
+  }, [data, sortDirection, sortKey, columns]);
 
   const currentPage = isControlledPagination ? controlledPage : internalPage;
   const totalPages = isControlledPagination
@@ -155,12 +157,15 @@ function DataTable<T extends object>({
   );
 
   const handleSort = (columnKey: string) => {
-    if (sortKey === columnKey) {
-      setSortKey(null);
-      setIsSorted(false);
-    } else {
+    if (sortKey !== columnKey) {
       setSortKey(columnKey);
-      setIsSorted(true);
+      setSortDirection('asc');
+    } else {
+      setSortDirection((currentDirection) => (currentDirection === 'asc' ? 'desc' : 'asc'));
+    }
+
+    if (!isControlledPagination) {
+      setInternalPage(1);
     }
   };
 

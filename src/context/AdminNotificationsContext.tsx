@@ -1,9 +1,8 @@
 import type { AxiosError } from 'axios';
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
-import { connectAdminSocket, disconnectAdminSocket } from '@/lib/socket';
 import type {
   AdminNotification,
   AdminNotificationBasicResponse,
@@ -21,12 +20,11 @@ interface ApiError {
 }
 
 export const AdminNotificationsProvider = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const hasFetchedRef = useRef(false);
 
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -95,45 +93,6 @@ export const AdminNotificationsProvider = ({ children }: { children: ReactNode }
       showToast(error.response?.data?.message || 'Failed to clear notifications.', 'error');
     }
   }, [showToast]);
-
-  useEffect(() => {
-    if (!isAuthenticated || !token) {
-      hasFetchedRef.current = false;
-      setNotifications([]);
-      setUnreadCount(0);
-      disconnectAdminSocket();
-      return;
-    }
-
-    if (!hasFetchedRef.current) {
-      hasFetchedRef.current = true;
-      fetchNotifications();
-      fetchUnreadCount();
-    }
-
-    const socket = connectAdminSocket(token);
-
-    const handleIncoming = ({ notification }: { notification: AdminNotification }) => {
-      setNotifications((prev) => {
-        if (prev.some((n) => n.id === notification.id)) return prev;
-        return [notification, ...prev];
-      });
-      setUnreadCount((prev) => prev + 1);
-      showToast(notification.title, 'success');
-    };
-
-    socket.on('admin:notification', handleIncoming);
-
-    return () => {
-      socket.off('admin:notification', handleIncoming);
-    };
-  }, [isAuthenticated, token, fetchNotifications, fetchUnreadCount, showToast]);
-
-  useEffect(() => {
-    return () => {
-      disconnectAdminSocket();
-    };
-  }, []);
 
   return (
     <AdminNotificationsContext.Provider

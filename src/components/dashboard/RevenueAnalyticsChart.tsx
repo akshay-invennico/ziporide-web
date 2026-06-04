@@ -11,8 +11,14 @@ import {
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useRevenueAnalytics } from '@/hooks/useDashboard';
+import type { DashboardChartFilters, DashboardChartFilterType } from '@/types/dashboard.types';
 
-type FilterKey = 'Daily' | 'Weekly' | 'Month' | 'Year';
+const filterOptions: Array<{ label: string; value: DashboardChartFilterType }> = [
+  { label: 'Daily', value: 'daily' },
+  { label: 'Week', value: 'week' },
+  { label: 'Month', value: 'month' },
+  { label: 'Year', value: 'year' },
+];
 
 const yTickFormatter = (value: number) => `£${value >= 1000 ? `${value / 1000}K` : value}`;
 
@@ -37,18 +43,8 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export default function RevenueAnalyticsChart() {
-  const [trendFilter, setTrendFilter] = useState<FilterKey>('Year');
-  const { data: activeData, loading, error } = useRevenueAnalytics(trendFilter);
-
-  // Pad single data point with empty entries so the area gradient renders
-  const chartData =
-    activeData.length === 1
-      ? [
-          { ...activeData[0], revenue: 0, rides: 0, month: '', day: '', _pad: true },
-          activeData[0],
-          { ...activeData[0], revenue: 0, rides: 0, month: '', day: '', _pad: true },
-        ]
-      : activeData;
+  const [filters, setFilters] = useState<DashboardChartFilters>({ type: 'year' });
+  const { data: chartData, loading, error } = useRevenueAnalytics(filters);
 
   return (
     <div className="bg-white h-[418px]  p-5 rounded-lg border border-[#DFE6E5] s col-span-1 lg:col-span-2 xl:col-span-4 transition-all overflow-hidden">
@@ -63,18 +59,18 @@ export default function RevenueAnalyticsChart() {
 
         {/* Filter tabs */}
         <div className="flex items-center gap-2">
-          {(['Daily', 'Weekly', 'Month', 'Year'] as FilterKey[]).map((filter) => (
+          {filterOptions.map((filter) => (
             <button
-              key={filter}
-              onClick={() => setTrendFilter(filter)}
+              key={filter.value}
+              onClick={() => setFilters((current) => ({ ...current, type: filter.value }))}
               disabled={loading}
               className={`px-5 py-1.5 text-[12px] cursor-pointer font-medium rounded-sm border transition-colors ${
-                trendFilter === filter
+                filters.type === filter.value
                   ? 'border-[#1DAFA1] text-[#1DAFA1] bg-[#EEFFFD]'
                   : 'border-[#DFE6E5] text-[#4E616A] '
               } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {filter}
+              {filter.label}
             </button>
           ))}
         </div>
@@ -96,7 +92,7 @@ export default function RevenueAnalyticsChart() {
             <p className="text-sm">No data available for this period</p>
           </div>
         ) : (
-          <ResponsiveContainer key={trendFilter} width="100%" height="100%">
+          <ResponsiveContainer key={filters.type} width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -108,7 +104,7 @@ export default function RevenueAnalyticsChart() {
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
 
               <XAxis
-                dataKey={(item) => item.month || item.day || 'N/A'}
+                dataKey="label"
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#4E616A', fontSize: 12, fontWeight: 500 }}

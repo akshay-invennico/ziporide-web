@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { useState, useEffect, useCallback } from 'react';
 
+import { useAuth } from '@/context/useAuth';
 import { API } from '@/lib/api';
 import apiClient from '@/lib/apiClient';
+import { connectAdminSocket } from '@/lib/socket';
+import type { AdminNotification } from '@/types/notification.types';
 import type {
   SupportTicket,
   SupportTicketResponse,
@@ -119,6 +122,55 @@ export const useSupportTickets = (
     fetchTickets,
     updateTicketStatus,
   };
+};
+
+export const useSupportTicketCount = () => {
+  const { isAuthenticated, token } = useAuth();
+  const [count, setCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchCount = useCallback(async () => {
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', '1');
+      queryParams.append('limit', '1');
+      queryParams.append('sortBy', 'createdAt');
+      queryParams.append('status', 'open');
+
+      const response = await apiClient.get<SupportTicketResponse>(
+        `${API.SUPPORT_TICKETS}?${queryParams.toString()}`,
+      );
+      const data = response.data;
+      if (data?.status) {
+        setCount(data.meta?.totalResults ?? data.data.length);
+      }
+    } catch (err) {
+      console.error('Failed to fetch support ticket count:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCount();
+  }, [fetchCount]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !token) return;
+
+    const socket = connectAdminSocket(token);
+    const handleNotification = ({ notification }: { notification: AdminNotification }) => {
+      if (notification.type === 'new_support_ticket') {
+        fetchCount();
+      }
+    };
+    socket.on('admin:notification', handleNotification);
+    return () => {
+      socket.off('admin:notification', handleNotification);
+    };
+  }, [isAuthenticated, token, fetchCount]);
+
+  return { count, loading, refetch: fetchCount };
 };
 
 export const useExportSupportCSV = () => {

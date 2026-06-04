@@ -16,6 +16,47 @@ import {
 import type { UseSupportTicketsParams } from '../../hooks/useSupportTickets';
 import type { SupportTicket } from '../../types/support.types';
 
+type TicketPerson = NonNullable<SupportTicket['rider'] | SupportTicket['driver']>;
+
+const getInitials = (name: string, fallback: string) =>
+  name
+    ?.trim()
+    .split(' ')
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || fallback;
+
+const TicketPersonCell = ({ person, fallback }: { person: TicketPerson | null; fallback: string }) =>
+  person ? (
+    <div className="flex items-center gap-3">
+      <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 bg-[#1DAFA1] overflow-hidden relative">
+        <span className="absolute inset-0 flex items-center justify-center">
+          {getInitials(person.name, fallback)}
+        </span>
+        {person.profile && (
+          <img
+            src={person.profile}
+            alt={person.name}
+            className="w-full h-full object-cover relative z-10"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        )}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-[14px] font-semibold text-[#1DAFA1]">{person.name}</span>
+        <span className="text-[12px] font-medium text-[#4E616A]">
+          {person.countryCode ? `${person.countryCode} ` : ''}
+          {person.phone}
+        </span>
+      </div>
+    </div>
+  ) : (
+    <span className="text-[14px] font-medium text-[#4E616A]">-</span>
+  );
+
 const SupportTicketsPage: React.FC = () => {
   const [params, setParams] = useState<UseSupportTicketsParams>({
     page: 1,
@@ -46,7 +87,17 @@ const SupportTicketsPage: React.FC = () => {
     const q = searchInput.trim().toLowerCase();
     if (!q) return tickets;
     return tickets.filter((t) => {
-      const fields = [t.ticketId, t.cause, t.status, t.driver?.name, t.driver?.phone];
+      const fields = [
+        t.ticketId,
+        t.cause,
+        t.status,
+        t.rider?.name,
+        t.rider?.phone,
+        t.rider?.email,
+        t.driver?.name,
+        t.driver?.phone,
+        t.driver?.email,
+      ];
       return fields.some((f) => f?.toLowerCase().includes(q));
     });
   }, [tickets, searchInput]);
@@ -153,6 +204,12 @@ const SupportTicketsPage: React.FC = () => {
         render: (ticket) => (
           <span className="text-[14px] font-medium text-[#4E616A]">{ticket.cause}</span>
         ),
+      },
+      {
+        key: 'rider',
+        label: 'RIDER',
+        sortable: true,
+        render: (ticket) => <TicketPersonCell person={ticket.rider} fallback="RD" />,
       },
       {
         key: 'driver',

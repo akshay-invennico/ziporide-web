@@ -38,6 +38,7 @@ export const useVehicles = (
           color: item.vehicle.color || 'N/A',
           image: item.vehicle.category || '/icons/vehicle/no_car.png', // Using category icon as vehicle image if available
           category: mapTypeToCategory(item.vehicle.type),
+          categoryName: item.vehicle.categoryName,
           licencePlate: item.vehicle.licensePlate,
           driver: {
             name: item.driver.name,

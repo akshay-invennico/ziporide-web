@@ -108,9 +108,9 @@ const VehicleInventoryPage: React.FC = () => {
         sortable: true,
         render: (vehicle) => (
           <span
-            className={`px-4 py-1.5 rounded-[500px] text-[14px] font-medium whitespace-nowrap ${getCategoryTheme(vehicle.category)}`}
+            className={`px-4 py-1.5 rounded-[500px] text-[14px] font-medium whitespace-nowrap ${getCategoryTheme(vehicle.categoryName)}`}
           >
-            {vehicle.category}
+            {vehicle.categoryName}
           </span>
         ),
       },

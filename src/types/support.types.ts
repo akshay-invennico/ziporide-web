@@ -1,6 +1,7 @@
 export interface SupportTicket {
   id: string;
   ticketId: string;
+  reporterType?: 'rider' | 'driver';
   cause: string;
   description: string;
   status: 'open' | 'checking' | 'resolved';
@@ -10,11 +11,21 @@ export interface SupportTicket {
     status: string;
     paymentStatus: string;
   } | null;
+  rider: {
+    id: string;
+    name: string;
+    email?: string;
+    phone: string;
+    countryCode?: string;
+    profile?: string | null;
+  } | null;
   driver: {
     id: string;
     name: string;
+    email?: string;
     phone: string;
-    profile?: string;
+    countryCode?: string;
+    profile?: string | null;
   } | null;
   createdAt: string;
 }

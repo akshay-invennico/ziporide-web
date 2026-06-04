@@ -18,6 +18,7 @@ export interface VehicleDatabaseRow {
   color: string;
   image: string;
   category: 'Electric' | 'Standard' | 'XL' | 'Executive (Premium)' | 'Executive XL (Premium)';
+  categoryName: string;
   licencePlate: string;
   driver: {
     name: string;
@@ -62,6 +63,7 @@ export interface ApiVehicle {
     licensePlate: string;
     type: string;
     category: string | null;
+    categoryName: string;
   };
   driver: {
     _id: string;

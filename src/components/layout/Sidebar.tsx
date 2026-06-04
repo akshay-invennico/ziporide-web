@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { usePermissions } from '@/hooks/usePermissions';
+import { useSupportTicketCount } from '@/hooks/useSupportTickets';
 import { usePendingDriverCount } from '@/hooks/useVerificationDriver';
 import { routes } from '@/routes/routes';
 
@@ -27,6 +28,7 @@ interface NavItem {
 export default function Sidebar() {
   const location = useLocation();
   const { count } = usePendingDriverCount();
+  const { count: supportTicketCount } = useSupportTicketCount();
   const { hasPermission } = usePermissions();
 
   const navigate = useNavigate();
@@ -85,6 +87,12 @@ export default function Sidebar() {
       {
         name: 'Support Tickets',
         path: routes.SUPPORT,
+        badge:
+          supportTicketCount > 0
+            ? supportTicketCount > 99
+              ? '99+'
+              : supportTicketCount.toString()
+            : undefined,
         icon: '/icons/sidebar/sidebarIcon8_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon8_active.svg',
         permission: 'support.view',
@@ -120,7 +128,7 @@ export default function Sidebar() {
         ],
       },
     ],
-    [count],
+    [count, supportTicketCount],
   );
 
   const navItems = useMemo(() => {

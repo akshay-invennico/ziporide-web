@@ -14,7 +14,7 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
   const s = (t.status || '').toLowerCase();
   if (s === 'completed') statusLabel = 'Completed';
   else if (s === 'cancelled') statusLabel = 'Cancelled';
-  else if (s === 'driver_allocated') statusLabel = 'Assigned';
+  else if (s === 'no_drivers') statusLabel = 'Assigned';
   else if (['driver_arrived', 'started', 'in_progress', 'on_the_way'].includes(s)) {
     statusLabel = 'In Progress';
   }
@@ -180,7 +180,7 @@ export const useTrips = (
 
       if (status && status !== 'All') {
         params.status =
-          status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
+          status === 'Assigned' ? 'no_drivers' : status.toLowerCase().replace(/ /g, '_');
       }
 
       if (startDate) params.startDate = startDate;
@@ -386,7 +386,7 @@ export const useExportTripsCSV = () => {
 
         if (status && status !== 'All') {
           params.status =
-            status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
+            status === 'Assigned' ? 'no_drivers' : status.toLowerCase().replace(/ /g, '_');
         }
 
         if (dateRange?.startDate) params.startDate = dateRange.startDate;
@@ -479,7 +479,7 @@ export const useExportTripsPDF = () => {
 
         if (status && status !== 'All') {
           params.status =
-            status === 'Assigned' ? 'driver_allocated' : status.toLowerCase().replace(/ /g, '_');
+            status === 'Assigned' ? 'no_drivers' : status.toLowerCase().replace(/ /g, '_');
         }
 
         if (dateRange?.startDate) params.startDate = dateRange.startDate;

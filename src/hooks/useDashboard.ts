@@ -14,47 +14,9 @@ import type {
   DashboardChartFilterType,
 } from '@/types/dashboard.types';
 
-const apiTypeMap: Record<'Daily' | 'Weekly' | 'Month' | 'Year', string> = {
-  Daily: 'daily',
-  Weekly: 'weekly',
-  Month: 'month',
-  Year: 'year',
-};
-
 const getDashboardChartParams = (filters: DashboardChartFilters) => ({
   type: filters.type,
 });
-
-const getExpectedLabels = (type: DashboardChartFilterType) => {
-  if (type === 'daily') {
-    return Array.from({ length: 24 }, (_, hour) => `${hour.toString().padStart(2, '0')}:00`);
-  }
-
-  if (type === 'week') {
-    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  }
-
-  if (type === 'month') {
-    const today = new Date();
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-
-    return Array.from({ length: lastDay }, (_, day) => String(day + 1));
-  }
-
-  return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-};
-
-const normalizeChartData = <T extends { label: string }>(
-  type: DashboardChartFilterType,
-  data: T[],
-  emptyItem: Omit<T, 'label'>,
-) => {
-  const dataByLabel = new Map(data.map((item) => [item.label, item]));
-
-  return getExpectedLabels(type).map(
-    (label) => dataByLabel.get(label) ?? ({ label, ...emptyItem } as T),
-  );
-};
 
 export const useDashboardSummary = (type: DashboardChartFilterType = 'week') => {
   const [data, setData] = useState<DashboardSummary['data'] | null>(null);
@@ -87,7 +49,7 @@ export const useDashboardSummary = (type: DashboardChartFilterType = 'week') => 
   return { data, loading, error, refetch: fetchSummary };
 };
 
-export const useRevenueAnalytics = (type: 'Daily' | 'Weekly' | 'Month' | 'Year') => {
+export const useRevenueAnalytics = (filters: DashboardChartFilters) => {
   const [data, setData] = useState<RevenueAnalyticsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +58,7 @@ export const useRevenueAnalytics = (type: 'Daily' | 'Weekly' | 'Month' | 'Year')
     setLoading(true);
     try {
       const response = await apiClient.get<RevenueAnalyticsResponse>(API.REVENUE_ANALYTICS, {
-        params: { type: apiTypeMap[type] },
+        params: getDashboardChartParams(filters),
       });
       if (response.data.success) {
         setData(response.data.data);
@@ -109,7 +71,7 @@ export const useRevenueAnalytics = (type: 'Daily' | 'Weekly' | 'Month' | 'Year')
     } finally {
       setLoading(false);
     }
-  }, [type]);
+  }, [filters]);
 
   useEffect(() => {
     fetchRevenue();
@@ -131,7 +93,7 @@ export const useRiderDriverReport = (filters: DashboardChartFilters) => {
         params: getDashboardChartParams(filters),
       });
       if (response.data.success) {
-        setData(normalizeChartData(filters.type, response.data.data, { riders: 0, drivers: 0 }));
+        setData(response.data.data);
       } else {
         setError(response.data.message || 'Failed to fetch rider driver report');
       }
@@ -163,7 +125,7 @@ export const useTripsOverTime = (filters: DashboardChartFilters) => {
         params: getDashboardChartParams(filters),
       });
       if (response.data.success) {
-        setData(normalizeChartData(filters.type, response.data.data, { trips: 0 }));
+        setData(response.data.data);
       } else {
         setError(response.data.message || 'Failed to fetch trips over time');
       }
