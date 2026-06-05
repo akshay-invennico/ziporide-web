@@ -11,6 +11,7 @@ interface TicketDetailsModalProps {
   ticket: SupportTicket | null;
   onStatusChange?: (id: string, newStatus: 'open' | 'checking' | 'resolved') => void;
   updatingStatus?: 'checking' | 'resolved' | null;
+  canEdit?: boolean;
 }
 
 const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
@@ -19,6 +20,7 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
   ticket,
   onStatusChange,
   updatingStatus,
+  canEdit = false,
 }) => {
   if (!isOpen || !ticket) return null;
 
@@ -119,7 +121,7 @@ const TicketDetailsModal: React.FC<TicketDetailsModalProps> = ({
         </div>
 
         {/* Footer */}
-        {ticket.status !== 'resolved' && (
+        {canEdit && ticket.status !== 'resolved' && (
           <div className="px-6 py-4 border-t border-[#DFE6E5] flex justify-end gap-3 bg-white">
             {ticket.status === 'open' && (
               <button

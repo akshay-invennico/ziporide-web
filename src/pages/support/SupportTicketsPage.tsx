@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
+import { usePermissions } from '@/hooks/usePermissions';
 
 import SupportPDFDocument from '../../components/support/SupportPDFDocument';
 import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
@@ -27,7 +28,13 @@ const getInitials = (name: string, fallback: string) =>
     .toUpperCase()
     .slice(0, 2) || fallback;
 
-const TicketPersonCell = ({ person, fallback }: { person: TicketPerson | null; fallback: string }) =>
+const TicketPersonCell = ({
+  person,
+  fallback,
+}: {
+  person: TicketPerson | null;
+  fallback: string;
+}) =>
   person ? (
     <div className="flex items-center gap-3">
       <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-bold text-[14px] shrink-0 bg-[#1DAFA1] overflow-hidden relative">
@@ -82,6 +89,8 @@ const SupportTicketsPage: React.FC = () => {
   };
 
   const { tickets, loading, pagination, updateTicketStatus } = useSupportTickets(params);
+  const { canEditModule } = usePermissions();
+  const canEditSupport = canEditModule('support');
 
   const filteredTickets = useMemo(() => {
     const q = searchInput.trim().toLowerCase();
@@ -174,6 +183,7 @@ const SupportTicketsPage: React.FC = () => {
   };
 
   const handleStatusChange = async (ticketId: string, newStatus: SupportTicket['status']) => {
+    if (!canEditSupport) return;
     setUpdatingStatus(newStatus as 'checking' | 'resolved');
     try {
       await updateTicketStatus(ticketId, newStatus);
@@ -365,6 +375,7 @@ const SupportTicketsPage: React.FC = () => {
         ticket={selectedTicket}
         onStatusChange={handleStatusChange}
         updatingStatus={updatingStatus}
+        canEdit={canEditSupport}
       />
     </div>
   );

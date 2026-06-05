@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useTrips, useCancelTrip, useExportTripsCSV, useExportTripsPDF } from '@/hooks/useTrips';
 import { type TripStatus, type TripRecord } from '@/types/driver.types';
 
@@ -42,6 +43,8 @@ export default function TripHistoryPage() {
   const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
   const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
   const [dateRange, setDateRange] = useState<DateRange>({ startDate: '', endDate: '' });
+  const { canEditModule } = usePermissions();
+  const canEditTrips = canEditModule('trips');
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -232,7 +235,8 @@ export default function TripHistoryPage() {
         key: 'action',
         label: 'ACTION',
         render: (trip) => {
-          const showCancel = trip.status === 'Assigned' || trip.status === 'In Progress';
+          const showCancel =
+            canEditTrips && (trip.status === 'Assigned' || trip.status === 'In Progress');
           return (
             <div className="flex items-center gap-2">
               <button
@@ -267,7 +271,7 @@ export default function TripHistoryPage() {
         },
       },
     ],
-    [],
+    [canEditTrips],
   );
 
   return (
@@ -359,7 +363,7 @@ export default function TripHistoryPage() {
         }}
         isLoading={isCancelling}
         onConfirm={async (reason) => {
-          if (!selectedTrip) return;
+          if (!selectedTrip || !canEditTrips) return;
           try {
             const success = await cancelTrip(selectedTrip.rideId || selectedTrip.id, reason);
             if (success) {

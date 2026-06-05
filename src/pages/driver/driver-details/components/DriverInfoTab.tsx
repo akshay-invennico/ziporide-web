@@ -11,6 +11,7 @@ import DocumentViewerModal from '../../../../components/ui/DocumentViewerModal';
 interface Props {
   driver: Driver;
   onProfileUpdated?: () => void;
+  canEdit?: boolean;
 }
 
 interface DocumentCardProps {
@@ -47,7 +48,7 @@ function DocumentCard({ name, src, onView }: DocumentCardProps) {
   );
 }
 
-export default function DriverInfoTab({ driver, onProfileUpdated }: Props) {
+export default function DriverInfoTab({ driver, onProfileUpdated, canEdit = false }: Props) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerDoc, setViewerDoc] = useState<{ name: string; src?: string }>({ name: '' });
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -77,7 +78,7 @@ export default function DriverInfoTab({ driver, onProfileUpdated }: Props) {
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
-    if (!file || !driverId) return;
+    if (!file || !driverId || !canEdit) return;
 
     if (!file.type.startsWith('image/')) {
       showToast('Please select a valid image file.', 'error');
@@ -162,15 +163,17 @@ export default function DriverInfoTab({ driver, onProfileUpdated }: Props) {
                         .slice(0, 2)}
                     </div>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isPhotoBusy || !driverId}
-                    className="absolute -bottom-0.5 -right-0.5 w-[24px] h-[24px] bg-[#1DAFA1] rounded-full flex items-center justify-center cursor-pointer border-2 border-white disabled:opacity-60 disabled:cursor-not-allowed"
-                    aria-label="Update profile photo"
-                  >
-                    <img src="/icons/camera.svg" alt="camera" className="w-[14px] h-[14px]" />
-                  </button>
+                  {canEdit && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isPhotoBusy || !driverId}
+                      className="absolute -bottom-0.5 -right-0.5 w-[24px] h-[24px] bg-[#1DAFA1] rounded-full flex items-center justify-center cursor-pointer border-2 border-white disabled:opacity-60 disabled:cursor-not-allowed"
+                      aria-label="Update profile photo"
+                    >
+                      <img src="/icons/camera.svg" alt="camera" className="w-[14px] h-[14px]" />
+                    </button>
+                  )}
                   <input
                     ref={fileInputRef}
                     type="file"

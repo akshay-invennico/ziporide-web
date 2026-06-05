@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/context/useToast';
+import { usePermissions } from '@/hooks/usePermissions';
 
 import DocumentViewerModal from '../../components/ui/DocumentViewerModal';
 import RejectDocumentModal from '../../components/ui/RejectDocumentModal';
@@ -48,10 +49,13 @@ const ApplicationDetailsPage = () => {
   const [rejectingDocumentType, setRejectingDocumentType] = useState<string>('');
   const [isRejectVerificationModalOpen, setIsRejectVerificationModalOpen] = useState(false);
   const { showToast } = useToast();
+  const { canEditModule } = usePermissions();
+  const canEditVerification = canEditModule('verification');
   const { driver: request, loading, error, refetch } = useDriverDetails(id);
   const { verifyDocument, updateDriverStatus, isVerifying } = useVerifyDriverDocument(id);
 
   const handleVerifyDocument = async (docType: string, isApproved: boolean, reason?: string) => {
+    if (!canEditVerification) return;
     try {
       await verifyDocument(docType, isApproved, reason);
       showToast(`Document ${isApproved ? 'approved' : 'rejected'} successfully`, 'success');
@@ -63,7 +67,7 @@ const ApplicationDetailsPage = () => {
   };
 
   const handleOverallStatusUpdate = async (action: 'approve' | 'reject', reason?: string) => {
-    if (!request) return;
+    if (!request || !canEditVerification) return;
     // Validation: Check if any document is still pending
     const isLicensePending =
       !request.licence?.document?.isVerified && !request.licence?.document?.rejectedReason;
@@ -120,6 +124,7 @@ const ApplicationDetailsPage = () => {
   };
 
   const handleOpenRejectModal = (docName: string, docType: string) => {
+    if (!canEditVerification) return;
     setRejectingDocument(docName);
     setRejectingDocumentType(docType);
     setIsRejectModalOpen(true);
@@ -197,7 +202,7 @@ const ApplicationDetailsPage = () => {
               </div>
             )}
 
-            {isPending && (
+            {isPending && canEditVerification && (
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsRejectVerificationModalOpen(true)}
@@ -401,7 +406,8 @@ const ApplicationDetailsPage = () => {
             </div>
 
             {!request.licence?.document?.isVerified &&
-              !request.licence?.document?.rejectedReason && (
+              !request.licence?.document?.rejectedReason &&
+              canEditVerification && (
                 <div className="flex items-center gap-2 ">
                   <button
                     onClick={() => handleOpenRejectModal('License', 'licence')}
@@ -512,7 +518,8 @@ const ApplicationDetailsPage = () => {
               </div>
 
               {!request.vehicle?.insurance?.isVerified &&
-                !request.vehicle?.insurance?.rejectedReason && (
+                !request.vehicle?.insurance?.rejectedReason &&
+                canEditVerification && (
                   <div className="flex items-center gap-2 ">
                     <button
                       onClick={() => handleOpenRejectModal('Insurance', 'insurance')}
@@ -575,24 +582,26 @@ const ApplicationDetailsPage = () => {
                 </div>
               </div>
 
-              {!request.vehicle?.mot?.isVerified && !request.vehicle?.mot?.rejectedReason && (
-                <div className="flex items-center gap-2 ">
-                  <button
-                    onClick={() => handleOpenRejectModal('MOT', 'mot')}
-                    disabled={isVerifying}
-                    className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
-                  >
-                    <X className="w-5 h-5 font-bold" />
-                  </button>
-                  <button
-                    onClick={() => handleVerifyDocument('mot', true)}
-                    disabled={isVerifying}
-                    className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
-                  >
-                    <Check className="w-5 h-5 font-bold" />
-                  </button>
-                </div>
-              )}
+              {!request.vehicle?.mot?.isVerified &&
+                !request.vehicle?.mot?.rejectedReason &&
+                canEditVerification && (
+                  <div className="flex items-center gap-2 ">
+                    <button
+                      onClick={() => handleOpenRejectModal('MOT', 'mot')}
+                      disabled={isVerifying}
+                      className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
+                    >
+                      <X className="w-5 h-5 font-bold" />
+                    </button>
+                    <button
+                      onClick={() => handleVerifyDocument('mot', true)}
+                      disabled={isVerifying}
+                      className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
+                    >
+                      <Check className="w-5 h-5 font-bold" />
+                    </button>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -660,24 +669,26 @@ const ApplicationDetailsPage = () => {
             </div>
           </div>
 
-          {!request.backgroundCheck?.isVerified && !request.backgroundCheck?.rejectedReason && (
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => handleOpenRejectModal('Background Check', 'backgroundCheck')}
-                disabled={isVerifying}
-                className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
-              >
-                <X className="w-5 h-5 font-bold" />
-              </button>
-              <button
-                onClick={() => handleVerifyDocument('backgroundCheck', true)}
-                disabled={isVerifying}
-                className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
-              >
-                <Check className="w-5 h-5 font-bold" />
-              </button>
-            </div>
-          )}
+          {!request.backgroundCheck?.isVerified &&
+            !request.backgroundCheck?.rejectedReason &&
+            canEditVerification && (
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => handleOpenRejectModal('Background Check', 'backgroundCheck')}
+                  disabled={isVerifying}
+                  className="p-2 rounded-md bg-[#FFF6F6] text-[#FF0707] cursor-pointer disabled:opacity-50"
+                >
+                  <X className="w-5 h-5 font-bold" />
+                </button>
+                <button
+                  onClick={() => handleVerifyDocument('backgroundCheck', true)}
+                  disabled={isVerifying}
+                  className="p-2 rounded-md bg-[#EAFFF2] text-[#00A63E] cursor-pointer disabled:opacity-50"
+                >
+                  <Check className="w-5 h-5 font-bold" />
+                </button>
+              </div>
+            )}
         </div>
       </div>
 

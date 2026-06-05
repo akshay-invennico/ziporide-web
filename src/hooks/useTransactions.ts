@@ -11,6 +11,7 @@ export interface UseTransactionsParams {
   search: string;
   startDate?: string;
   endDate?: string;
+  filterType?: 'payin' | 'payout' | 'refunded';
 }
 
 const mapType = (type: string) => {
@@ -66,6 +67,7 @@ export const useTransactions = (
       }
       if (params.startDate) queryParams.append('startDate', params.startDate);
       if (params.endDate) queryParams.append('endDate', params.endDate);
+      if (params.filterType) queryParams.append('filterType', params.filterType);
 
       const response = await apiClient.get<TransactionResponse>(
         `${API.TRANSACTIONS}?${queryParams.toString()}`,
@@ -123,6 +125,7 @@ export const useTransactions = (
       search: initialParams.search,
       startDate: initialParams.startDate,
       endDate: initialParams.endDate,
+      filterType: initialParams.filterType,
     });
   }, [
     fetchTransactions,
@@ -131,6 +134,7 @@ export const useTransactions = (
     initialParams.search,
     initialParams.startDate,
     initialParams.endDate,
+    initialParams.filterType,
   ]);
 
   return {
@@ -162,6 +166,7 @@ export const useExportTransactionsCSV = () => {
         }
         if (params.startDate) queryParams.append('startDate', params.startDate);
         if (params.endDate) queryParams.append('endDate', params.endDate);
+        if (params.filterType) queryParams.append('filterType', params.filterType);
 
         const response = await apiClient.get<TransactionResponse>(
           `${API.TRANSACTIONS}?${queryParams.toString()}`,
@@ -248,6 +253,7 @@ export const useExportTransactionsPDF = () => {
         }
         if (params.startDate) queryParams.append('startDate', params.startDate);
         if (params.endDate) queryParams.append('endDate', params.endDate);
+        if (params.filterType) queryParams.append('filterType', params.filterType);
 
         const response = await apiClient.get<TransactionResponse>(
           `${API.TRANSACTIONS}?${queryParams.toString()}`,

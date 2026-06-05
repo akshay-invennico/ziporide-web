@@ -5,6 +5,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useSupportTicketCount } from '@/hooks/useSupportTickets';
 import { usePendingDriverCount } from '@/hooks/useVerificationDriver';
 import { routes } from '@/routes/routes';
+import type { OperatorModuleKey } from '@/types/operator.types';
 
 interface SubItem {
   name: string;
@@ -12,6 +13,7 @@ interface SubItem {
   icon: string;
   activeIcon: string;
   permission?: string;
+  moduleKey?: OperatorModuleKey;
 }
 
 interface NavItem {
@@ -23,13 +25,14 @@ interface NavItem {
   hasDropdown?: boolean;
   subItems?: SubItem[];
   permission?: string;
+  moduleKey?: OperatorModuleKey;
 }
 
 export default function Sidebar() {
   const location = useLocation();
   const { count } = usePendingDriverCount();
   const { count: supportTicketCount } = useSupportTicketCount();
-  const { hasPermission } = usePermissions();
+  const { canViewModule, hasPermission } = usePermissions();
 
   const navigate = useNavigate();
 
@@ -40,6 +43,7 @@ export default function Sidebar() {
         path: routes.DASHBOARD,
         icon: '/icons/sidebar/sidebarIcon1_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon1_active.svg',
+        moduleKey: 'dashboard',
         permission: 'dashboard.view_analytics',
       },
       {
@@ -47,6 +51,7 @@ export default function Sidebar() {
         path: routes.RIDER,
         icon: '/icons/sidebar/sidebarIcon2_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon2_active.svg',
+        moduleKey: 'riders',
         permission: 'riders.view',
       },
       {
@@ -54,6 +59,7 @@ export default function Sidebar() {
         path: routes.DRIVER,
         icon: '/icons/sidebar/sidebarIcon3_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon3_active.svg',
+        moduleKey: 'drivers',
         permission: 'drivers.view',
       },
       {
@@ -62,6 +68,7 @@ export default function Sidebar() {
         badge: count > 0 ? (count > 99 ? '99+' : count.toString()) : undefined,
         icon: '/icons/sidebar/sidebarIcon4_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon4_active.svg',
+        moduleKey: 'verification',
         permission: 'verification.view',
       },
       {
@@ -69,6 +76,7 @@ export default function Sidebar() {
         path: routes.TRIPS,
         icon: '/icons/sidebar/sidebarIcon5_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon5_active.svg',
+        moduleKey: 'trips',
         permission: 'trips.view',
       },
       {
@@ -76,6 +84,7 @@ export default function Sidebar() {
         path: routes.INVENTORY,
         icon: '/icons/sidebar/sidebarIcon6_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon6_active.svg',
+        moduleKey: 'inventory',
         permission: 'inventory.view',
       },
       {
@@ -83,6 +92,8 @@ export default function Sidebar() {
         path: routes.TRANSACTIONS,
         icon: '/icons/sidebar/sidebarIcon7_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon7_active.svg',
+        moduleKey: 'transactions',
+        permission: 'transactions.view',
       },
       {
         name: 'Support Tickets',
@@ -95,6 +106,7 @@ export default function Sidebar() {
             : undefined,
         icon: '/icons/sidebar/sidebarIcon8_default.svg',
         activeIcon: '/icons/sidebar/sidebarIcon8_active.svg',
+        moduleKey: 'support',
         permission: 'support.view',
       },
       {
@@ -109,6 +121,7 @@ export default function Sidebar() {
             path: routes.PRICING_LOGIC,
             icon: '/icons/sidebar/sidebarIcon10_default.svg',
             activeIcon: '/icons/sidebar/sidebarIcon10_active.svg',
+            moduleKey: 'pricing',
             permission: 'pricing.view',
           },
           {
@@ -116,13 +129,15 @@ export default function Sidebar() {
             path: routes.PUSH_NOTIFICATIONS,
             icon: '/icons/sidebar/sidebarIcon11_default.svg',
             activeIcon: '/icons/sidebar/sidebarIcon11_active.svg',
-            permission: 'notifications.send',
+            moduleKey: 'notifications',
+            permission: 'notifications.view',
           },
           {
             name: 'Operators',
             path: routes.OPERATORS,
             icon: '/icons/sidebar/sidebarIcon12_default.svg',
             activeIcon: '/icons/sidebar/sidebarIcon12_active.svg',
+            moduleKey: 'operators',
             permission: 'operators.view',
           },
         ],
@@ -136,16 +151,19 @@ export default function Sidebar() {
       .map((item) => {
         if (item.subItems) {
           const visibleSubItems = item.subItems.filter(
-            (sub) => !sub.permission || hasPermission(sub.permission),
+            (sub) =>
+              (sub.moduleKey && canViewModule(sub.moduleKey)) ||
+              (!sub.moduleKey && (!sub.permission || hasPermission(sub.permission))),
           );
           if (visibleSubItems.length === 0) return null;
           return { ...item, subItems: visibleSubItems };
         }
-        if (item.permission && !hasPermission(item.permission)) return null;
+        if (item.moduleKey && !canViewModule(item.moduleKey)) return null;
+        if (!item.moduleKey && item.permission && !hasPermission(item.permission)) return null;
         return item;
       })
       .filter(Boolean) as NavItem[];
-  }, [allNavItems, hasPermission]);
+  }, [allNavItems, canViewModule, hasPermission]);
 
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
 

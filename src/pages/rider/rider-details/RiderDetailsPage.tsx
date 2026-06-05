@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useRiderDetails, useUpdateRiderStatus } from '@/hooks/useRider';
 import { routes } from '@/routes/routes';
 
@@ -17,6 +18,8 @@ export default function RiderDetailsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('info');
   const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
+  const { canEditModule } = usePermissions();
+  const canEditRiders = canEditModule('riders');
 
   const { rider, loading, error, refetch } = useRiderDetails(id);
   const { updateStatus, isUpdating } = useUpdateRiderStatus();
@@ -81,7 +84,7 @@ export default function RiderDetailsPage() {
         {activeTab === 'timeline' && <ActivityTimelineTab riderId={rider.id} />}
       </div>
 
-      {activeTab === 'info' && (
+      {activeTab === 'info' && canEditRiders && (
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}
@@ -107,7 +110,7 @@ export default function RiderDetailsPage() {
         isOpen={isSuspendModalOpen}
         onClose={() => setIsSuspendModalOpen(false)}
         onConfirm={async (reason) => {
-          if (!id) return;
+          if (!id || !canEditRiders) return;
           const newStatus = rider.status?.toLowerCase() === 'suspended' ? 'active' : 'suspended';
           try {
             const success = await updateStatus([id], newStatus, reason);

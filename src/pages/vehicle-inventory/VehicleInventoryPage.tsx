@@ -5,6 +5,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/context/useToast';
 import { useFileUpload } from '@/hooks/useFileUpload';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useVehicleCategories } from '@/hooks/useVehicleCategories';
 import { useVehicles } from '@/hooks/useVehicles';
 import type { VehicleCategory, VehicleDatabaseRow } from '@/types/vehicle.types';
@@ -26,6 +27,8 @@ const VehicleInventoryPage: React.FC = () => {
   } = useVehicleCategories();
   const { uploadImage } = useFileUpload();
   const { showToast } = useToast();
+  const { canEditModule } = usePermissions();
+  const canEditInventory = canEditModule('inventory');
   const [activeTab, setActiveTab] = useState<'category' | 'database'>('category');
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [categoryToRemove, setCategoryToRemove] = useState<string | number | null>(null);
@@ -62,12 +65,13 @@ const VehicleInventoryPage: React.FC = () => {
   };
 
   const handleRemoveClick = (id: string | number) => {
+    if (!canEditInventory) return;
     setCategoryToRemove(id);
     setIsRemoveModalOpen(true);
   };
 
   const handleConfirmRemove = async () => {
-    if (categoryToRemove) {
+    if (categoryToRemove && canEditInventory) {
       try {
         await removeCategory(categoryToRemove as string);
         setIsRemoveModalOpen(false);
@@ -196,20 +200,22 @@ const VehicleInventoryPage: React.FC = () => {
         <div className="flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-[20px] font-semibold text-[#000000]">Vehicle Categories</h2>
-            <button
-              onClick={() => {
-                if (vehicleCategories.length >= 7) {
-                  showToast('Only 7 vehicle categories are allowed.', 'error');
-                  return;
-                }
-                setCategoryToEdit(null);
-                setIsAddModalOpen(true);
-              }}
-              className="flex  cursor-pointer items-center gap-2 bg-[#1DAFA1] text-white px-4 py-2 rounded-sm font-semibold text-[14px]"
-            >
-              <img src="/icons/vehicle/add.svg" alt="add" className="w-[22px] h-[22px]" />
-              Add Category
-            </button>
+            {canEditInventory && (
+              <button
+                onClick={() => {
+                  if (vehicleCategories.length >= 7) {
+                    showToast('Only 7 vehicle categories are allowed.', 'error');
+                    return;
+                  }
+                  setCategoryToEdit(null);
+                  setIsAddModalOpen(true);
+                }}
+                className="flex  cursor-pointer items-center gap-2 bg-[#1DAFA1] text-white px-4 py-2 rounded-sm font-semibold text-[14px]"
+              >
+                <img src="/icons/vehicle/add.svg" alt="add" className="w-[22px] h-[22px]" />
+                Add Category
+              </button>
+            )}
           </div>
 
           {/* Grid of Cards */}
@@ -279,33 +285,36 @@ const VehicleInventoryPage: React.FC = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-6 mt-1">
-                          <button
-                            onClick={() => handleRemoveClick(cat.id)}
-                            className="flex cursor-pointer items-center gap-1.5 text-[#FF0707] text-[14px] font-medium"
-                          >
-                            <img
-                              src="/icons/vehicle/remove.svg"
-                              alt="remove"
-                              className="w-[22px] h-[22px]"
-                            />
-                            Remove
-                          </button>
-                          <button
-                            onClick={() => {
-                              setCategoryToEdit(cat);
-                              setIsAddModalOpen(true);
-                            }}
-                            className="flex cursor-pointer items-center gap-1.5 text-[#1DAFA1] text-[14px] font-medium"
-                          >
-                            <img
-                              src="/icons/vehicle/edit.svg"
-                              alt="edit"
-                              className="w-[22px] h-[22px]"
-                            />
-                            Edit
-                          </button>
-                        </div>
+                        {canEditInventory && (
+                          <div className="flex items-center gap-6 mt-1">
+                            <button
+                              onClick={() => handleRemoveClick(cat.id)}
+                              className="flex cursor-pointer items-center gap-1.5 text-[#FF0707] text-[14px] font-medium"
+                            >
+                              <img
+                                src="/icons/vehicle/remove.svg"
+                                alt="remove"
+                                className="w-[22px] h-[22px]"
+                              />
+                              Remove
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (!canEditInventory) return;
+                                setCategoryToEdit(cat);
+                                setIsAddModalOpen(true);
+                              }}
+                              className="flex cursor-pointer items-center gap-1.5 text-[#1DAFA1] text-[14px] font-medium"
+                            >
+                              <img
+                                src="/icons/vehicle/edit.svg"
+                                alt="edit"
+                                className="w-[22px] h-[22px]"
+                              />
+                              Edit
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -370,6 +379,7 @@ const VehicleInventoryPage: React.FC = () => {
         existingCategories={vehicleCategories}
         isLoading={categoryToEdit ? isUpdating : isCreating}
         onConfirm={async (values) => {
+          if (!canEditInventory) return;
           let iconString = values.categoryIcon;
 
           if (iconString instanceof File) {

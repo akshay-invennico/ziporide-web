@@ -53,7 +53,9 @@ const OperatorsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-  const { hasPermission } = usePermissions();
+  const { canViewModule, canEditModule } = usePermissions();
+  const canViewOperators = canViewModule('operators');
+  const canEditOperators = canEditModule('operators');
 
   const { operators, loading, totalPages, refetch } = useOperators(
     currentPage,
@@ -71,17 +73,21 @@ const OperatorsPage = () => {
   const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
 
   const openModal = (mode: 'add' | 'edit' | 'view', operator?: Operator) => {
+    if (mode === 'view' && !canViewOperators) return;
+    if ((mode === 'add' || mode === 'edit') && !canEditOperators) return;
     setModalMode(mode);
     setSelectedOperator(operator || null);
     setIsModalOpen(true);
   };
 
   const openRemoveModal = (operator: Operator) => {
+    if (!canEditOperators) return;
     setSelectedOperator(operator);
     setIsRemoveModalOpen(true);
   };
 
   const handleConfirm = async (values: CreateOperatorPayload | UpdateOperatorPayload) => {
+    if (!canEditOperators) return;
     try {
       if (modalMode === 'add') {
         await createOperator(values as CreateOperatorPayload);
@@ -96,7 +102,7 @@ const OperatorsPage = () => {
   };
 
   const handleRemoveConfirm = async () => {
-    if (!selectedOperator) return;
+    if (!selectedOperator || !canEditOperators) return;
     try {
       await deleteOperator(selectedOperator.id);
       setIsRemoveModalOpen(false);
@@ -186,17 +192,17 @@ const OperatorsPage = () => {
         headerClassName: 'min-w-[140px]',
         render: (row) => (
           <div className="flex items-center gap-4">
-            {hasPermission('operators.view') && (
+            {canViewOperators && (
               <button onClick={() => openModal('view', row)} className="cursor-pointer">
                 <img src="/icons/settings/eye.svg" alt="view" className="w-[22px] h-[22px]" />
               </button>
             )}
-            {hasPermission('operators.manage') && (
+            {canEditOperators && (
               <button onClick={() => openModal('edit', row)} className="cursor-pointer">
                 <img src="/icons/settings/edit.svg" alt="edit" className="w-[22px] h-[22px]" />
               </button>
             )}
-            {hasPermission('operators.remove') && (
+            {canEditOperators && (
               <button onClick={() => openRemoveModal(row)} className="cursor-pointer">
                 <img src="/icons/settings/remove.svg" alt="remove" className="w-[22px] h-[22px]" />
               </button>
@@ -205,7 +211,7 @@ const OperatorsPage = () => {
         ),
       },
     ],
-    [hasPermission],
+    [canEditOperators, canViewOperators],
   );
 
   return (
@@ -228,7 +234,7 @@ const OperatorsPage = () => {
               }}
             />
           </div>
-          {hasPermission('operators.manage') && (
+          {canEditOperators && (
             <button
               onClick={() => openModal('add')}
               className="flex items-center gap-2 bg-[#1DAFA1] text-white px-4 py-2 rounded-sm text-[14px] font-medium cursor-pointer"

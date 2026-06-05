@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useDriverDetails, useUpdateDriverStatus } from '@/hooks/useDriver';
 import { routes } from '@/routes/routes';
 
@@ -29,6 +30,8 @@ export default function DriverDetailsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabKey>('info');
   const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
+  const { canEditModule } = usePermissions();
+  const canEditDrivers = canEditModule('drivers');
 
   const { driver, loading, error, refetch } = useDriverDetails(id);
   const { updateStatus, isUpdating } = useUpdateDriverStatus();
@@ -57,7 +60,7 @@ export default function DriverDetailsPage() {
   const isSuspended = driver.status?.toLowerCase() === 'suspended';
 
   const handleStatusUpdate = async (reason?: string) => {
-    if (!id) return;
+    if (!id || !canEditDrivers) return;
     const newStatus = isSuspended ? 'approved' : 'suspended';
     try {
       const success = await updateStatus([id], newStatus, reason);
@@ -100,7 +103,9 @@ export default function DriverDetailsPage() {
 
       {/* Tab Content */}
       <div className="bg-white w-full">
-        {activeTab === 'info' && <DriverInfoTab driver={driver} onProfileUpdated={refetch} />}
+        {activeTab === 'info' && (
+          <DriverInfoTab driver={driver} onProfileUpdated={refetch} canEdit={canEditDrivers} />
+        )}
         {activeTab === 'subscription' && <DriverSubscriptionTab />}
         {activeTab === 'earning' && <DriverEarningTab />}
         {activeTab === 'trip-history' && <DriverTripHistoryTab />}
@@ -108,7 +113,7 @@ export default function DriverDetailsPage() {
       </div>
 
       {/* Status Update Button */}
-      {activeTab === 'info' && (
+      {activeTab === 'info' && canEditDrivers && (
         <div className="mt-4 flex justify-end">
           <button
             onClick={() => setIsSuspendModalOpen(true)}

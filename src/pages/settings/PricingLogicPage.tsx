@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { usePermissions } from '@/hooks/usePermissions';
 import { usePricing } from '@/hooks/usePricing';
 import type { PricingData } from '@/types/pricing.types';
 
@@ -16,6 +17,8 @@ const defaultPricing: PricingData = {
 
 const PricingLogicPage = () => {
   const { pricing, isLoading, getPricing, updatePricing, setPricing } = usePricing();
+  const { canEditModule } = usePermissions();
+  const canEditPricing = canEditModule('pricing');
 
   useEffect(() => {
     const fetchPricing = async () => {
@@ -28,12 +31,13 @@ const PricingLogicPage = () => {
   }, [getPricing, setPricing]);
 
   const handleUpdate = async () => {
-    if (pricing) {
+    if (pricing && canEditPricing) {
       await updatePricing(pricing);
     }
   };
 
   const handleInputChange = (field: string, value: string | number | boolean) => {
+    if (!canEditPricing) return;
     setPricing((prev) => {
       if (!prev) return prev;
 
@@ -86,6 +90,7 @@ const PricingLogicPage = () => {
             placeholder="e.g. 10.00"
             value={pricing?.minimumFare ?? ''}
             onChange={(val) => handleInputChange('minimumFare', val)}
+            disabled={!canEditPricing}
           />
         </div>
       </div>
@@ -106,6 +111,7 @@ const PricingLogicPage = () => {
             placeholder="e.g. 10.00"
             value={pricing?.cancellationFee ?? ''}
             onChange={(val) => handleInputChange('cancellationFee', val)}
+            disabled={!canEditPricing}
           />
           <NumberInput
             label="Airport Parking Charges"
@@ -113,6 +119,7 @@ const PricingLogicPage = () => {
             placeholder="e.g. 10.00"
             value={pricing?.airportParkingCharge ?? ''}
             onChange={(val) => handleInputChange('airportParkingCharge', val)}
+            disabled={!canEditPricing}
           />
         </div>
 
@@ -124,6 +131,7 @@ const PricingLogicPage = () => {
             suffix="/Min"
             value={pricing?.waitingCharge ?? ''}
             onChange={(val) => handleInputChange('waitingCharge', val)}
+            disabled={!canEditPricing}
           />
           <NumberInput
             label="Free Waiting Time"
@@ -132,6 +140,7 @@ const PricingLogicPage = () => {
             suffix="Mins"
             value={pricing?.freeWaitingTime ?? ''}
             onChange={(val) => handleInputChange('freeWaitingTime', val)}
+            disabled={!canEditPricing}
           />
           <NumberInput
             label="Max Paid Waiting Time"
@@ -140,6 +149,7 @@ const PricingLogicPage = () => {
             suffix="Mins"
             value={pricing?.maxPaidWaitingTime ?? ''}
             onChange={(val) => handleInputChange('maxPaidWaitingTime', val)}
+            disabled={!canEditPricing}
           />
         </div>
 
@@ -166,9 +176,10 @@ const PricingLogicPage = () => {
               onClick={() =>
                 handleInputChange('surgePricing_enabled', !pricing?.surgePricing?.enabled)
               }
+              disabled={!canEditPricing}
               className={`relative inline-flex cursor-pointer h-6 w-11 items-center rounded-full transition-colors ${
                 pricing?.surgePricing?.enabled ? 'bg-[#14B8A6]' : 'bg-gray-300'
-              }`}
+              } disabled:cursor-not-allowed disabled:opacity-60`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -186,7 +197,7 @@ const PricingLogicPage = () => {
             placeholder="e.g. 1.5"
             value={pricing?.surgePricing?.multiplier ?? ''}
             onChange={(val) => handleInputChange('surgePricing_multiplier', val)}
-            disabled={!pricing?.surgePricing?.enabled}
+            disabled={!canEditPricing || !pricing?.surgePricing?.enabled}
           />
         </div>
 
@@ -261,7 +272,7 @@ const PricingLogicPage = () => {
       <div className="flex justify-end pt-2 pb-6">
         <button
           onClick={handleUpdate}
-          disabled={isLoading}
+          disabled={isLoading || !canEditPricing}
           className="px-6 py-3 bg-[#14B8A6] cursor-pointer text-white text-[14px] font-semibold rounded-md disabled:opacity-50 flex items-center justify-center min-w-[200px]"
         >
           {isLoading ? (

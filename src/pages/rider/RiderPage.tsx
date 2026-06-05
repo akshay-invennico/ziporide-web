@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
+import { usePermissions } from '@/hooks/usePermissions';
 import {
   useRiders,
   useUpdateRiderStatus,
@@ -25,6 +26,8 @@ const RiderPage = () => {
   const itemsPerPage = 10;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const { canEditModule } = usePermissions();
+  const canEditRiders = canEditModule('riders');
 
   const filterRef = useRef<HTMLDivElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
@@ -215,7 +218,7 @@ const RiderPage = () => {
             >
               <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px] shrink-0" />
             </Link>
-            {rider.status?.toLowerCase() === 'active' && (
+            {canEditRiders && rider.status?.toLowerCase() === 'active' && (
               <button
                 onClick={() => setSuspendedRiderId(rider.id)}
                 className="shrink-0 cursor-pointer"
@@ -228,7 +231,7 @@ const RiderPage = () => {
                 />
               </button>
             )}
-            {rider.status?.toLowerCase() === 'suspended' && (
+            {canEditRiders && rider.status?.toLowerCase() === 'suspended' && (
               <button
                 onClick={() => setSuspendedRiderId(rider.id)}
                 className="shrink-0 cursor-pointer"
@@ -245,7 +248,7 @@ const RiderPage = () => {
         ),
       },
     ],
-    [],
+    [canEditRiders],
   );
 
   return (
@@ -328,7 +331,7 @@ const RiderPage = () => {
         isOpen={!!suspendedRiderId}
         onClose={() => setSuspendedRiderId(null)}
         onConfirm={async (reason) => {
-          if (!suspendedRiderId) return;
+          if (!suspendedRiderId || !canEditRiders) return;
           const currentRider = riders.find((r) => r.id === suspendedRiderId);
           const newStatus =
             currentRider?.status?.toLowerCase() === 'suspended' ? 'active' : 'suspended';

@@ -10,6 +10,7 @@ import {
   useExportDriversCSV,
   useExportDriversPDF,
 } from '@/hooks/useDriver';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { Driver } from '@/types/driver.types';
 
 import DriverPDFDocument from '../../components/driver/DriverPDFDocument';
@@ -25,6 +26,8 @@ const DriverPage = () => {
   const itemsPerPage = 10;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const { canEditModule } = usePermissions();
+  const canEditDrivers = canEditModule('drivers');
 
   const filterRef = useRef<HTMLDivElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
@@ -220,7 +223,7 @@ const DriverPage = () => {
               >
                 <img src="/icons/rider/eye.svg" alt="eye" className="w-[24px] h-[24px] shrink-0" />
               </Link>
-              {driver.status?.toLowerCase() === 'approved' && (
+              {canEditDrivers && driver.status?.toLowerCase() === 'approved' && (
                 <button
                   onClick={() => setSuspendedDriverId(id)}
                   className="shrink-0 cursor-pointer"
@@ -233,7 +236,7 @@ const DriverPage = () => {
                   />
                 </button>
               )}
-              {driver.status?.toLowerCase() === 'suspended' && (
+              {canEditDrivers && driver.status?.toLowerCase() === 'suspended' && (
                 <button
                   onClick={() => setSuspendedDriverId(id)}
                   className="shrink-0 cursor-pointer"
@@ -251,7 +254,7 @@ const DriverPage = () => {
         },
       },
     ],
-    [],
+    [canEditDrivers],
   );
 
   return (
@@ -335,7 +338,7 @@ const DriverPage = () => {
         isOpen={!!suspendedDriverId}
         onClose={() => setSuspendedDriverId(null)}
         onConfirm={async (reason) => {
-          if (!suspendedDriverId) return;
+          if (!suspendedDriverId || !canEditDrivers) return;
           const currentDriver = drivers.find((d) => (d.id || d._id) === suspendedDriverId);
           const newStatus =
             currentDriver?.status?.toLowerCase() === 'suspended' ? 'approved' : 'suspended';

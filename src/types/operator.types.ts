@@ -8,6 +8,7 @@ export type OperatorModuleKey =
   | 'verification'
   | 'trips'
   | 'inventory'
+  | 'transactions'
   | 'support'
   | 'pricing'
   | 'notifications'

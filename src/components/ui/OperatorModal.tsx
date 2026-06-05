@@ -58,6 +58,12 @@ const DEFAULT_MODULES: Array<{
     defaultAccess: 'view',
   },
   {
+    key: 'transactions',
+    label: 'Transactions',
+    accessLevels: ['view', 'edit', 'hide'],
+    defaultAccess: 'view',
+  },
+  {
     key: 'support',
     label: 'Support Tickets',
     accessLevels: ['view', 'edit', 'hide'],

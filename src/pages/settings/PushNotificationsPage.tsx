@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import Dropdown from '@/components/ui/Dropdown';
 import { useNotifications } from '@/hooks/useNotifications';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { TargetAudience } from '@/types/notification.types';
 
 const audienceOptions: { label: string; value: TargetAudience }[] = [
@@ -12,6 +13,8 @@ const audienceOptions: { label: string; value: TargetAudience }[] = [
 
 const PushNotificationsPage = () => {
   const { isSending, sendNotification } = useNotifications();
+  const { canEditModule } = usePermissions();
+  const canSendNotifications = canEditModule('notifications');
 
   const [targetAudience, setTargetAudience] = useState<TargetAudience | ''>('');
   const [title, setTitle] = useState('');
@@ -33,6 +36,7 @@ const PushNotificationsPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canSendNotifications) return;
     if (!validate()) return;
 
     const success = await sendNotification({
@@ -71,6 +75,7 @@ const PushNotificationsPage = () => {
               options={audienceOptions}
               value={targetAudience}
               onChange={(val) => {
+                if (!canSendNotifications) return;
                 setTargetAudience(val as TargetAudience);
                 if (errors.targetAudience)
                   setErrors((prev) => ({ ...prev, targetAudience: undefined }));
@@ -87,14 +92,16 @@ const PushNotificationsPage = () => {
                 type="text"
                 value={title}
                 onChange={(e) => {
+                  if (!canSendNotifications) return;
                   setTitle(e.target.value);
                   if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
                 }}
                 placeholder="Enter notification title"
                 maxLength={200}
+                disabled={!canSendNotifications}
                 className={`w-full bg-white border rounded-md px-4 py-3 text-[#000000] text-[14px] font-medium outline-none transition-colors placeholder:text-[#0A0A0A80] ${
                   errors.title ? 'border-red-500' : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
-                }`}
+                } disabled:cursor-not-allowed disabled:bg-[#F9F9F9]`}
               />
               {errors.title && <p className="mt-1 text-[12px] text-red-500">{errors.title}</p>}
             </div>
@@ -105,15 +112,17 @@ const PushNotificationsPage = () => {
               <textarea
                 value={body}
                 onChange={(e) => {
+                  if (!canSendNotifications) return;
                   setBody(e.target.value);
                   if (errors.body) setErrors((prev) => ({ ...prev, body: undefined }));
                 }}
                 placeholder="Enter notification message"
                 rows={5}
                 maxLength={1000}
+                disabled={!canSendNotifications}
                 className={`w-full bg-white border rounded-md px-4 py-3 text-[#000000] text-[14px] font-medium outline-none transition-colors placeholder:text-[#0A0A0A80] resize-none ${
                   errors.body ? 'border-red-500' : 'border-[#DFE6E5] focus:border-[#1DAFA1]'
-                }`}
+                } disabled:cursor-not-allowed disabled:bg-[#F9F9F9]`}
               />
               {errors.body && <p className="mt-1 text-[12px] text-red-500">{errors.body}</p>}
             </div>
@@ -121,7 +130,7 @@ const PushNotificationsPage = () => {
             {/* Send Button */}
             <button
               type="submit"
-              disabled={isSending}
+              disabled={isSending || !canSendNotifications}
               className="w-full bg-[#1DAFA1] cursor-pointer font-inter text-white font-semibold py-4 rounded-md text-[14px] transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSending ? (

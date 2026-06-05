@@ -16,6 +16,17 @@ import {
 import type { UseTransactionsParams } from '../../hooks/useTransactions';
 import type { Transaction } from '../../types/transaction.types';
 
+type TransactionFilter = 'All' | 'Pay-in' | 'Payout' | 'Refund';
+
+const FILTER_TYPE_BY_TAB: Record<
+  Exclude<TransactionFilter, 'All'>,
+  UseTransactionsParams['filterType']
+> = {
+  'Pay-in': 'payin',
+  Payout: 'payout',
+  Refund: 'refunded',
+};
+
 const TransactionsPage: React.FC = () => {
   const [params, setParams] = useState<UseTransactionsParams>({
     page: 1,
@@ -24,7 +35,7 @@ const TransactionsPage: React.FC = () => {
     startDate: '',
     endDate: '',
   });
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Pay-in' | 'Payout' | 'Refund'>('All');
+  const [activeFilter, setActiveFilter] = useState<TransactionFilter>('All');
 
   const dateRange: DateRange = {
     startDate: params.startDate || '',
@@ -206,7 +217,12 @@ const TransactionsPage: React.FC = () => {
       const filterType = txn.filterType?.toLowerCase();
 
       if (activeFilter === 'Pay-in') {
-        return filterType === 'pay-in' || type.includes('subscription') || type === 'pay_in';
+        return (
+          filterType === 'payin' ||
+          filterType === 'pay-in' ||
+          filterType === 'pay_in' ||
+          type.includes('subscription')
+        );
       }
       if (activeFilter === 'Payout') {
         return (
@@ -246,7 +262,11 @@ const TransactionsPage: React.FC = () => {
                   key={filter}
                   onClick={() => {
                     setActiveFilter(filter);
-                    setParams((prev) => ({ ...prev, page: 1 }));
+                    setParams((prev) => ({
+                      ...prev,
+                      page: 1,
+                      filterType: filter === 'All' ? undefined : FILTER_TYPE_BY_TAB[filter],
+                    }));
                   }}
                   className={`px-3 py-2 text-[14px] cursor-pointer font-medium rounded-sm border transition-colors ${
                     activeFilter === filter
