@@ -116,6 +116,25 @@ const buildDefaultModuleAccess = (
     return acc;
   }, {} as ModuleAccess);
 
+const mergePermissionModules = (modules?: typeof DEFAULT_MODULES): typeof DEFAULT_MODULES => {
+  if (!modules?.length) return DEFAULT_MODULES;
+
+  const moduleByKey = new Map(DEFAULT_MODULES.map((mod) => [mod.key, mod]));
+
+  modules.forEach((mod) => {
+    moduleByKey.set(mod.key, {
+      ...mod,
+      accessLevels: ['view', 'edit', 'hide'],
+      defaultAccess: mod.defaultAccess || 'view',
+    });
+  });
+
+  return [
+    ...DEFAULT_MODULES.map((mod) => moduleByKey.get(mod.key) || mod),
+    ...modules.filter((mod) => !DEFAULT_MODULES.some((defaultMod) => defaultMod.key === mod.key)),
+  ];
+};
+
 const getRoleDisplayName = (role: string) => {
   switch (role) {
     case 'admin':
@@ -156,7 +175,7 @@ const OperatorModal: React.FC<OperatorModalProps> = ({
 
   const modules = useMemo(
     () =>
-      (config?.modules?.length ? config.modules : DEFAULT_MODULES).map((mod) => ({
+      mergePermissionModules(config?.modules).map((mod) => ({
         ...mod,
         accessLevels: ['view', 'edit', 'hide'] as ModuleAccessLevel[],
         defaultAccess: mod.defaultAccess || 'view',

@@ -25,6 +25,13 @@ const hasRequiredAccess = (actual: ModuleAccessLevel | undefined, required: Modu
   return actual === 'edit';
 };
 
+const getModuleAccessLevel = (
+  moduleAccess: Partial<Record<OperatorModuleKey, ModuleAccessLevel>> | undefined,
+  moduleKey: OperatorModuleKey,
+) => {
+  return moduleAccess?.[moduleKey] || 'view';
+};
+
 const getRequiredAccess = (permission: string): ModuleAccessLevel => {
   const action = permission.split('.').slice(1).join('.');
   return EDIT_PERMISSION_SUFFIXES.has(action) ? 'edit' : 'view';
@@ -41,7 +48,10 @@ export const usePermissions = () => {
       if (isSuperAdmin) return true;
       if (moduleAccess) {
         const moduleKey = permission.split('.')[0] as OperatorModuleKey;
-        return hasRequiredAccess(moduleAccess[moduleKey], getRequiredAccess(permission));
+        return hasRequiredAccess(
+          getModuleAccessLevel(moduleAccess, moduleKey),
+          getRequiredAccess(permission),
+        );
       }
       return permissions.includes(permission);
     },
@@ -51,7 +61,8 @@ export const usePermissions = () => {
   const canViewModule = useCallback(
     (moduleKey: OperatorModuleKey) => {
       if (isSuperAdmin) return true;
-      if (moduleAccess) return hasRequiredAccess(moduleAccess[moduleKey], 'view');
+      if (moduleAccess)
+        return hasRequiredAccess(getModuleAccessLevel(moduleAccess, moduleKey), 'view');
       return permissions.some((permission) => permission.startsWith(`${moduleKey}.`));
     },
     [isSuperAdmin, moduleAccess, permissions],
@@ -60,7 +71,8 @@ export const usePermissions = () => {
   const canEditModule = useCallback(
     (moduleKey: OperatorModuleKey) => {
       if (isSuperAdmin) return true;
-      if (moduleAccess) return hasRequiredAccess(moduleAccess[moduleKey], 'edit');
+      if (moduleAccess)
+        return hasRequiredAccess(getModuleAccessLevel(moduleAccess, moduleKey), 'edit');
       return permissions.some((permission) => {
         const [permissionModule] = permission.split('.');
         return permissionModule === moduleKey && getRequiredAccess(permission) === 'edit';
