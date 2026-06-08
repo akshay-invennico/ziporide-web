@@ -123,7 +123,9 @@ const DriverPage = () => {
       {
         key: 'name',
         label: 'DRIVER',
+        type: 'string',
         sortable: true,
+        sortValue: (driver) => driver.name || driver.driverName || '',
         render: (driver) => (
           <div className="flex items-center gap-3">
             {driver.profilePhotoUrl || driver.avatar ? (
@@ -159,6 +161,7 @@ const DriverPage = () => {
       {
         key: 'email',
         label: 'EMAIL',
+        type: 'string',
         sortable: true,
         render: (driver) => (
           <span className="text-[#1DAFA1] font-medium text-[14px]">{driver.email || '-'}</span>
@@ -167,7 +170,9 @@ const DriverPage = () => {
       {
         key: 'totalTrips',
         label: 'TOTAL TRIPS',
+        type: 'number',
         sortable: true,
+        sortValue: (driver) => driver.totalTrips ?? 0,
         render: (driver) => (
           <span className="text-[#4E616A] text-[14px] font-medium">{driver.totalTrips || 0}</span>
         ),
@@ -175,7 +180,9 @@ const DriverPage = () => {
       {
         key: 'totalEarnings',
         label: 'TOTAL EARN',
+        type: 'number',
         sortable: true,
+        sortValue: (driver) => driver.totalEarnings ?? driver.totalEarned ?? 0,
         render: (driver) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
             £{Number(driver.totalEarnings || driver.totalEarned || 0).toFixed(2)}
@@ -185,7 +192,9 @@ const DriverPage = () => {
       {
         key: 'rating',
         label: 'RATINGS',
+        type: 'number',
         sortable: true,
+        sortValue: (driver) => driver.avgRating ?? driver.rating ?? 0,
         render: (driver) => (
           <div className="flex items-center gap-1.5">
             <Star className="h-[15px] w-[15px] fill-[#E9A90A] text-[#E9A90A]" />

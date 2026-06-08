@@ -62,6 +62,12 @@ const TripDetailsModal = ({
   const isCompleted = trip.status === 'Completed';
   const isCancelled = trip.status === 'Cancelled';
   const hasCancellationInfo = isCancelled && !!trip.cancellationDetails;
+  const routeStops =
+    trip.route.stops && trip.route.stops.length > 0
+      ? trip.route.stops
+      : trip.route.stop1Location
+        ? [trip.route.stop1Location]
+        : [];
 
   const copyToClipboard = async (text: string) => {
     if (navigator.clipboard?.writeText) {
@@ -293,22 +299,24 @@ const TripDetailsModal = ({
                       </span>
                     </div>
                   </div>
-                  {trip.route.stop1Location && trip.route.stop1Location !== '' && (
-                    <div className="flex gap-3 items-start">
+                  {routeStops.map((stop, index) => (
+                    <div className="flex gap-3 items-start" key={`${stop}-${index}`}>
                       <div className="flex flex-col items-center">
                         <div className="w-5 h-5 rounded-full bg-[#000000] shrink-0 mt-0.5 flex items-center justify-center">
-                          <span className="text-white text-[10px] font-bold">1</span>
+                          <span className="text-white text-[10px] font-bold">{index + 1}</span>
                         </div>
                         <div className="w-[4px] h-10 border-l-2 border-dashed border-[#1DAFA1]" />
                       </div>
                       <div className="flex flex-col pb-4">
-                        <span className="text-[12px] font-medium text-[#4E616A]">Stop 1</span>
+                        <span className="text-[12px] font-medium text-[#4E616A]">
+                          Stop {index + 1}
+                        </span>
                         <span className="text-[14px] font-medium text-[#000000]">
-                          {trip.route.stop1Location}
+                          {stop}
                         </span>
                       </div>
                     </div>
-                  )}
+                  ))}
                   <div className="flex gap-3 items-start">
                     <div className="flex flex-col items-center">
                       <img

@@ -210,6 +210,7 @@ const SupportTicketsPage: React.FC = () => {
       {
         key: 'cause',
         label: 'CAUSE',
+        type: 'string',
         sortable: true,
         render: (ticket) => (
           <span className="text-[14px] font-medium text-[#4E616A]">{ticket.cause}</span>
@@ -218,13 +219,17 @@ const SupportTicketsPage: React.FC = () => {
       {
         key: 'rider',
         label: 'RIDER',
+        type: 'string',
         sortable: true,
+        sortValue: (ticket) => ticket.rider?.name || '',
         render: (ticket) => <TicketPersonCell person={ticket.rider} fallback="RD" />,
       },
       {
         key: 'driver',
         label: 'DRIVER',
+        type: 'string',
         sortable: true,
+        sortValue: (ticket) => ticket.driver?.name || '',
         render: (ticket) =>
           ticket.driver ? (
             <div className="flex items-center gap-3">

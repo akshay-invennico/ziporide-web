@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { usePermissions } from '@/hooks/usePermissions';
 import { useDriverDetails, useUpdateDriverStatus } from '@/hooks/useDriver';
+import { usePermissions } from '@/hooks/usePermissions';
 import { routes } from '@/routes/routes';
 
 import SuspendRiderModal from '../../../components/ui/SuspendRiderModal';

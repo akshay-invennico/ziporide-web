@@ -391,6 +391,7 @@ export interface TripRecord {
   route: {
     pickupLocation: string;
     stop1Location?: string;
+    stops?: string[];
     destination: string;
   };
   distance: number;

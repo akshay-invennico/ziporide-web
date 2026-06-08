@@ -51,7 +51,7 @@ export const useRiders = (
       const params: Record<string, string | number | undefined> = {
         page,
         limit,
-        sortBy: 'createdAt',
+        sortBy: 'createdAt:desc',
       };
 
       if (hasAppliedFilters) {

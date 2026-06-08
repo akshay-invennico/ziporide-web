@@ -55,6 +55,7 @@ export const mapBackendRideToTripRecord = (t: RawRideData): TripRecord => {
     route: {
       pickupLocation: t.pickup?.address || 'N/A',
       stop1Location: t.stops?.[0]?.address || '',
+      stops: (t.stops || []).map((stop) => stop.address).filter(Boolean),
       destination: t.destination?.address || 'N/A',
     },
     rider: t.rider
@@ -158,6 +159,7 @@ export const useTrips = (
   page: number = 1,
   limit: number = 10,
   dateRange?: { startDate?: string; endDate?: string },
+  searchQuery: string = '',
 ) => {
   const [trips, setTrips] = useState<TripRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -185,6 +187,7 @@ export const useTrips = (
 
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
+      if (searchQuery.trim()) params.search = searchQuery.trim();
 
       const response = await apiClient.get<RidesResponse>(API.ADMIN_TRIPS, { params });
 
@@ -202,7 +205,7 @@ export const useTrips = (
     } finally {
       setLoading(false);
     }
-  }, [status, page, limit, startDate, endDate]);
+  }, [status, page, limit, startDate, endDate, searchQuery]);
 
   useEffect(() => {
     fetchTrips();

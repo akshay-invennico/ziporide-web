@@ -36,6 +36,7 @@ const AvatarCell = ({ initials, bg = '#1DAFA1' }: { initials: string; bg?: strin
 export default function TripHistoryPage() {
   const [activeTab, setActiveTab] = useState<FilterTab>('All');
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
   const [isTripModalOpen, setIsTripModalOpen] = useState(false);
@@ -58,14 +59,28 @@ export default function TripHistoryPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const { trips, loading, totalPages, refetch } = useTrips(activeTab, currentPage, 10, dateRange);
+  const { trips, loading, totalPages, refetch } = useTrips(
+    activeTab,
+    currentPage,
+    10,
+    dateRange,
+    debouncedSearch,
+  );
   const { cancelTrip, isCancelling } = useCancelTrip();
   const { exportCSV } = useExportTripsCSV();
   const { fetchAllTrips, setIsExporting: setIsExportingPDF } = useExportTripsPDF();
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [dateRange.startDate, dateRange.endDate]);
+  }, [dateRange.startDate, dateRange.endDate, debouncedSearch]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+
+    return () => window.clearTimeout(timeout);
+  }, [search]);
 
   const handleExportCSV = async () => {
     await exportCSV(activeTab, dateRange);
@@ -92,20 +107,6 @@ export default function TripHistoryPage() {
       setIsExportingPDF(false);
     }
   };
-
-  const filtered = useMemo(() => {
-    if (!search) return trips;
-    const q = search.toLowerCase();
-    return trips.filter((trip) => {
-      return (
-        trip.id.toLowerCase().includes(q) ||
-        trip.rider.name.toLowerCase().includes(q) ||
-        trip.driver.name.toLowerCase().includes(q) ||
-        trip.route.pickupLocation.toLowerCase().includes(q) ||
-        trip.route.destination.toLowerCase().includes(q)
-      );
-    });
-  }, [trips, search]);
 
   const handleTabChange = (tab: FilterTab) => {
     setActiveTab(tab);
@@ -334,7 +335,7 @@ export default function TripHistoryPage() {
 
         <DataTable<TripRecord>
           columns={columns}
-          data={filtered}
+          data={trips}
           rowKey={(trip) => trip.id}
           currentPage={currentPage}
           totalPages={totalPages}
