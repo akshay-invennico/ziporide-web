@@ -44,8 +44,8 @@ export interface DataTableProps<T> {
 
 const SortIcon: React.FC = () => {
   return (
-    <div className="flex items-center">
-      <img src="/icons/updown.svg" alt="sort" className="w-[18px] h-[18px]" />
+    <div className="flex h-[18px] w-[18px] shrink-0 items-center justify-center">
+      <img src="/icons/updown.svg" alt="sort" className="h-[18px] w-[18px] min-h-[18px] min-w-[18px] shrink-0" />
     </div>
   );
 };
