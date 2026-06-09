@@ -155,9 +155,12 @@ const DriverPage = () => {
               </div>
             )}
             <div className="flex flex-col">
-              <span className="font-medium text-[#1DAFA1] text-[14px]">
+              <Link
+                to={`/driver/details/${getDriverId(driver)}`}
+                className="font-medium text-[#1DAFA1] text-[14px] hover:underline"
+              >
                 {driver.name || driver.driverName}
-              </span>
+              </Link>
               <span className="text-[12px] font-medium text-[#4E616A] whitespace-nowrap">
                 {driver.countryCode} {driver.phone}
               </span>

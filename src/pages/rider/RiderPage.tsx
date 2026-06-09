@@ -143,7 +143,12 @@ const RiderPage = () => {
               </div>
             )}
             <div className="flex flex-col">
-              <span className="font-medium text-[#1DAFA1] text-[14px]">{rider.name}</span>
+              <Link
+                to={`/rider/details/${rider.id}`}
+                className="font-medium text-[#1DAFA1] text-[14px] hover:underline"
+              >
+                {rider.name}
+              </Link>
               <span className="text-[12px] font-medium text-[#4E616A] whitespace-nowrap">
                 {rider?.countryCode} {rider?.phone}
               </span>
