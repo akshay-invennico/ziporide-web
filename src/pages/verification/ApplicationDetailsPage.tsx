@@ -339,7 +339,7 @@ const ApplicationDetailsPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="flex flex-col gap-6">
             <div className="flex justify-between items-center">
-              <span className="text-[14px] font-medium text-[#4E616A]">PAN License Number</span>
+              <span className="text-[14px] font-medium text-[#4E616A]">PHV License Number</span>
               <span className="text-[14px] font-medium text-[#000000]">
                 {request.licence?.number || '-'}
               </span>
