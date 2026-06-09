@@ -20,6 +20,13 @@ import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import FilterDropdown, { type FilterType } from '../../components/ui/filter/FilterDropdown';
 import SuspendRiderModal from '../../components/ui/SuspendRiderModal';
 
+const formatJoinedDate = (dateStr?: string) => {
+  if (!dateStr) return '-';
+
+  const date = new Date(dateStr);
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-CA');
+};
+
 const RiderPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -186,6 +193,18 @@ const RiderPage = () => {
               {Number(rider.rating || rider.avgRating || 0).toFixed(1)}
             </span>
           </div>
+        ),
+      },
+      {
+        key: 'joinedOn',
+        label: 'JOINED ON',
+        type: 'date',
+        sortable: true,
+        sortValue: (rider) => rider.joinedOn || rider.createdAt || '',
+        render: (rider) => (
+          <span className="text-[#4E616A] text-[14px] font-medium">
+            {formatJoinedDate(rider.joinedOn || rider.createdAt)}
+          </span>
         ),
       },
       {

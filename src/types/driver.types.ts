@@ -83,6 +83,7 @@ export interface Driver {
   // Possible date fields for "Applied On" and "Approved/Rejected On"
   createdAt?: string;
   updatedAt?: string;
+  joinedOn?: string;
   appliedOn?: string;
   actionDate?: string;
   driverName?: string;
