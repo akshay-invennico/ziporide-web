@@ -1,11 +1,9 @@
 import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
-import { usePermissions } from '@/hooks/usePermissions';
-import { useTrips, useCancelTrip } from '@/hooks/useTrips';
+import { useTrips } from '@/hooks/useTrips';
 import type { TripRecord } from '@/types/driver.types';
 
-import CancelRideModal from '../ui/CancelRideModal';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import TripDetailsModal from '../ui/TripDetailsModal';
 
@@ -13,24 +11,11 @@ export default function RecentTripsTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
 
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
-  const { canEditModule } = usePermissions();
-  const canEditTrips = canEditModule('trips');
-
-  const { trips, loading, refetch } = useTrips('All', 1, 6);
-  const { cancelTrip, isCancelling } = useCancelTrip();
+  const { trips, loading } = useTrips('All', 1, 6);
 
   const handleViewDetails = (trip: TripRecord) => {
     setSelectedTrip(trip);
     setIsModalOpen(true);
-  };
-
-  const handleCancelClick = (trip: TripRecord) => {
-    if (!canEditTrips) return;
-    setSelectedTrip(trip);
-    setCancelMode(trip.status === 'In Progress' ? 'force-end' : 'cancel');
-    setIsCancelModalOpen(true);
   };
 
   return (
@@ -189,20 +174,6 @@ export default function RecentTripsTable() {
                           className="w-[22px] h-[22px]"
                         />
                       </button>
-                      {canEditTrips &&
-                        trip.status !== 'Completed' &&
-                        trip.status !== 'Cancelled' && (
-                          <button
-                            onClick={() => handleCancelClick(trip)}
-                            className="cursor-pointer"
-                          >
-                            <img
-                              src="/icons/dashboard/cancel.svg"
-                              alt="cancel"
-                              className="w-[22px] h-[22px]"
-                            />
-                          </button>
-                        )}
                     </div>
                   </td>
                 </tr>
@@ -216,25 +187,6 @@ export default function RecentTripsTable() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         trip={selectedTrip}
-      />
-
-      <CancelRideModal
-        isOpen={isCancelModalOpen}
-        mode={cancelMode}
-        onClose={() => setIsCancelModalOpen(false)}
-        isLoading={isCancelling}
-        onConfirm={async (reason) => {
-          if (!selectedTrip || !canEditTrips) return;
-          try {
-            const success = await cancelTrip(selectedTrip.rideId || selectedTrip.id, reason);
-            if (success) {
-              setIsCancelModalOpen(false);
-              refetch();
-            }
-          } catch (err) {
-            console.error('Cancellation failed:', err);
-          }
-        }}
       />
     </div>
   );

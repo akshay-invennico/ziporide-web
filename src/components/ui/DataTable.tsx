@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useId } from 'react';
+import React, { useCallback, useId, useMemo, useState } from 'react';
 
 import LoadingSpinner from './LoadingSpinner';
 import Pagination from './Pagination';
@@ -45,15 +45,32 @@ export interface DataTableProps<T> {
 const SortIcon: React.FC = () => {
   return (
     <div className="flex h-[18px] w-[18px] shrink-0 items-center justify-center">
-      <img src="/icons/updown.svg" alt="sort" className="h-[18px] w-[18px] min-h-[18px] min-w-[18px] shrink-0" />
+      <img
+        src="/icons/updown.svg"
+        alt="sort"
+        className="h-[18px] w-[18px] min-h-[18px] min-w-[18px] shrink-0"
+      />
     </div>
   );
+};
+
+const toComparableString = (val: unknown) => {
+  if (val && typeof val === 'object') {
+    const obj = val as Record<string, unknown>;
+    if (obj.name) return String(obj.name);
+    if (obj.pickupLocation) return String(obj.pickupLocation);
+    return JSON.stringify(val);
+  }
+
+  return String(val ?? '');
 };
 
 function DataTable<T extends object>({
   columns,
   data,
   rowKey,
+  sort,
+  onSort,
   currentPage: controlledPage,
   totalPages: controlledTotalPages,
   pageSize = 10,
@@ -71,8 +88,9 @@ function DataTable<T extends object>({
   const tableId = useId();
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const activeSortKey = sort?.column || sortKey;
+  const activeSortDirection = sort?.direction ?? sortDirection;
 
-  // Pagination: controlled (server-side) vs uncontrolled (client-side)
   const isControlledPagination =
     controlledPage !== undefined &&
     controlledTotalPages !== undefined &&
@@ -80,50 +98,60 @@ function DataTable<T extends object>({
   const [internalPage, setInternalPage] = useState(1);
 
   const sortedData = useMemo(() => {
-    if (!sortDirection || !sortKey) return data;
+    if (!activeSortDirection || !activeSortKey) return data;
 
-    const column = columns.find((c) => c.key === sortKey);
+    const column = columns.find((c) => c.key === activeSortKey);
     if (!column) return data;
 
-    const sorted = [...data].sort((a, b) => {
-      const valA = column.sortValue ? column.sortValue(a) : (a as Record<string, unknown>)[sortKey];
-      const valB = column.sortValue ? column.sortValue(b) : (b as Record<string, unknown>)[sortKey];
+    return [...data].sort((a, b) => {
+      const valA = column.sortValue
+        ? column.sortValue(a)
+        : (a as Record<string, unknown>)[activeSortKey];
+      const valB = column.sortValue
+        ? column.sortValue(b)
+        : (b as Record<string, unknown>)[activeSortKey];
 
       if (valA === valB) return 0;
-      if (valA === null || valA === undefined) return 1;
-      if (valB === null || valB === undefined) return -1;
+      if (valA === null || valA === undefined || valA === '') return 1;
+      if (valB === null || valB === undefined || valB === '') return -1;
+
+      let comparison = 0;
 
       switch (column.type) {
         case 'number': {
-          const numA = parseFloat(String(valA).replace(/[£,+-]/g, '')) || 0;
-          const numB = parseFloat(String(valB).replace(/[£,+-]/g, '')) || 0;
-          return numA - numB;
+          const numA = Number(String(valA).replace(/[^0-9.-]/g, ''));
+          const numB = Number(String(valB).replace(/[^0-9.-]/g, ''));
+          comparison = (Number.isNaN(numA) ? 0 : numA) - (Number.isNaN(numB) ? 0 : numB);
+          break;
         }
         case 'date': {
           const recA = a as Record<string, unknown>;
           const recB = b as Record<string, unknown>;
           const dateStrA = recA.date && recA.time ? `${recA.date} ${recA.time}` : String(valA);
           const dateStrB = recB.date && recB.time ? `${recB.date} ${recB.time}` : String(valB);
+          const timeA = new Date(String(dateStrA)).getTime();
+          const timeB = new Date(String(dateStrB)).getTime();
 
-          return new Date(String(dateStrA)).getTime() - new Date(String(dateStrB)).getTime();
+          if (Number.isNaN(timeA) && Number.isNaN(timeB)) comparison = 0;
+          else if (Number.isNaN(timeA)) return 1;
+          else if (Number.isNaN(timeB)) return -1;
+          else comparison = timeA - timeB;
+
+          break;
         }
         case 'string':
-        default: {
-          const toString = (val: unknown) => {
-            if (val && typeof val === 'object') {
-              const obj = val as Record<string, unknown>;
-              if (obj.pickupLocation) return String(obj.pickupLocation);
-              return JSON.stringify(val);
-            }
-            return String(val ?? '');
-          };
-          return toString(valA).toLowerCase().localeCompare(toString(valB).toLowerCase());
-        }
+        default:
+          comparison = toComparableString(valA)
+            .toLowerCase()
+            .localeCompare(toComparableString(valB).toLowerCase(), undefined, {
+              numeric: true,
+              sensitivity: 'base',
+            });
       }
-    });
 
-    return sortDirection === 'desc' ? sorted.reverse() : sorted;
-  }, [data, sortDirection, sortKey, columns]);
+      return activeSortDirection === 'desc' ? comparison * -1 : comparison;
+    });
+  }, [data, activeSortDirection, activeSortKey, columns]);
 
   const currentPage = isControlledPagination ? controlledPage : internalPage;
   const totalPages = isControlledPagination
@@ -157,11 +185,14 @@ function DataTable<T extends object>({
   );
 
   const handleSort = (columnKey: string) => {
-    if (sortKey !== columnKey) {
-      setSortKey(columnKey);
-      setSortDirection('asc');
+    const nextDirection: SortDirection =
+      activeSortKey === columnKey && activeSortDirection === 'asc' ? 'desc' : 'asc';
+
+    if (onSort) {
+      onSort({ column: columnKey, direction: nextDirection });
     } else {
-      setSortDirection((currentDirection) => (currentDirection === 'asc' ? 'desc' : 'asc'));
+      setSortKey(columnKey);
+      setSortDirection(nextDirection);
     }
 
     if (!isControlledPagination) {
@@ -220,7 +251,7 @@ function DataTable<T extends object>({
                     onClick={col.sortable ? () => handleSort(col.key) : undefined}
                     className={`px-6 py-4 ${col.sortable ? 'cursor-pointer group hover:bg-gray-50 select-none' : ''} ${col.headerClassName || ''}`}
                   >
-                    <div className={`flex items-center justify-between gap-2 w-full`}>
+                    <div className="flex items-center justify-between gap-2 w-full">
                       <span className="text-nowrap">{col.label}</span>
                       {col.sortable && <SortIcon />}
                     </div>

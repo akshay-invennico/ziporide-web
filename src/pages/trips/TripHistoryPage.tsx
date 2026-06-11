@@ -3,12 +3,10 @@ import { Search } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 
 import DataTable, { type Column } from '@/components/ui/DataTable';
-import { usePermissions } from '@/hooks/usePermissions';
-import { useTrips, useCancelTrip, useExportTripsCSV, useExportTripsPDF } from '@/hooks/useTrips';
+import { useTrips, useExportTripsCSV, useExportTripsPDF } from '@/hooks/useTrips';
 import { type TripStatus, type TripRecord } from '@/types/driver.types';
 
 import TripPDFDocument from '../../components/trips/TripPDFDocument';
-import CancelRideModal from '../../components/ui/CancelRideModal';
 import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
 import ExportDropdown from '../../components/ui/export/ExportDropdown';
 import TripDetailsModal from '../../components/ui/TripDetailsModal';
@@ -40,12 +38,8 @@ export default function TripHistoryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
   const [isTripModalOpen, setIsTripModalOpen] = useState(false);
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
-  const [cancelMode, setCancelMode] = useState<'cancel' | 'force-end'>('cancel');
   const [dateRange, setDateRange] = useState<DateRange>({ startDate: '', endDate: '' });
-  const { canEditModule } = usePermissions();
-  const canEditTrips = canEditModule('trips');
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -59,14 +53,13 @@ export default function TripHistoryPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const { trips, loading, totalPages, refetch } = useTrips(
+  const { trips, loading, totalPages } = useTrips(
     activeTab,
     currentPage,
     10,
     dateRange,
     debouncedSearch,
   );
-  const { cancelTrip, isCancelling } = useCancelTrip();
   const { exportCSV } = useExportTripsCSV();
   const { fetchAllTrips, setIsExporting: setIsExportingPDF } = useExportTripsPDF();
 
@@ -235,44 +228,23 @@ export default function TripHistoryPage() {
       {
         key: 'action',
         label: 'ACTION',
-        render: (trip) => {
-          const showCancel =
-            canEditTrips && (trip.status === 'Assigned' || trip.status === 'In Progress');
-          return (
-            <div className="flex items-center gap-2">
-              <button
-                className="cursor-pointer"
-                title="View"
-                onClick={() => {
-                  setSelectedTrip(trip);
-                  setIsTripModalOpen(true);
-                }}
-              >
-                <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px]" />
-              </button>
-              {showCancel && (
-                <button
-                  className="cursor-pointer"
-                  title="Cancel"
-                  onClick={() => {
-                    setSelectedTrip(trip);
-                    setCancelMode(trip.status === 'In Progress' ? 'force-end' : 'cancel');
-                    setIsCancelModalOpen(true);
-                  }}
-                >
-                  <img
-                    src="/icons/dashboard/cancel.svg"
-                    alt="cancel"
-                    className="w-[20px] h-[20px]"
-                  />
-                </button>
-              )}
-            </div>
-          );
-        },
+        render: (trip) => (
+          <div className="flex items-center gap-2">
+            <button
+              className="cursor-pointer"
+              title="View"
+              onClick={() => {
+                setSelectedTrip(trip);
+                setIsTripModalOpen(true);
+              }}
+            >
+              <img src="/icons/rider/eye.svg" alt="view" className="w-[20px] h-[20px]" />
+            </button>
+          </div>
+        ),
       },
     ],
-    [canEditTrips],
+    [],
   );
 
   return (
@@ -353,29 +325,6 @@ export default function TripHistoryPage() {
           setSelectedTrip(null);
         }}
         trip={selectedTrip}
-      />
-
-      <CancelRideModal
-        isOpen={isCancelModalOpen}
-        mode={cancelMode}
-        onClose={() => {
-          setIsCancelModalOpen(false);
-          setSelectedTrip(null);
-        }}
-        isLoading={isCancelling}
-        onConfirm={async (reason) => {
-          if (!selectedTrip || !canEditTrips) return;
-          try {
-            const success = await cancelTrip(selectedTrip.rideId || selectedTrip.id, reason);
-            if (success) {
-              setIsCancelModalOpen(false);
-              setSelectedTrip(null);
-              refetch();
-            }
-          } catch (err) {
-            console.error('Cancellation failed:', err);
-          }
-        }}
       />
     </div>
   );

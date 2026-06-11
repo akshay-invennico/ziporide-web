@@ -28,6 +28,7 @@ export const useRiders = (
   page: number = 1,
   limit: number = 10,
   searchQuery: string = '',
+  sortBy: string = 'createdAt:desc',
 ) => {
   const [riders, setRiders] = useState<Rider[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,7 +52,7 @@ export const useRiders = (
       const params: Record<string, string | number | undefined> = {
         page,
         limit,
-        sortBy: 'createdAt:desc',
+        sortBy,
       };
 
       if (hasAppliedFilters) {
@@ -110,6 +111,7 @@ export const useRiders = (
     initialFilters.rating,
     initialFilters.startDate,
     initialFilters.endDate,
+    sortBy,
   ]);
 
   useEffect(() => {

@@ -39,6 +39,7 @@ export const useDrivers = (
   page: number = 1,
   limit: number = 10,
   searchQuery: string = '',
+  sortBy: string = 'createdAt',
 ) => {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -60,7 +61,7 @@ export const useDrivers = (
         (initialFilters.rating && initialFilters.rating !== 'All');
 
       const params: Record<string, string | number> = {
-        sortBy: 'createdAt',
+        sortBy,
       };
 
       if (!hasAppliedFilters) {
@@ -118,7 +119,7 @@ export const useDrivers = (
     } finally {
       setLoading(false);
     }
-  }, [page, limit, initialFilters]);
+  }, [page, limit, initialFilters, sortBy]);
 
   useEffect(() => {
     fetchDrivers();

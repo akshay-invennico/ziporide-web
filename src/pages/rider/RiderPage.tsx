@@ -3,7 +3,7 @@ import { Search, Star } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import DataTable, { type Column } from '@/components/ui/DataTable';
+import DataTable, { type Column, type SortState } from '@/components/ui/DataTable';
 import { usePermissions } from '@/hooks/usePermissions';
 import {
   useRiders,
@@ -30,6 +30,7 @@ const formatJoinedDate = (dateStr?: string) => {
 const RiderPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortState, setSortState] = useState<SortState>({ column: '', direction: null });
   const itemsPerPage = 10;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -66,12 +67,27 @@ const RiderPage = () => {
     () => ({ ...filters, startDate: dateRange.startDate, endDate: dateRange.endDate }),
     [filters, dateRange.startDate, dateRange.endDate],
   );
+  const riderSortBy = useMemo(() => {
+    if (!sortState.direction) return 'createdAt:desc';
+
+    const sortFieldMap: Record<string, string> = {
+      name: 'name',
+      email: 'email',
+      totalTrips: 'totalTrips',
+      totalSpent: 'totalSpent',
+      rating: 'rating',
+      joinedOn: 'createdAt',
+    };
+
+    return `${sortFieldMap[sortState.column] || sortState.column}:${sortState.direction}`;
+  }, [sortState.column, sortState.direction]);
 
   const { riders, loading, totalPages, refetch } = useRiders(
     ridersFilters,
     currentPage,
     itemsPerPage,
     searchQuery,
+    riderSortBy,
   );
 
   useEffect(() => {
@@ -119,6 +135,7 @@ const RiderPage = () => {
         label: 'RIDER',
         type: 'string',
         sortable: true,
+        sortValue: (rider) => rider.name || '',
         render: (rider) => (
           <div className="flex items-center gap-3">
             {rider.profilePhotoUrl || rider.avatar ? (
@@ -161,6 +178,7 @@ const RiderPage = () => {
         label: 'EMAIL',
         type: 'string',
         sortable: true,
+        sortValue: (rider) => rider.email || '',
         render: (rider) => (
           <span className="text-[#1DAFA1] font-medium text-[14px]">{rider.email || '-'}</span>
         ),
@@ -170,6 +188,7 @@ const RiderPage = () => {
         label: 'TOTAL TRIPS',
         type: 'number',
         sortable: true,
+        sortValue: (rider) => rider.totalTrips ?? 0,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">{rider.totalTrips || 0}</span>
         ),
@@ -179,6 +198,7 @@ const RiderPage = () => {
         label: 'TOTAL SPENT',
         type: 'number',
         sortable: true,
+        sortValue: (rider) => rider.totalSpent ?? 0,
         render: (rider) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
             £{Number(rider.totalSpent || 0).toFixed(2)}
@@ -340,6 +360,11 @@ const RiderPage = () => {
           columns={columns}
           data={riders}
           rowKey={(r) => r.id}
+          sort={sortState}
+          onSort={(nextSort) => {
+            setSortState(nextSort);
+            setCurrentPage(1);
+          }}
           loading={loading}
           selectable
           selectedKeys={selectedRiderIds}

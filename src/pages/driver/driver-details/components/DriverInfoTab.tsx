@@ -121,6 +121,12 @@ export default function DriverInfoTab({ driver, onProfileUpdated, canEdit = fals
     }
   };
 
+  const formatPhoneNumber = (countryCode?: string, phone?: string) => {
+    if (!phone) return '-';
+    if (!countryCode || phone.startsWith(countryCode)) return phone;
+    return `${countryCode} ${phone}`;
+  };
+
   return (
     <>
       <div className="flex flex-col gap-0">
@@ -241,7 +247,7 @@ export default function DriverInfoTab({ driver, onProfileUpdated, canEdit = fals
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] text-[#4E616A] font-medium mb-0.5">Phone Number</p>
                   <p className="text-[14px] font-semibold text-[#101828] truncate">
-                    {driver.phone}
+                    {formatPhoneNumber(driver.countryCode, driver.phone)}
                   </p>
                 </div>
               </div>

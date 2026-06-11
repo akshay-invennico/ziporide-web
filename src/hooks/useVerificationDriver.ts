@@ -23,6 +23,7 @@ export const useDrivers = (
   initialLimit: number = 12,
   searchQuery: string = '',
   dateRange?: { startDate?: string; endDate?: string },
+  sortBy: string = 'createdAt',
 ) => {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,7 +45,7 @@ export const useDrivers = (
         const params: Record<string, string | number | boolean> = {
           page,
           limit,
-          sortBy: 'createdAt',
+          sortBy,
         };
         if (status && status !== 'All') {
           params.status = status.toLowerCase();
@@ -76,7 +77,7 @@ export const useDrivers = (
         setLoading(false);
       }
     },
-    [],
+    [sortBy],
   );
 
   const startDate = dateRange?.startDate;
@@ -84,7 +85,16 @@ export const useDrivers = (
 
   useEffect(() => {
     fetchDrivers(statusFilter, initialPage, initialLimit, searchQuery, { startDate, endDate });
-  }, [fetchDrivers, statusFilter, initialPage, initialLimit, searchQuery, startDate, endDate]);
+  }, [
+    fetchDrivers,
+    statusFilter,
+    initialPage,
+    initialLimit,
+    searchQuery,
+    startDate,
+    endDate,
+    sortBy,
+  ]);
 
   return {
     drivers,

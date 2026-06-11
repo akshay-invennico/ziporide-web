@@ -3,7 +3,7 @@ import { Search } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import DataTable, { type Column } from '@/components/ui/DataTable';
+import DataTable, { type Column, type SortState } from '@/components/ui/DataTable';
 import type { Driver } from '@/types/driver.types';
 
 import DateRangePicker, { type DateRange } from '../../components/ui/DateRangePicker';
@@ -29,9 +29,23 @@ const getStatusColor = (status: string) => {
   }
 };
 
+const getDriverName = (driver: Driver) => driver.driverName || driver.name || 'Unknown';
+
+const getAppliedDate = (driver: Driver) =>
+  driver.appliedOn || driver.consents?.acceptedAt || driver.createdAt || '';
+
+const getActionDate = (driver: Driver) =>
+  driver.actionDate ||
+  driver.updatedAt ||
+  driver.appliedOn ||
+  driver.consents?.acceptedAt ||
+  driver.createdAt ||
+  '';
+
 const VerificationPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortState, setSortState] = useState<SortState>({ column: '', direction: null });
   const itemsPerPage = 12;
   const [filterStatus, setFilterStatus] = useState<'Pending' | 'Approved' | 'Rejected' | 'All'>(
     'Pending',
@@ -62,12 +76,27 @@ const VerificationPage = () => {
     };
   }, [searchQuery]);
 
+  const verificationSortBy = useMemo(() => {
+    if (!sortState.direction) return 'createdAt';
+
+    const sortFieldMap: Record<string, string> = {
+      driver: 'name',
+      email: 'email',
+      appliedOn: 'createdAt',
+      approvedOn: 'updatedAt',
+      reason: 'reason',
+    };
+
+    return `${sortFieldMap[sortState.column] || sortState.column}:${sortState.direction}`;
+  }, [sortState.column, sortState.direction]);
+
   const { drivers, loading, totalPages } = useDrivers(
     filterStatus,
     currentPage,
     itemsPerPage,
     debouncedSearchQuery,
     dateRange,
+    verificationSortBy,
   );
 
   useEffect(() => {
@@ -122,7 +151,9 @@ const VerificationPage = () => {
       {
         key: 'driver',
         label: 'DRIVER',
+        type: 'string',
         sortable: true,
+        sortValue: getDriverName,
         render: (request) => (
           <div className="flex items-center gap-3">
             <div className="h-[40px] w-[40px] rounded-full bg-[#1DAFA1] flex items-center justify-center text-white font-bold text-[16px] shrink-0 overflow-hidden">
@@ -130,7 +161,7 @@ const VerificationPage = () => {
                 <span>
                   {request.avatar && request.avatar.length <= 2
                     ? request.avatar
-                    : (request.driverName || request.name)
+                    : getDriverName(request)
                         ?.trim()
                         .split(/\s+/)
                         .map((n) => n[0])
@@ -141,14 +172,14 @@ const VerificationPage = () => {
               ) : (
                 <img
                   src={request.avatar}
-                  alt={request.driverName || request.name || 'Driver'}
+                  alt={getDriverName(request)}
                   className="w-full h-full object-cover"
                 />
               )}
             </div>
             <div className="flex flex-col">
               <span className="font-medium text-[#1DAFA1] text-[14px] leading-tight">
-                {request.driverName || request.name || 'Unknown'}
+                {getDriverName(request)}
               </span>
               <span className="text-[12px] font-medium text-[#4E616A]">
                 {request.countryCode
@@ -162,7 +193,9 @@ const VerificationPage = () => {
       {
         key: 'email',
         label: 'EMAIL',
+        type: 'string',
         sortable: true,
+        sortValue: (request) => request.email || '',
         render: (request) => (
           <span className="text-[#1DAFA1] font-medium text-[14px]">{request.email || '-'}</span>
         ),
@@ -170,13 +203,13 @@ const VerificationPage = () => {
       {
         key: 'appliedOn',
         label: 'APPLIED ON',
+        type: 'date',
         sortable: true,
+        sortValue: getAppliedDate,
         render: (request) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
-            {request.appliedOn || request.consents?.acceptedAt || request.createdAt
-              ? new Date(
-                  request.appliedOn || request.consents?.acceptedAt || request.createdAt!,
-                ).toLocaleDateString('en-CA')
+            {getAppliedDate(request)
+              ? new Date(getAppliedDate(request)).toLocaleDateString('en-CA')
               : '-'}
           </span>
         ),
@@ -187,21 +220,13 @@ const VerificationPage = () => {
       cols.push({
         key: 'approvedOn',
         label: 'APPROVED ON',
-        sortable: false,
+        type: 'date',
+        sortable: true,
+        sortValue: getActionDate,
         render: (request) => (
           <span className="text-[#4E616A] text-[14px] font-medium">
-            {request.actionDate ||
-            request.updatedAt ||
-            request.appliedOn ||
-            request.consents?.acceptedAt ||
-            request.createdAt
-              ? new Date(
-                  request.actionDate ||
-                    request.updatedAt ||
-                    request.appliedOn ||
-                    request.consents?.acceptedAt ||
-                    request.createdAt!,
-                ).toLocaleDateString('en-CA')
+            {getActionDate(request)
+              ? new Date(getActionDate(request)).toLocaleDateString('en-CA')
               : '-'}
           </span>
         ),
@@ -234,9 +259,13 @@ const VerificationPage = () => {
       cols.push({
         key: 'reason',
         label: 'REASON',
-        sortable: false,
+        type: 'string',
+        sortable: true,
+        sortValue: (request) => request.reason || request.rejectedReason || '',
         render: (request) => (
-          <span className="text-[#4E616A] font-medium text-[14px]">{request.reason || '-'}</span>
+          <span className="text-[#4E616A] font-medium text-[14px]">
+            {request.reason || request.rejectedReason || '-'}
+          </span>
         ),
       });
     }
@@ -302,6 +331,7 @@ const VerificationPage = () => {
                 onClick={() => {
                   setFilterStatus(status);
                   setCurrentPage(1);
+                  setSortState({ column: '', direction: null });
                 }}
                 className={`px-4 py-1.5 rounded-sm text-[13px] cursor-pointer font-medium border transition-all ${
                   filterStatus === status
@@ -341,6 +371,11 @@ const VerificationPage = () => {
           columns={columns}
           data={currentData}
           rowKey={(d) => d.id}
+          sort={sortState}
+          onSort={(nextSort) => {
+            setSortState(nextSort);
+            setCurrentPage(1);
+          }}
           loading={loading}
           currentPage={currentPage}
           totalPages={totalPages}

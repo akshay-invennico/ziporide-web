@@ -3,7 +3,7 @@ import { Search, Star } from 'lucide-react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import DataTable, { type Column } from '@/components/ui/DataTable';
+import DataTable, { type Column, type SortState } from '@/components/ui/DataTable';
 import {
   useDrivers,
   useUpdateDriverStatus,
@@ -30,6 +30,7 @@ const formatJoinedDate = (dateStr?: string) => {
 const DriverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortState, setSortState] = useState<SortState>({ column: '', direction: null });
   const itemsPerPage = 10;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -66,12 +67,27 @@ const DriverPage = () => {
     () => ({ ...filters, startDate: dateRange.startDate, endDate: dateRange.endDate }),
     [filters, dateRange.startDate, dateRange.endDate],
   );
+  const driverSortBy = useMemo(() => {
+    if (!sortState.direction) return 'createdAt';
+
+    const sortFieldMap: Record<string, string> = {
+      name: 'name',
+      email: 'email',
+      totalTrips: 'totalTrips',
+      totalEarnings: 'totalEarnings',
+      rating: 'avgRating',
+      joinedOn: 'createdAt',
+    };
+
+    return `${sortFieldMap[sortState.column] || sortState.column}:${sortState.direction}`;
+  }, [sortState.column, sortState.direction]);
 
   const { drivers, loading, totalPages, refetch } = useDrivers(
     driversFilters,
     currentPage,
     itemsPerPage,
     searchQuery,
+    driverSortBy,
   );
 
   useEffect(() => {
@@ -354,6 +370,11 @@ const DriverPage = () => {
           columns={columns}
           data={drivers}
           rowKey={(d) => getDriverId(d)}
+          sort={sortState}
+          onSort={(nextSort) => {
+            setSortState(nextSort);
+            setCurrentPage(1);
+          }}
           loading={loading}
           selectable
           selectedKeys={selectedDriverIds}
